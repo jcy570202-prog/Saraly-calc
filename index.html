@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>浪花薪資計算工具 - 哲運娛樂</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen py-8 px-4 sm:px-6">
+    <div class="max-w-4xl mx-auto">
+        <!-- 標題區 -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-800">🌊 浪花薪資與分潤計算系統</h1>
+                    <p class="text-sm text-gray-500 mt-1">依據最新規則自動計算固定月服務費、服務費實發與分潤實發</p>
+                </div>
+                <button onclick="addRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg transition text-sm shadow-sm flex items-center gap-2">
+                    <span>+ 新增直播主</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- 試算表格區 -->
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse" id="salaryTable">
+                    <thead>
+                        <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
+                            <th class="py-3 px-4 font-semibold">直播主名稱</th>
+                            <th class="py-3 px-4 font-semibold">浪花點數</th>
+                            <th class="py-3 px-4 font-semibold">固定月服務費</th>
+                            <th class="py-3 px-4 font-semibold">時數 / 分潤(%)</th>
+                            <th class="py-3 px-4 font-semibold">服務費實發</th>
+                            <th class="py-3 px-4 font-semibold">分潤實發</th>
+                            <th class="py-3 px-4 font-semibold">總計金額</th>
+                            <th class="py-3 px-4 text-center font-semibold">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 text-sm text-gray-700" id="tableBody">
+                        <!-- 動態插入列 -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- 總計摘要卡片 -->
+        <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl shadow-md p-6 text-white">
+            <h2 class="text-lg font-semibold mb-4 text-indigo-200">📊 總計與報表摘要</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                <div class="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
+                    <p class="text-xs text-indigo-200 uppercase tracking-wider">總服務費實發</p>
+                    <p class="text-2xl font-bold mt-1" id="totalServiceFee">NT$ 0</p>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
+                    <p class="text-xs text-indigo-200 uppercase tracking-wider">總分潤實發</p>
+                    <p class="text-2xl font-bold mt-1" id="totalSplitFee">NT$ 0</p>
+                </div>
+                <div class="bg-white/10 rounded-lg p-4 backdrop-blur-sm border border-indigo-400/30">
+                    <p class="text-xs text-indigo-200 uppercase tracking-wider">總支出金額 (總計)</p>
+                    <p class="text-2xl font-bold text-amber-300 mt-1" id="grandTotal">NT$ 0</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const tiers = [
+            { threshold: 6000000, fee: 110000 },
+            { threshold: 5000000, fee: 100000 },
+            { threshold: 4000000, fee: 84000 },
+            { threshold: 3000000, fee: 68000 },
+            { threshold: 2000000, fee: 52000 },
+            { threshold: 1000000, fee: 32000 },
+            { threshold: 750000, fee: 24000 },
+            { threshold: 500000, fee: 16000 },
+            { threshold: 400000, fee: 12000 },
+            { threshold: 200000, fee: 6000 },
+            { threshold: 100000, fee: 3200 },
+            { threshold: 0, fee: 0 }
+        ];
+
+        function getFixedFee(langhua) {
+            // 規則 1：少於 100,000 點，固定月服務費為 0
+            if (langhua < 100000) {
+                return 0;
+            }
+            for (let t of tiers) {
+                if (langhua >= t.threshold) {
+                    return t.fee;
+                }
+            }
+            return 0;
+        }
+
+        window.onload = function() {
+            addRow("直播主 A", 1000000, 20, 20);
+            addRow("直播主 B", 100000, 20, 20);
+        };
+
+        function addRow(name = "新直播主", langhua = 100000, hours = 20, splitPercent = 20) {
+            const tbody = document.getElementById('tableBody');
+            const row = document.createElement('tr');
+            row.className = "hover:bg-gray-50/80 transition";
+            
+            row.innerHTML = `
+                <td class="py-3 px-4">
+                    <input type="text" value="${name}" class="w-32 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </td>
+                <td class="py-3 px-4">
+                    <input type="number" value="${langhua}" oninput="calculate()" class="langhua-input w-28 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" min="0" step="1000">
+                </td>
+                <td class="py-3 px-4">
+                    <span class="fixed-fee font-medium text-gray-800">0</span>
+                </td>
+                <td class="py-3 px-4">
+                    <div class="flex items-center gap-1">
+                        <input type="number" value="${hours}" oninput="calculate()" placeholder="時數" class="hours-input w-14 border border-gray-300 rounded px-1 py-1 text-xs" title="時數">
+                        <span class="text-gray-400">/</span>
+                        <input type="number" value="${splitPercent}" oninput="calculate()" placeholder="%" class="split-input w-14 border border-gray-300 rounded px-1 py-1 text-xs" title="分潤%">
+                    </div>
+                </td>
+                <td class="py-3 px-4 text-gray-600 service-fee-actual">0</td>
+                <td class="py-3 px-4 text-gray-600 split-fee-actual">0</td>
+                <td class="py-3 px-4 font-semibold text-indigo-600 row-total">0</td>
+                <td class="py-3 px-4 text-center">
+                    <button onclick="removeRow(this)" class="text-red-400 hover:text-red-600 text-sm font-medium px-2 py-1 rounded transition">刪除</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+            calculate();
+        }
+
+        function removeRow(btn) {
+            btn.closest('tr').remove();
+            calculate();
+        }
+
+        function formatCurrency(num) {
+            return "NT$ " + Math.round(num).toLocaleString();
+        }
+
+        function calculate() {
+            const rows = document.querySelectorAll('#tableBody tr');
+            let totalService = 0;
+            let totalSplit = 0;
+
+            rows.forEach(row => {
+                const langhua = parseFloat(row.querySelector('.langhua-input').value) || 0;
+                const hours = parseFloat(row.querySelector('.hours-input').value) || 0;
+                const splitPercent = parseFloat(row.querySelector('.split-input').value) || 0;
+
+                // 1. 固定月服務費
+                const fixedFee = getFixedFee(langhua);
+                row.querySelector('.fixed-fee').innerText = fixedFee.toLocaleString();
+
+                // 2. 服務費實發公式
+                let serviceFeeActual = 0;
+                if (langhua < 100000) {
+                    serviceFeeActual = 0;
+                } else if (fixedFee === 3200) {
+                    // 規則 2：固定服務費若是 3200，固定扣 1200 再乘以 0.95
+                    serviceFeeActual = (fixedFee - 1200) * 0.95;
+                } else {
+                    // 其他級距維持原公式：(固定月服務費 - 時數*100) * 0.95
+                    serviceFeeActual = (fixedFee - (hours * 100)) * 0.95;
+                }
+
+                // 3. 分潤實發公式：=ROUNDUP((浪花點數 / 分潤%) * 0.9 * 0.95, 0)
+                let splitFeeActual = 0;
+                if (splitPercent > 0 && langhua >= 100000) {
+                    splitFeeActual = Math.ceil((langhua / splitPercent) * 0.9 * 0.95);
+                }
+
+                const rowTotal = serviceFeeActual + splitFeeActual;
+
+                row.querySelector('.service-fee-actual').innerText = Math.round(serviceFeeActual).toLocaleString();
+                row.querySelector('.split-fee-actual').innerText = splitFeeActual.toLocaleString();
+                row.querySelector('.row-total').innerText = formatCurrency(rowTotal);
+
+                totalService += serviceFeeActual;
+                totalSplit += splitFeeActual;
+            });
+
+            const grandTotal = totalService + totalSplit;
+
+            document.getElementById('totalServiceFee').innerText = formatCurrency(totalService);
+            document.getElementById('totalSplitFee').innerText = formatCurrency(totalSplit);
+            document.getElementById('grandTotal').innerText = formatCurrency(grandTotal);
+        }
+    </script>
+</body>
+</html>
