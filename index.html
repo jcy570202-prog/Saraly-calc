@@ -17,7 +17,7 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">🌊 浪花薪資與分潤計算系統</h1>
-                    <p class="text-sm text-gray-500 mt-1">依據最新規則自動計算固定月服務費、服務費實發與分潤實發</p>
+                    <p class="text-sm text-gray-500 mt-1">依據最新規則自動計算固定月服務費、服務費實發與分潤實發（未達 10 萬點仍會計算分潤）</p>
                 </div>
                 <button onclick="addRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg transition text-sm shadow-sm flex items-center gap-2">
                     <span>+ 新增直播主</span>
@@ -99,7 +99,7 @@
 
         window.onload = function() {
             addRow("直播主 A", 1000000, 20, 20);
-            addRow("直播主 B", 100000, 20, 20);
+            addRow("直播主 B", 50000, 20, 20); // 測試少於 100,000 點時仍會計算分潤
         };
 
         function addRow(name = "新直播主", langhua = 100000, hours = 20, splitPercent = 20) {
@@ -163,16 +163,14 @@
                 if (langhua < 100000) {
                     serviceFeeActual = 0;
                 } else if (fixedFee === 3200) {
-                    // 規則 2：固定服務費若是 3200，固定扣 1200 再乘以 0.95
                     serviceFeeActual = (fixedFee - 1200) * 0.95;
                 } else {
-                    // 其他級距維持原公式：(固定月服務費 - 時數*100) * 0.95
                     serviceFeeActual = (fixedFee - (hours * 100)) * 0.95;
                 }
 
-                // 3. 分潤實發公式：=ROUNDUP((浪花點數 / 分潤%) * 0.9 * 0.95, 0)
+                // 3. 分潤實發公式：取消原本 langhua >= 100000 的限制，未達 10 萬點一樣正常計算分潤[cite: 1]
                 let splitFeeActual = 0;
-                if (splitPercent > 0 && langhua >= 100000) {
+                if (splitPercent > 0) {
                     splitFeeActual = Math.ceil((langhua / splitPercent) * 0.9 * 0.95);
                 }
 
