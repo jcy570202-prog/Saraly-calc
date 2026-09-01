@@ -4,6 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>浪花薪資計算工具 - 哲運娛樂</title>
+    
+    <!-- 網頁分頁與 iOS 桌面圖示 -->
+    <link rel="icon" href="icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon.png">
+
+    <!-- Android / PWA 專用圖示設定 -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4f46e5">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -85,7 +94,6 @@
         ];
 
         function getFixedFee(langhua) {
-            // 規則 1：少於 100,000 點，固定月服務費為 0
             if (langhua < 100000) {
                 return 0;
             }
@@ -99,7 +107,7 @@
 
         window.onload = function() {
             addRow("直播主 A", 1000000, 20, 20);
-            addRow("直播主 B", 50000, 20, 20); // 測試少於 100,000 點時仍會計算分潤
+            addRow("直播主 B", 50000, 20, 20);
         };
 
         function addRow(name = "新直播主", langhua = 100000, hours = 20, splitPercent = 20) {
@@ -154,11 +162,9 @@
                 const hours = parseFloat(row.querySelector('.hours-input').value) || 0;
                 const splitPercent = parseFloat(row.querySelector('.split-input').value) || 0;
 
-                // 1. 固定月服務費
                 const fixedFee = getFixedFee(langhua);
                 row.querySelector('.fixed-fee').innerText = fixedFee.toLocaleString();
 
-                // 2. 服務費實發公式
                 let serviceFeeActual = 0;
                 if (langhua < 100000) {
                     serviceFeeActual = 0;
@@ -168,7 +174,6 @@
                     serviceFeeActual = (fixedFee - (hours * 100)) * 0.95;
                 }
 
-                // 3. 分潤實發公式：取消原本 langhua >= 100000 的限制，未達 10 萬點一樣正常計算分潤
                 let splitFeeActual = 0;
                 if (splitPercent > 0) {
                     splitFeeActual = Math.ceil((langhua / splitPercent) * 0.9 * 0.95);
