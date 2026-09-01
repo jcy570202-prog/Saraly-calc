@@ -168,7 +168,7 @@
                     serviceFeeActual = (fixedFee - (hours * 100)) * 0.95;
                 }
 
-                // 3. 分潤實發公式：取消原本 langhua >= 100000 的限制，未達 10 萬點一樣正常計算分潤[cite: 1]
+                // 3. 分潤實發公式：取消原本 langhua >= 100000 的限制，未達 10 萬點一樣正常計算分潤
                 let splitFeeActual = 0;
                 if (splitPercent > 0) {
                     splitFeeActual = Math.ceil((langhua / splitPercent) * 0.9 * 0.95);
