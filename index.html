@@ -24,7 +24,7 @@
                     🧮 業績模擬試算 (內部)
                 </button>
                 <button onclick="switchTab('statement')" id="tabStatement" class="px-6 py-2.5 rounded-xl font-medium text-sm transition text-gray-600 hover:text-gray-900">
-                    📋 直播主對帳查詢 (前台)
+                    📋 對帳查詢系統 (前台/管理員)
                 </button>
             </div>
         </div>
@@ -35,15 +35,14 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
                         <h1 class="text-2xl font-bold text-gray-800">🌊 浪花薪資與分潤計算系統</h1>
-                        <p class="text-sm text-gray-500 mt-1">哲運娛樂專用結算工具（支援時數檢核、領用扣除、合約版本分潤與對帳單預覽）</p>
+                        <p class="text-sm text-gray-500 mt-1">哲運娛樂專用結算工具</p>
                     </div>
-                    <button onclick="addRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg transition text-sm shadow-sm flex items-center gap-2">
+                    <button onclick="addRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg transition text-sm shadow-sm">
                         <span>+ 新增直播主</span>
                     </button>
                 </div>
             </div>
 
-            <!-- 試算表格區 -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left border-collapse" id="salaryTable">
@@ -60,14 +59,11 @@
                                 <th class="py-3 px-3 text-center font-semibold">操作</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100 text-sm text-gray-700" id="tableBody">
-                            <!-- 動態插入列 -->
-                        </tbody>
+                        <tbody class="divide-y divide-gray-100 text-sm text-gray-700" id="tableBody"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- 總計摘要卡片 -->
             <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl shadow-md p-6 text-white">
                 <h2 class="text-lg font-semibold mb-4 text-indigo-200">📊 總計與報表摘要</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
@@ -87,7 +83,7 @@
             </div>
         </div>
 
-        <!-- ================= 區塊二：直播主與管理員對帳查詢 ================= -->
+        <!-- ================= 區塊二：對帳與管理員查詢 ================= -->
         <div id="sectionStatement" class="hidden max-w-4xl mx-auto space-y-6">
             <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 text-center">
                 <h1 class="text-2xl font-bold text-gray-800">🌊 哲運娛樂 - 對帳查詢系統</h1>
@@ -121,42 +117,31 @@
 
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">選擇查詢月份</label>
-                    <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </select>
+                    <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                 </div>
 
                 <div class="bg-gray-50 rounded-xl p-5 border border-gray-200 space-y-3 text-sm text-gray-600">
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>本月浪花點數：</span>
-                        <span id="resLanghua" class="font-medium text-gray-800">0 點</span>
+                        <span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>級距固定服務費：</span>
-                        <span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span>
+                        <span>級距固定服務費：</span><span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>領用浪花扣除：</span>
-                        <span id="resRedeemed" class="font-medium text-gray-800">0 點</span>
+                        <span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>當月直播時數：</span>
-                        <span id="resHours" class="font-medium text-gray-800">0 小時</span>
+                        <span>當月直播時數：</span><span id="resHours" class="font-medium text-gray-800">0 小時</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>服務費實發：</span>
-                        <span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span>
+                        <span>服務費實發：</span><span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>分潤實發：</span>
-                        <span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span>
+                        <span>分潤實發：</span><span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span>
                     </div>
                     <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl p-4 text-white flex justify-between items-center mt-4">
-                        <div>
-                            <p class="text-xs text-indigo-200 uppercase tracking-wider">本月總計實領金額</p>
-                        </div>
-                        <div class="text-xl sm:text-2xl font-bold text-amber-300" id="resGrandTotal">
-                            NT$ 0
-                        </div>
+                        <div><p class="text-xs text-indigo-200 uppercase tracking-wider">本月總計實領金額</p></div>
+                        <div class="text-xl sm:text-2xl font-bold text-amber-300" id="resGrandTotal">NT$ 0</div>
                     </div>
                 </div>
             </div>
@@ -164,19 +149,15 @@
             <!-- 管理員大帳號專用：所有人月份總覽面板 -->
             <div id="adminQueryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 hidden space-y-5">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                    <div>
-                        <h2 class="text-lg font-bold text-gray-800">👑 哲運管理員後台 - 全體直播主月份總覽</h2>
-                    </div>
+                    <div><h2 class="text-lg font-bold text-gray-800">👑 哲運管理員後台 - 全體直播主月份總覽</h2></div>
                     <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                 </div>
 
                 <div class="w-full sm:w-72">
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">選擇總覽月份</label>
-                    <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                    </select>
+                    <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                 </div>
 
-                <!-- 所有人清單表格 -->
                 <div class="border border-gray-200 rounded-xl overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse text-sm">
@@ -193,20 +174,14 @@
                                     <th class="py-3 px-3 font-semibold text-right">總計金額</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-100 text-gray-700" id="adminTableBody">
-                            </tbody>
+                            <tbody class="divide-y divide-gray-100 text-gray-700" id="adminTableBody"></tbody>
                         </table>
                     </div>
                 </div>
 
-                <!-- 總計卡片 -->
                 <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl shadow-md p-6 text-white flex justify-between items-center">
-                    <div>
-                        <p class="text-xs text-indigo-200 uppercase tracking-wider">當月全公司總支出金額</p>
-                    </div>
-                    <div class="text-2xl font-bold text-amber-300" id="adminGrandTotal">
-                        NT$ 0
-                    </div>
+                    <div><p class="text-xs text-indigo-200 uppercase tracking-wider">當月全公司總支出金額</p></div>
+                    <div class="text-2xl font-bold text-amber-300" id="adminGrandTotal">NT$ 0</div>
                 </div>
             </div>
         </div>
@@ -258,31 +233,23 @@
         window.onload = function() {
             addRow("王郁茹", 1254314, 145200, 22, "瞬_21");
             addRow("宋晨瑋", 906506, 0, 20, "瞬_21");
+            initData();
         };
 
         function addRow(name = "新直播主", langhua = 100000, redeemed = 0, hours = 20, contract = "瞬_21") {
             const tbody = document.getElementById('tableBody');
             const row = document.createElement('tr');
             row.className = "hover:bg-gray-50/85 transition";
-            
             row.innerHTML = `
-                <td class="py-3 px-3">
-                    <input type="text" value="${name}" class="name-input w-28 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                </td>
-                <td class="py-3 px-3">
-                    <input type="number" value="${langhua}" oninput="calculate()" class="langhua-input w-28 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" min="0" step="1000">
-                </td>
-                <td class="py-3 px-3">
-                    <input type="number" value="${redeemed}" oninput="calculate()" class="redeemed-input w-24 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" min="0" step="1000">
-                </td>
-                <td class="py-3 px-3">
-                    <span class="fixed-fee font-medium text-gray-800">0</span>
-                </td>
+                <td class="py-3 px-3"><input type="text" value="${name}" class="name-input w-28 border border-gray-300 rounded px-2 py-1 text-sm"></td>
+                <td class="py-3 px-3"><input type="number" value="${langhua}" oninput="calculate()" class="langhua-input w-28 border border-gray-300 rounded px-2 py-1 text-sm" min="0" step="1000"></td>
+                <td class="py-3 px-3"><input type="number" value="${redeemed}" oninput="calculate()" class="redeemed-input w-24 border border-gray-300 rounded px-2 py-1 text-sm" min="0" step="1000"></td>
+                <td class="py-3 px-3"><span class="fixed-fee font-medium text-gray-800">0</span></td>
                 <td class="py-3 px-3">
                     <div class="flex items-center gap-1">
-                        <input type="number" value="${hours}" oninput="calculate()" placeholder="時數" class="hours-input w-14 border border-gray-300 rounded px-1 py-1 text-xs" title="時數">
+                        <input type="number" value="${hours}" oninput="calculate()" class="hours-input w-14 border border-gray-300 rounded px-1 py-1 text-xs">
                         <span class="text-gray-400">/</span>
-                        <select onchange="calculate()" class="contract-select border border-gray-300 rounded px-1.5 py-1 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" title="合約版本">
+                        <select onchange="calculate()" class="contract-select border border-gray-300 rounded px-1.5 py-1 text-xs bg-white">
                             <option value="瞬_21" ${contract === '瞬_21' ? 'selected' : ''}>瞬_21</option>
                             <option value="瞬_25" ${contract === '瞬_25' ? 'selected' : ''}>瞬_25</option>
                         </select>
@@ -291,9 +258,7 @@
                 <td class="py-3 px-3 text-gray-600 service-fee-actual">0</td>
                 <td class="py-3 px-3 text-gray-600 split-fee-actual">0</td>
                 <td class="py-3 px-3 font-semibold text-indigo-600 row-total">0</td>
-                <td class="py-3 px-3 text-center flex items-center justify-center gap-1.5">
-                    <button onclick="removeRow(this)" class="text-red-400 hover:text-red-600 text-xs font-medium px-2 py-1.5 rounded transition">刪除</button>
-                </td>
+                <td class="py-3 px-3 text-center"><button onclick="removeRow(this)" class="text-red-400 hover:text-red-600 text-xs font-medium px-2 py-1.5 rounded">刪除</button></td>
             `;
             tbody.appendChild(row);
             calculate();
@@ -310,8 +275,7 @@
 
         function calculate() {
             const rows = document.querySelectorAll('#tableBody tr');
-            let totalService = 0;
-            let totalSplit = 0;
+            let totalService = 0, totalSplit = 0;
 
             rows.forEach(row => {
                 const langhua = parseFloat(row.querySelector('.langhua-input').value) || 0;
@@ -324,24 +288,13 @@
                 row.querySelector('.fixed-fee').innerText = fixedFee.toLocaleString();
 
                 let serviceFeeActual = 0;
-                if (hours < 20 || langhua < 100000) {
-                    serviceFeeActual = 0;
-                } else {
+                if (hours >= 20 && langhua >= 100000) {
                     const effectiveHours = Math.min(hours, 20);
-                    if (fixedFee === 3200) {
-                        serviceFeeActual = (fixedFee - 1200) * 0.95;
-                    } else {
-                        serviceFeeActual = (fixedFee - (effectiveHours * 100)) * 0.95;
-                    }
+                    serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
                 }
 
                 const netLanghua = Math.max(0, langhua - redeemed);
-                let splitFeeActual = 0;
-                if (divisor > 0) {
-                    const step1 = Math.floor(netLanghua / divisor);
-                    splitFeeActual = Math.ceil(step1 * 0.9 * 0.95);
-                }
-
+                let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
                 const rowTotal = serviceFeeActual + splitFeeActual;
 
                 row.querySelector('.service-fee-actual').innerText = Math.round(serviceFeeActual).toLocaleString();
@@ -357,38 +310,21 @@
             document.getElementById('grandTotal').innerText = formatCurrency(totalService + totalSplit);
         }
 
-        // ================= 對帳與管理員登入資料邏輯 =================
-        let streamersData = [
-            { id: "admin", name: "哲運管理員", contract: "管理員", password: "888" },
-            { id: "2853632", name: "王郁茹", contract: "瞬_21", password: "123" },
-            { id: "4843183", name: "宋晨瑋", contract: "瞬_21", password: "123" },
-            { id: "2250346", name: "李沛瑩", contract: "瞬_21", password: "123" },
-            { id: "3119799", name: "倪詩涵", contract: "瞬_21", password: "123" },
-            { id: "1437218", name: "黃婷", contract: "瞬_25", password: "123" },
-            { id: "4994567", name: "黃微甯", contract: "瞬_25", password: "123" },
-            { id: "1466001", name: "簡詩蓉", contract: "瞬_21", password: "123" },
-            { id: "2641349", name: "SZU BEE", contract: "瞬_21", password: "123" }
-        ];
-
-        let incomeData = [
-            { id: "2853632", month: "2026-07", langhua: 1254314, redeemed: 145200, hours: 22 },
-            { id: "4843183", month: "2026-07", langhua: 906506, redeemed: 0, hours: 20 },
-            { id: "2250346", month: "2026-07", langhua: 1619565, redeemed: 0, hours: 25 },
-            { id: "3119799", month: "2026-07", langhua: 600148, redeemed: 0, hours: 25 },
-            { id: "1437218", month: "2026-07", langhua: 206111, redeemed: 0, hours: 25 },
-            { id: "4994567", month: "2026-07", langhua: 138616, redeemed: 0, hours: 25 },
-            { id: "1466001", month: "2026-07", langhua: 1364672, redeemed: 0, hours: 25 },
-            { id: "2853632", month: "2026-08", langhua: 1161723, redeemed: 287600, hours: 22 },
-            { id: "4843183", month: "2026-08", langhua: 1173357, redeemed: 0, hours: 20 },
-            { id: "2250346", month: "2026-08", langhua: 1002356, redeemed: 0, hours: 25 },
-            { id: "3119799", month: "2026-08", langhua: 564656, redeemed: 0, hours: 25 },
-            { id: "1437218", month: "2026-08", langhua: 124775, redeemed: 0, hours: 25 },
-            { id: "4994567", month: "2026-08", langhua: 172633, redeemed: 0, hours: 25 },
-            { id: "1466001", month: "2026-08", langhua: 1224378, redeemed: 0, hours: 25 },
-            { id: "2641349", month: "2026-08", langhua: 708465, redeemed: 0, hours: 25 }
-        ];
-
+        // ================= 動態讀取 JSON 邏輯 =================
+        let streamersData = [];
+        let incomeData = [];
         let currentStreamer = null;
+
+        async function initData() {
+            try {
+                const resS = await fetch('streamers.json');
+                streamersData = await resS.json();
+                const resI = await fetch('income.json');
+                incomeData = await resI.json();
+            } catch (e) {
+                console.warn("無法讀取外部 JSON，請確保透過本地伺服器或網頁伺服器執行。");
+            }
+        }
 
         function handleLogin() {
             const idInput = document.getElementById('inputId').value.trim();
@@ -404,7 +340,6 @@
             document.getElementById('loginCard').classList.add('hidden');
 
             if (streamer.id === 'admin') {
-                // 顯示管理員總覽介面
                 const allMonths = [...new Set(incomeData.map(i => i.month))].sort().reverse();
                 const selectAdminMonth = document.getElementById('selectAdminMonth');
                 selectAdminMonth.innerHTML = '';
@@ -418,7 +353,6 @@
                 document.getElementById('adminQueryCard').classList.remove('hidden');
                 loadAdminStatement();
             } else {
-                // 顯示一般直播主介面
                 document.getElementById('welcomeName').innerText = streamer.name;
                 document.getElementById('welcomeId').innerText = streamer.id;
                 document.getElementById('welcomeContract').innerText = streamer.contract;
@@ -465,24 +399,13 @@
             const fixedFee = getFixedFee(langhua);
 
             let serviceFeeActual = 0;
-            if (hours < 20 || langhua < 100000) {
-                serviceFeeActual = 0;
-            } else {
+            if (hours >= 20 && langhua >= 100000) {
                 const effectiveHours = Math.min(hours, 20);
-                if (fixedFee === 3200) {
-                    serviceFeeActual = (fixedFee - 1200) * 0.95;
-                } else {
-                    serviceFeeActual = (fixedFee - (effectiveHours * 100)) * 0.95;
-                }
+                serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
             }
 
             const netLanghua = Math.max(0, langhua - redeemed);
-            let splitFeeActual = 0;
-            if (divisor > 0) {
-                const step1 = Math.floor(netLanghua / divisor);
-                splitFeeActual = Math.ceil(step1 * 0.9 * 0.95);
-            }
-
+            let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
             const grandTotal = Math.round(serviceFeeActual) + splitFeeActual;
 
             document.getElementById('resLanghua').innerText = `${langhua.toLocaleString()} 點`;
@@ -494,15 +417,12 @@
             document.getElementById('resGrandTotal').innerText = `NT$ ${grandTotal.toLocaleString()}`;
         }
 
-        // 管理員後台試算載入
         function loadAdminStatement() {
             const selectedMonth = document.getElementById('selectAdminMonth').value;
             const tbody = document.getElementById('adminTableBody');
             tbody.innerHTML = '';
 
             let companyTotal = 0;
-            
-            // 排除 admin 自己，撈出所有一般直播主
             const streamers = streamersData.filter(s => s.id !== 'admin');
 
             streamers.forEach(s => {
@@ -515,24 +435,13 @@
                 const fixedFee = getFixedFee(langhua);
 
                 let serviceFeeActual = 0;
-                if (hours < 20 || langhua < 100000) {
-                    serviceFeeActual = 0;
-                } else {
+                if (hours >= 20 && langhua >= 100000) {
                     const effectiveHours = Math.min(hours, 20);
-                    if (fixedFee === 3200) {
-                        serviceFeeActual = (fixedFee - 1200) * 0.95;
-                    } else {
-                        serviceFeeActual = (fixedFee - (effectiveHours * 100)) * 0.95;
-                    }
+                    serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
                 }
 
                 const netLanghua = Math.max(0, langhua - redeemed);
-                let splitFeeActual = 0;
-                if (divisor > 0) {
-                    const step1 = Math.floor(netLanghua / divisor);
-                    splitFeeActual = Math.ceil(step1 * 0.9 * 0.95);
-                }
-
+                let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
                 const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
                 companyTotal += rowTotal;
 
