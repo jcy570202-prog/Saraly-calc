@@ -339,7 +339,8 @@
             currentStreamer = streamer;
             document.getElementById('loginCard').classList.add('hidden');
 
-            if (streamer.id === 'admin') {
+            // 調整這裡：只要 id 是 admin 或 boss，就直接解鎖管理員總覽後台
+            if (streamer.id === 'admin' || streamer.id === 'boss') {
                 const allMonths = [...new Set(incomeData.map(i => i.month))].sort().reverse();
                 const selectAdminMonth = document.getElementById('selectAdminMonth');
                 selectAdminMonth.innerHTML = '';
@@ -376,7 +377,6 @@
                 document.getElementById('queryCard').classList.remove('hidden');
             }
         }
-
         function handleLogout() {
             currentStreamer = null;
             document.getElementById('inputId').value = '';
