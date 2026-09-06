@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>浪花薪資計算工具 - 哲運娛樂</title>
+    <title>浪花薪資計算與對帳系統 - 哲運娛樂</title>
     
     <!-- 網頁分頁與 iOS 桌面圖示 -->
     <link rel="icon" href="icon.png" type="image/png">
     <link rel="apple-touch-icon" href="icon.png">
-
-    <!-- Android / PWA 專用圖示設定 -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5">
 
@@ -21,71 +19,162 @@
 </head>
 <body class="bg-gray-50 min-h-screen py-8 px-4 sm:px-6">
     <div class="max-w-7xl mx-auto">
-        <!-- 標題區 -->
-        <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
-            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div>
-                    <h1 class="text-2xl font-bold text-gray-800">🌊 浪花薪資與分潤計算系統</h1>
-                    <p class="text-sm text-gray-500 mt-1">哲運娛樂專用結算工具（支援時數檢核、領用扣除、合約版本分潤與對帳單預覽）</p>
-                </div>
-                <button onclick="addRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg transition text-sm shadow-sm flex items-center gap-2">
-                    <span>+ 新增直播主</span>
+        <!-- 頂部切換頁籤 -->
+        <div class="flex justify-center mb-6">
+            <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200 inline-flex gap-2">
+                <button onclick="switchTab('simulator')" id="tabSimulator" class="px-6 py-2.5 rounded-xl font-medium text-sm transition bg-indigo-600 text-white shadow-sm">
+                    🧮 業績模擬試算 (內部)
+                </button>
+                <button onclick="switchTab('statement')" id="tabStatement" class="px-6 py-2.5 rounded-xl font-medium text-sm transition text-gray-600 hover:text-gray-900">
+                    📋 直播主對帳查詢 (前台)
                 </button>
             </div>
         </div>
 
-        <!-- 試算表格區 -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
-            <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse" id="salaryTable">
-                    <thead>
-                        <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
-                            <th class="py-3 px-3 font-semibold">直播主名稱</th>
-                            <th class="py-3 px-3 font-semibold">浪花點數</th>
-                            <th class="py-3 px-3 font-semibold">領用浪花</th>
-                            <th class="py-3 px-3 font-semibold">固定服務費</th>
-                            <th class="py-3 px-3 font-semibold">時數 / 合約版本</th>
-                            <th class="py-3 px-3 font-semibold">服務費實發</th>
-                            <th class="py-3 px-3 font-semibold">分潤實發</th>
-                            <th class="py-3 px-3 font-semibold">總計金額</th>
-                            <th class="py-3 px-3 text-center font-semibold">操作</th>
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-gray-100 text-sm text-gray-700" id="tableBody">
-                        <!-- 動態插入列 -->
-                    </tbody>
-                </table>
+        <!-- ================= 區塊一：業績模擬試算 (你原本的工具) ================= -->
+        <div id="sectionSimulator" class="space-y-6">
+            <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl font-bold text-gray-800">🌊 浪花薪資與分潤計算系統</h1>
+                        <p class="text-sm text-gray-500 mt-1">哲運娛樂專用結算工具（支援時數檢核、領用扣除、合約版本分潤與對帳單預覽）</p>
+                    </div>
+                    <button onclick="addRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg transition text-sm shadow-sm flex items-center gap-2">
+                        <span>+ 新增直播主</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 試算表格區 -->
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse" id="salaryTable">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
+                                <th class="py-3 px-3 font-semibold">直播主名稱</th>
+                                <th class="py-3 px-3 font-semibold">浪花點數</th>
+                                <th class="py-3 px-3 font-semibold">領用浪花</th>
+                                <th class="py-3 px-3 font-semibold">固定服務費</th>
+                                <th class="py-3 px-3 font-semibold">時數 / 合約版本</th>
+                                <th class="py-3 px-3 font-semibold">服務費實發</th>
+                                <th class="py-3 px-3 font-semibold">分潤實發</th>
+                                <th class="py-3 px-3 font-semibold">總計金額</th>
+                                <th class="py-3 px-3 text-center font-semibold">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100 text-sm text-gray-700" id="tableBody">
+                            <!-- 動態插入列 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 總計摘要卡片 -->
+            <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl shadow-md p-6 text-white">
+                <h2 class="text-lg font-semibold mb-4 text-indigo-200">📊 總計與報表摘要</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+                    <div class="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
+                        <p class="text-xs text-indigo-200 uppercase tracking-wider">總服務費實發</p>
+                        <p class="text-2xl font-bold mt-1" id="totalServiceFee">NT$ 0</p>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
+                        <p class="text-xs text-indigo-200 uppercase tracking-wider">總分潤實發</p>
+                        <p class="text-2xl font-bold mt-1" id="totalSplitFee">NT$ 0</p>
+                    </div>
+                    <div class="bg-white/10 rounded-lg p-4 backdrop-blur-sm border border-indigo-400/30">
+                        <p class="text-xs text-indigo-200 uppercase tracking-wider">總支出金額 (總計)</p>
+                        <p class="text-2xl font-bold text-amber-300 mt-1" id="grandTotal">NT$ 0</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- 總計摘要卡片 -->
-        <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl shadow-md p-6 text-white">
-            <h2 class="text-lg font-semibold mb-4 text-indigo-200">📊 總計與報表摘要</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                <div class="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-                    <p class="text-xs text-indigo-200 uppercase tracking-wider">總服務費實發</p>
-                    <p class="text-2xl font-bold mt-1" id="totalServiceFee">NT$ 0</p>
+        <!-- ================= 區塊二：直播主對帳查詢 (新功能) ================= -->
+        <div id="sectionStatement" class="hidden max-w-xl mx-auto space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 text-center">
+                <h1 class="text-2xl font-bold text-gray-800">🌊 哲運娛樂 - 直播主對帳查詢系統</h1>
+                <p class="text-sm text-gray-500 mt-1">請輸入您的 ID 與密碼登入查詢歷史個人對帳單</p>
+            </div>
+
+            <!-- 登入表單 -->
+            <div id="loginCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">直播主 ID</label>
+                    <input type="text" id="inputId" placeholder="請輸入您的 ID" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <div class="bg-white/10 rounded-lg p-4 backdrop-blur-sm">
-                    <p class="text-xs text-indigo-200 uppercase tracking-wider">總分潤實發</p>
-                    <p class="text-2xl font-bold mt-1" id="totalSplitFee">NT$ 0</p>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">密碼 (Password)</label>
+                    <input type="password" id="inputPassword" placeholder="請輸入密碼" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <div class="bg-white/10 rounded-lg p-4 backdrop-blur-sm border border-indigo-400/30">
-                    <p class="text-xs text-indigo-200 uppercase tracking-wider">總支出金額 (總計)</p>
-                    <p class="text-2xl font-bold text-amber-300 mt-1" id="grandTotal">NT$ 0</p>
+                <button onclick="handleLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm tracking-wide">
+                    登入查詢
+                </button>
+            </div>
+
+            <!-- 查詢主畫面 (登入後顯示) -->
+            <div id="queryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 hidden space-y-5">
+                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800">歡迎回來，<span id="welcomeName" class="text-indigo-600"></span> <span class="text-xs text-gray-400 font-normal">(ID: <span id="welcomeId"></span>)</span></h2>
+                        <p class="text-xs text-gray-400 mt-0.5">合約版本：<span id="welcomeContract"></span></p>
+                    </div>
+                    <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">選擇查詢月份</label>
+                    <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <!-- 動態載入月份 -->
+                    </select>
+                </div>
+
+                <!-- 對帳單明細結果 -->
+                <div class="bg-gray-50 rounded-xl p-5 border border-gray-200 space-y-3 text-sm text-gray-600">
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                        <span>本月浪花點數：</span>
+                        <span id="resLanghua" class="font-medium text-gray-800">0 點</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                        <span>級距固定服務費：</span>
+                        <span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                        <span>領用浪花扣除：</span>
+                        <span id="resRedeemed" class="font-medium text-gray-800">0 點</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                        <span>當月直播時數：</span>
+                        <span id="resHours" class="font-medium text-gray-800">0 小時</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                        <span>服務費實發：</span>
+                        <span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                        <span>分潤實發：</span>
+                        <span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span>
+                    </div>
+
+                    <!-- 總計區 -->
+                    <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl p-4 text-white flex justify-between items-center mt-4">
+                        <div>
+                            <p class="text-xs text-indigo-200 uppercase tracking-wider">本月總計實領金額</p>
+                        </div>
+                        <div class="text-xl sm:text-2xl font-bold text-amber-300" id="resGrandTotal">
+                            NT$ 0
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 對帳單預覽 Modal -->
+    <!-- 模擬試算的對帳單預覽 Modal -->
     <div id="previewModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
         <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl">
             <h3 class="text-lg font-bold text-gray-800 mb-2">📋 個人結算對帳單預覽</h3>
             <p class="text-xs text-gray-500 mb-4">以下為該直播主本月份的詳細結算明細：</p>
-            <div id="previewContent" class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-xs font-mono text-gray-700 whitespace-pre-line max-h-80 overflow-y-auto mb-4">
-                <!-- 動態填入預覽內容 -->
-            </div>
+            <div id="previewContent" class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-xs font-mono text-gray-700 whitespace-pre-line max-h-80 overflow-y-auto mb-4"></div>
             <div class="flex justify-end">
                 <button onclick="closeModal()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition shadow-sm">關閉</button>
             </div>
@@ -114,6 +203,26 @@
                 if (langhua >= t.threshold) return t.fee;
             }
             return 0;
+        }
+
+        // 頁籤切換邏輯
+        function switchTab(tab) {
+            const btnSim = document.getElementById('tabSimulator');
+            const btnStmt = document.getElementById('tabStatement');
+            const secSim = document.getElementById('sectionSimulator');
+            const secStmt = document.getElementById('sectionStatement');
+
+            if (tab === 'simulator') {
+                btnSim.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition bg-indigo-600 text-white shadow-sm";
+                btnStmt.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition text-gray-600 hover:text-gray-900";
+                secSim.classList.remove('hidden');
+                secStmt.classList.add('hidden');
+            } else {
+                btnStmt.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition bg-indigo-600 text-white shadow-sm";
+                btnSim.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition text-gray-600 hover:text-gray-900";
+                secStmt.classList.remove('hidden');
+                secSim.classList.add('hidden');
+            }
         }
 
         window.onload = function() {
@@ -180,8 +289,6 @@
                 const redeemed = parseFloat(row.querySelector('.redeemed-input').value) || 0;
                 const hours = parseFloat(row.querySelector('.hours-input').value) || 0;
                 const contract = row.querySelector('.contract-select').value;
-                
-                // 瞬_21 係數 20，瞬_25 係數 24
                 const divisor = (contract === '瞬_25') ? 24 : 20;
 
                 const fixedFee = getFixedFee(langhua);
@@ -254,6 +361,119 @@
         function closeModal() {
             document.getElementById('previewModal').classList.remove('flex');
             document.getElementById('previewModal').classList.add('hidden');
+        }
+
+        // ================= 直播主對帳登入與資料讀取邏輯 =================
+        let streamersData = [];
+        let incomeData = [];
+        let currentStreamer = null;
+
+        // 當切換到對帳頁籤或初始化時，自動抓取 JSON 檔
+        async function fetchStatementData() {
+            try {
+                const resS = await fetch('streamers.json');
+                streamersData = await resS.json();
+                const resI = await fetch('income.json');
+                incomeData = await resI.json();
+            } catch (e) {
+                // 如果本地還沒有上傳 JSON，預設給予測試資料方便除錯
+                streamersData = [
+                    { id: "S001", name: "直播主A", contract: "瞬_21", password: "123" },
+                    { id: "S002", name: "直播主B", contract: "瞬_25", password: "456" }
+                ];
+                incomeData = [
+                    { id: "S001", month: "2026-03", langhua: 1200000, redeemed: 0, hours: 22 },
+                    { id: "S002", month: "2026-03", langhua: 600000, redeemed: 0, hours: 25 }
+                ];
+            }
+        }
+        fetchStatementData();
+
+        function handleLogin() {
+            const idInput = document.getElementById('inputId').value.trim();
+            const passInput = document.getElementById('inputPassword').value.trim();
+
+            const streamer = streamersData.find(s => s.id === idInput && s.password === passInput);
+            if (!streamer) {
+                alert("ID 或密碼錯誤，請重新輸入！");
+                return;
+            }
+
+            currentStreamer = streamer;
+            document.getElementById('welcomeName').innerText = streamer.name;
+            document.getElementById('welcomeId').innerText = streamer.id;
+            document.getElementById('welcomeContract').innerText = streamer.contract;
+
+            const months = incomeData.filter(item => item.id === streamer.id).map(item => item.month);
+            const selectMonth = document.getElementById('selectMonth');
+            selectMonth.innerHTML = '';
+            
+            if (months.length === 0) {
+                selectMonth.innerHTML = '<option value="">目前無結算資料</option>';
+            } else {
+                months.forEach(m => {
+                    const [y, mm] = m.split('-');
+                    const opt = document.createElement('option');
+                    opt.value = m;
+                    opt.innerText = `${y}年${parseInt(mm)}月`;
+                    selectMonth.appendChild(opt);
+                });
+                loadStatement();
+            }
+
+            document.getElementById('loginCard').classList.add('hidden');
+            document.getElementById('queryCard').classList.remove('hidden');
+        }
+
+        function handleLogout() {
+            currentStreamer = null;
+            document.getElementById('inputId').value = '';
+            document.getElementById('inputPassword').value = '';
+            document.getElementById('queryCard').classList.add('hidden');
+            document.getElementById('loginCard').classList.remove('hidden');
+        }
+
+        function loadStatement() {
+            if (!currentStreamer) return;
+            const selectedMonth = document.getElementById('selectMonth').value;
+            const record = incomeData.find(item => item.id === currentStreamer.id && item.month === selectedMonth);
+            if (!record) return;
+
+            const langhua = record.langhua;
+            const redeemed = record.redeemed;
+            const hours = record.hours;
+            const contract = currentStreamer.contract;
+            const divisor = (contract === '瞬_25') ? 24 : 20;
+            const fixedFee = getFixedFee(langhua);
+
+            let serviceFeeActual = 0;
+            if (hours < 20 || langhua < 100000) {
+                serviceFeeActual = 0;
+            } else {
+                const effectiveHours = Math.min(hours, 20);
+                if (fixedFee === 3200) {
+                    serviceFeeActual = (fixedFee - 1200) * 0.95;
+                } else {
+                    serviceFeeActual = (fixedFee - (effectiveHours * 100)) * 0.95;
+                }
+            }
+
+            const netLanghua = Math.max(0, langhua - redeemed);
+            let splitFeeActual = 0;
+            if (divisor > 0) {
+                const step1 = Math.floor(netLanghua / divisor);
+                splitFeeActual = Math.ceil(step1 * 0.9 * 0.95);
+            }
+
+            const grandTotal = Math.round(serviceFeeActual) + splitFeeActual;
+
+            document.getElementById('resLanghua').innerText = `${langhua.toLocaleString()} 點`;
+            document.getElementById('resFixedFee').innerText = `NT$ ${fixedFee.toLocaleString()}`;
+            document.getElementById('resRedeemed').innerText = `${redeemed.toLocaleString()} 點`;
+            document.getElementById('resHours').innerText = `${hours} 小時`;
+            document.getElementById('resServiceFee').innerText = `NT$ ${Math.round(serviceFeeActual).toLocaleString()}`;
+            document.getElementById('resSplitFee').innerText = `NT$ ${splitFeeActual.toLocaleString()}`;
+            document.getElementById('resGrandTotal').innerText = `NT$ ${grandTotal.toLocaleString()}`;
         }
     </script>
 </body>
