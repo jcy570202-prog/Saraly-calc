@@ -20,7 +20,7 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-8 px-4 sm:px-6">
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-6xl mx-auto">
         <!-- 標題區 -->
         <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -42,6 +42,7 @@
                         <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
                             <th class="py-3 px-4 font-semibold">直播主名稱</th>
                             <th class="py-3 px-4 font-semibold">浪花點數</th>
+                            <th class="py-3 px-4 font-semibold">領用浪花</th>
                             <th class="py-3 px-4 font-semibold">固定月服務費</th>
                             <th class="py-3 px-4 font-semibold">時數 / 分潤(%)</th>
                             <th class="py-3 px-4 font-semibold">服務費實發</th>
@@ -106,21 +107,24 @@
         }
 
         window.onload = function() {
-            addRow("直播主 A", 1000000, 20, 20);
-            addRow("直播主 B", 50000, 20, 20);
+            addRow("直播主 A", 1000000, 200000, 20, 20);
+            addRow("直播主 B", 50000, 0, 20, 20);
         };
 
-        function addRow(name = "新直播主", langhua = 100000, hours = 20, splitPercent = 20) {
+        function addRow(name = "新直播主", langhua = 100000, redeemed = 0, hours = 20, splitPercent = 20) {
             const tbody = document.getElementById('tableBody');
             const row = document.createElement('tr');
             row.className = "hover:bg-gray-50/80 transition";
             
             row.innerHTML = `
                 <td class="py-3 px-4">
-                    <input type="text" value="${name}" class="w-32 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <input type="text" value="${name}" class="w-28 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </td>
                 <td class="py-3 px-4">
-                    <input type="number" value="${langhua}" oninput="calculate()" class="langhua-input w-28 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" min="0" step="1000">
+                    <input type="number" value="${langhua}" oninput="calculate()" class="langhua-input w-24 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" min="0" step="1000">
+                </td>
+                <td class="py-3 px-4">
+                    <input type="number" value="${redeemed}" oninput="calculate()" class="redeemed-input w-24 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" min="0" step="1000">
                 </td>
                 <td class="py-3 px-4">
                     <span class="fixed-fee font-medium text-gray-800">0</span>
@@ -159,12 +163,15 @@
 
             rows.forEach(row => {
                 const langhua = parseFloat(row.querySelector('.langhua-input').value) || 0;
+                const redeemed = parseFloat(row.querySelector('.redeemed-input').value) || 0;
                 const hours = parseFloat(row.querySelector('.hours-input').value) || 0;
                 const splitPercent = parseFloat(row.querySelector('.split-input').value) || 0;
 
+                // 1. 固定月服務費依原始「浪花點數」決定級距
                 const fixedFee = getFixedFee(langhua);
                 row.querySelector('.fixed-fee').innerText = fixedFee.toLocaleString();
 
+                // 2. 服務費實發計算
                 let serviceFeeActual = 0;
                 if (langhua < 100000) {
                     serviceFeeActual = 0;
@@ -174,9 +181,15 @@
                     serviceFeeActual = (fixedFee - (hours * 100)) * 0.95;
                 }
 
+                // 3. 分潤實發計算：
+                //    - 扣除領用浪花淨額
+                //    - / 分潤% 後無條件捨去 (Math.floor)
+                //    - * 0.9 * 0.95 後無條件進位 (Math.ceil)
+                const netLanghua = Math.max(0, langhua - redeemed);
                 let splitFeeActual = 0;
                 if (splitPercent > 0) {
-                    splitFeeActual = Math.ceil((langhua / splitPercent) * 0.9 * 0.95);
+                    const step1 = Math.floor(netLanghua / splitPercent);
+                    splitFeeActual = Math.ceil(step1 * 0.9 * 0.95);
                 }
 
                 const rowTotal = serviceFeeActual + splitFeeActual;
