@@ -26,7 +26,7 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">🌊 浪花薪資與分潤計算系統</h1>
-                    <p class="text-sm text-gray-500 mt-1">依據最新規則自動計算固定月服務費、服務費實發與分潤實發（未達 10 萬點仍會計算分潤）</p>
+                    <p class="text-sm text-gray-500 mt-1">依據最新規則自動計算固定月服務費、服務費實發與分潤實發（時數未達 20 小時歸零，超過以 20 小時計算）</p>
                 </div>
                 <button onclick="addRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg transition text-sm shadow-sm flex items-center gap-2">
                     <span>+ 新增直播主</span>
@@ -107,6 +107,7 @@
         }
 
         window.onload = function() {
+            // 預設範例：領用浪花預設帶入 0
             addRow("直播主 A", 1000000, 0, 20, 20);
             addRow("直播主 B", 50000, 0, 20, 20);
         };
@@ -171,14 +172,19 @@
                 const fixedFee = getFixedFee(langhua);
                 row.querySelector('.fixed-fee').innerText = fixedFee.toLocaleString();
 
-                // 2. 服務費實發計算
+                // 2. 服務費實發計算：
+                //    - 若時數未達 20 小時，直接歸零
+                //    - 若時數超過 20 小時，計算時數上限以 20 小時計（即最多扣 20 * 100）
                 let serviceFeeActual = 0;
-                if (langhua < 100000) {
+                if (hours < 20 || langhua < 100000) {
                     serviceFeeActual = 0;
-                } else if (fixedFee === 3200) {
-                    serviceFeeActual = (fixedFee - 1200) * 0.95;
                 } else {
-                    serviceFeeActual = (fixedFee - (hours * 100)) * 0.95;
+                    const effectiveHours = Math.min(hours, 20);
+                    if (fixedFee === 3200) {
+                        serviceFeeActual = (fixedFee - 1200) * 0.95;
+                    } else {
+                        serviceFeeActual = (fixedFee - (effectiveHours * 100)) * 0.95;
+                    }
                 }
 
                 // 3. 分潤實發計算：
