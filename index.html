@@ -5,13 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>浪花薪資計算與對帳系統 - 哲運娛樂</title>
     
-    <!-- 網頁分頁與 iOS 桌面圖示 -->
     <link rel="icon" href="icon.png" type="image/png">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5">
 
-    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
@@ -89,18 +87,18 @@
             </div>
         </div>
 
-        <!-- ================= 區塊二：直播主對帳查詢 ================= -->
-        <div id="sectionStatement" class="hidden max-w-xl mx-auto space-y-6">
+        <!-- ================= 區塊二：直播主與管理員對帳查詢 ================= -->
+        <div id="sectionStatement" class="hidden max-w-4xl mx-auto space-y-6">
             <div class="bg-white rounded-2xl shadow-sm p-6 border border-gray-100 text-center">
-                <h1 class="text-2xl font-bold text-gray-800">🌊 哲運娛樂 - 直播主對帳查詢系統</h1>
-                <p class="text-sm text-gray-500 mt-1">請輸入您的 ID 與密碼登入查詢歷史個人對帳單</p>
+                <h1 class="text-2xl font-bold text-gray-800">🌊 哲運娛樂 - 對帳查詢系統</h1>
+                <p class="text-sm text-gray-500 mt-1">請輸入 ID 與密碼登入查詢</p>
             </div>
 
             <!-- 登入表單 -->
-            <div id="loginCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-4">
+            <div id="loginCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-4 max-w-xl mx-auto">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">直播主 ID</label>
-                    <input type="text" id="inputId" placeholder="請輸入您的 ID" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">帳號 ID (管理員請輸入 admin)</label>
+                    <input type="text" id="inputId" placeholder="請輸入 ID" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1">密碼 (Password)</label>
@@ -111,8 +109,8 @@
                 </button>
             </div>
 
-            <!-- 查詢主畫面 (登入後顯示) -->
-            <div id="queryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 hidden space-y-5">
+            <!-- 一般直播主查詢面板 -->
+            <div id="queryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 hidden space-y-5 max-w-xl mx-auto">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
                     <div>
                         <h2 class="text-lg font-bold text-gray-800">歡迎回來，<span id="welcomeName" class="text-indigo-600"></span> <span class="text-xs text-gray-400 font-normal">(ID: <span id="welcomeId"></span>)</span></h2>
@@ -124,11 +122,9 @@
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-1.5">選擇查詢月份</label>
                     <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <!-- 動態載入月份 -->
                     </select>
                 </div>
 
-                <!-- 對帳單明細結果 -->
                 <div class="bg-gray-50 rounded-xl p-5 border border-gray-200 space-y-3 text-sm text-gray-600">
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
                         <span>本月浪花點數：</span>
@@ -154,8 +150,6 @@
                         <span>分潤實發：</span>
                         <span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span>
                     </div>
-
-                    <!-- 總計區 -->
                     <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl p-4 text-white flex justify-between items-center mt-4">
                         <div>
                             <p class="text-xs text-indigo-200 uppercase tracking-wider">本月總計實領金額</p>
@@ -166,17 +160,54 @@
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-    <!-- 模擬試算的對帳單預覽 Modal -->
-    <div id="previewModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
-        <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl">
-            <h3 class="text-lg font-bold text-gray-800 mb-2">📋 個人結算對帳單預覽</h3>
-            <p class="text-xs text-gray-500 mb-4">以下為該直播主本月份的詳細結算明細：</p>
-            <div id="previewContent" class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-xs font-mono text-gray-700 whitespace-pre-line max-h-80 overflow-y-auto mb-4"></div>
-            <div class="flex justify-end">
-                <button onclick="closeModal()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition shadow-sm">關閉</button>
+            <!-- 管理員大帳號專用：所有人月份總覽面板 -->
+            <div id="adminQueryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 hidden space-y-5">
+                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                    <div>
+                        <h2 class="text-lg font-bold text-gray-800">👑 哲運管理員後台 - 全體直播主月份總覽</h2>
+                    </div>
+                    <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
+                </div>
+
+                <div class="w-full sm:w-72">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1.5">選擇總覽月份</label>
+                    <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </select>
+                </div>
+
+                <!-- 所有人清單表格 -->
+                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse text-sm">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
+                                    <th class="py-3 px-3 font-semibold">ID</th>
+                                    <th class="py-3 px-3 font-semibold">直播主名稱</th>
+                                    <th class="py-3 px-3 font-semibold">合約</th>
+                                    <th class="py-3 px-3 font-semibold">浪花點數</th>
+                                    <th class="py-3 px-3 font-semibold">領用扣除</th>
+                                    <th class="py-3 px-3 font-semibold">時數</th>
+                                    <th class="py-3 px-3 font-semibold">服務費實發</th>
+                                    <th class="py-3 px-3 font-semibold">分潤實發</th>
+                                    <th class="py-3 px-3 font-semibold text-right">總計金額</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100 text-gray-700" id="adminTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 總計卡片 -->
+                <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl shadow-md p-6 text-white flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-indigo-200 uppercase tracking-wider">當月全公司總支出金額</p>
+                    </div>
+                    <div class="text-2xl font-bold text-amber-300" id="adminGrandTotal">
+                        NT$ 0
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -205,7 +236,6 @@
             return 0;
         }
 
-        // 頁籤切換邏輯
         function switchTab(tab) {
             const btnSim = document.getElementById('tabSimulator');
             const btnStmt = document.getElementById('tabStatement');
@@ -226,8 +256,8 @@
         }
 
         window.onload = function() {
-            addRow("直播主 A", 1000000, 0, 20, "瞬_21");
-            addRow("直播主 B", 500000, 0, 20, "瞬_25");
+            addRow("王郁茹", 1254314, 145200, 22, "瞬_21");
+            addRow("宋晨瑋", 906506, 0, 20, "瞬_21");
         };
 
         function addRow(name = "新直播主", langhua = 100000, redeemed = 0, hours = 20, contract = "瞬_21") {
@@ -262,7 +292,6 @@
                 <td class="py-3 px-3 text-gray-600 split-fee-actual">0</td>
                 <td class="py-3 px-3 font-semibold text-indigo-600 row-total">0</td>
                 <td class="py-3 px-3 text-center flex items-center justify-center gap-1.5">
-                    <button onclick="openPreviewModal(this)" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-medium px-2.5 py-1.5 rounded transition" title="預覽對帳單">預覽</button>
                     <button onclick="removeRow(this)" class="text-red-400 hover:text-red-600 text-xs font-medium px-2 py-1.5 rounded transition">刪除</button>
                 </td>
             `;
@@ -328,65 +357,38 @@
             document.getElementById('grandTotal').innerText = formatCurrency(totalService + totalSplit);
         }
 
-        function openPreviewModal(btn) {
-            const row = btn.closest('tr');
-            const name = row.querySelector('.name-input').value || "直播主";
-            const langhua = parseFloat(row.querySelector('.langhua-input').value) || 0;
-            const redeemed = parseFloat(row.querySelector('.redeemed-input').value) || 0;
-            const fixedFee = row.querySelector('.fixed-fee').innerText;
-            const hours = row.querySelector('.hours-input').value || 0;
-            const contract = row.querySelector('.contract-select').value;
-            const serviceFeeActual = row.querySelector('.service-fee-actual').innerText;
-            const splitFeeActual = row.querySelector('.split-fee-actual').innerText;
-            const rowTotal = row.querySelector('.row-total').innerText;
+        // ================= 對帳與管理員登入資料邏輯 =================
+        let streamersData = [
+            { id: "admin", name: "哲運管理員", contract: "管理員", password: "888" },
+            { id: "2853632", name: "王郁茹", contract: "瞬_21", password: "123" },
+            { id: "4843183", name: "宋晨瑋", contract: "瞬_21", password: "123" },
+            { id: "2250346", name: "李沛瑩", contract: "瞬_21", password: "123" },
+            { id: "3119799", name: "倪詩涵", contract: "瞬_21", password: "123" },
+            { id: "1437218", name: "黃婷", contract: "瞬_25", password: "123" },
+            { id: "4994567", name: "黃微甯", contract: "瞬_25", password: "123" },
+            { id: "1466001", name: "簡詩蓉", contract: "瞬_21", password: "123" },
+            { id: "2641349", name: "SZU BEE", contract: "瞬_21", password: "123" }
+        ];
 
-            const previewText = `【哲運娛樂】${name} - 薪資與分潤結算明細
-----------------------------------------
-• 本月浪花點數：${langhua.toLocaleString()} 點 (級距固定服務費: NT$ ${fixedFee})
-• 領用浪花扣除：${redeemed.toLocaleString()} 點
-• 直播時數 / 合約版本：${hours} 小時 / ${contract}
-----------------------------------------
-• 服務費實發：NT$ ${serviceFeeActual}
-• 分潤實發：NT$ ${splitFeeActual}
-----------------------------------------
-本月總計實領金額：${rowTotal}
-----------------------------------------
-（哲運娛樂經紀有限公司 敬上）`;
+        let incomeData = [
+            { id: "2853632", month: "2026-07", langhua: 1254314, redeemed: 145200, hours: 22 },
+            { id: "4843183", month: "2026-07", langhua: 906506, redeemed: 0, hours: 20 },
+            { id: "2250346", month: "2026-07", langhua: 1619565, redeemed: 0, hours: 25 },
+            { id: "3119799", month: "2026-07", langhua: 600148, redeemed: 0, hours: 25 },
+            { id: "1437218", month: "2026-07", langhua: 206111, redeemed: 0, hours: 25 },
+            { id: "4994567", month: "2026-07", langhua: 138616, redeemed: 0, hours: 25 },
+            { id: "1466001", month: "2026-07", langhua: 1364672, redeemed: 0, hours: 25 },
+            { id: "2853632", month: "2026-08", langhua: 1161723, redeemed: 287600, hours: 22 },
+            { id: "4843183", month: "2026-08", langhua: 1173357, redeemed: 0, hours: 20 },
+            { id: "2250346", month: "2026-08", langhua: 1002356, redeemed: 0, hours: 25 },
+            { id: "3119799", month: "2026-08", langhua: 564656, redeemed: 0, hours: 25 },
+            { id: "1437218", month: "2026-08", langhua: 124775, redeemed: 0, hours: 25 },
+            { id: "4994567", month: "2026-08", langhua: 172633, redeemed: 0, hours: 25 },
+            { id: "1466001", month: "2026-08", langhua: 1224378, redeemed: 0, hours: 25 },
+            { id: "2641349", month: "2026-08", langhua: 708465, redeemed: 0, hours: 25 }
+        ];
 
-            document.getElementById('previewContent').innerText = previewText;
-            document.getElementById('previewModal').classList.remove('hidden');
-            document.getElementById('previewModal').classList.add('flex');
-        }
-
-        function closeModal() {
-            document.getElementById('previewModal').classList.remove('flex');
-            document.getElementById('previewModal').classList.add('hidden');
-        }
-
-        // ================= 直播主對帳登入與資料讀取邏輯 =================
-        let streamersData = [];
-        let incomeData = [];
         let currentStreamer = null;
-
-        async function fetchStatementData() {
-            try {
-                const resS = await fetch('streamers.json');
-                streamersData = await resS.json();
-                const resI = await fetch('income.json');
-                incomeData = await resI.json();
-            } catch (e) {
-                // 如果未架設伺服器或找不到 JSON 檔案，自動啟用內建測試資料供直接檢視
-                streamersData = [
-                    { id: "S001", name: "直播主A", contract: "瞬_21", password: "123" },
-                    { id: "S002", name: "直播主B", contract: "瞬_25", password: "456" }
-                ];
-                incomeData = [
-                    { id: "S001", month: "2026-03", langhua: 1200000, redeemed: 0, hours: 22 },
-                    { id: "S002", month: "2026-03", langhua: 600000, redeemed: 0, hours: 25 }
-                ];
-            }
-        }
-        fetchStatementData();
 
         function handleLogin() {
             const idInput = document.getElementById('inputId').value.trim();
@@ -399,29 +401,46 @@
             }
 
             currentStreamer = streamer;
-            document.getElementById('welcomeName').innerText = streamer.name;
-            document.getElementById('welcomeId').innerText = streamer.id;
-            document.getElementById('welcomeContract').innerText = streamer.contract;
+            document.getElementById('loginCard').classList.add('hidden');
 
-            const months = incomeData.filter(item => item.id === streamer.id).map(item => item.month);
-            const selectMonth = document.getElementById('selectMonth');
-            selectMonth.innerHTML = '';
-            
-            if (months.length === 0) {
-                selectMonth.innerHTML = '<option value="">目前無結算資料</option>';
-            } else {
-                months.forEach(m => {
+            if (streamer.id === 'admin') {
+                // 顯示管理員總覽介面
+                const allMonths = [...new Set(incomeData.map(i => i.month))].sort().reverse();
+                const selectAdminMonth = document.getElementById('selectAdminMonth');
+                selectAdminMonth.innerHTML = '';
+                allMonths.forEach(m => {
                     const [y, mm] = m.split('-');
                     const opt = document.createElement('option');
                     opt.value = m;
                     opt.innerText = `${y}年${parseInt(mm)}月`;
-                    selectMonth.appendChild(opt);
+                    selectAdminMonth.appendChild(opt);
                 });
-                loadStatement();
-            }
+                document.getElementById('adminQueryCard').classList.remove('hidden');
+                loadAdminStatement();
+            } else {
+                // 顯示一般直播主介面
+                document.getElementById('welcomeName').innerText = streamer.name;
+                document.getElementById('welcomeId').innerText = streamer.id;
+                document.getElementById('welcomeContract').innerText = streamer.contract;
 
-            document.getElementById('loginCard').classList.add('hidden');
-            document.getElementById('queryCard').classList.remove('hidden');
+                const months = incomeData.filter(item => item.id === streamer.id).map(item => item.month).sort().reverse();
+                const selectMonth = document.getElementById('selectMonth');
+                selectMonth.innerHTML = '';
+                
+                if (months.length === 0) {
+                    selectMonth.innerHTML = '<option value="">目前無結算資料</option>';
+                } else {
+                    months.forEach(m => {
+                        const [y, mm] = m.split('-');
+                        const opt = document.createElement('option');
+                        opt.value = m;
+                        opt.innerText = `${y}年${parseInt(mm)}月`;
+                        selectMonth.appendChild(opt);
+                    });
+                    loadStatement();
+                }
+                document.getElementById('queryCard').classList.remove('hidden');
+            }
         }
 
         function handleLogout() {
@@ -429,6 +448,7 @@
             document.getElementById('inputId').value = '';
             document.getElementById('inputPassword').value = '';
             document.getElementById('queryCard').classList.add('hidden');
+            document.getElementById('adminQueryCard').classList.add('hidden');
             document.getElementById('loginCard').classList.remove('hidden');
         }
 
@@ -436,11 +456,10 @@
             if (!currentStreamer) return;
             const selectedMonth = document.getElementById('selectMonth').value;
             const record = incomeData.find(item => item.id === currentStreamer.id && item.month === selectedMonth);
-            if (!record) return;
-
-            const langhua = record.langhua;
-            const redeemed = record.redeemed;
-            const hours = record.hours;
+            
+            const langhua = record ? record.langhua : 0;
+            const redeemed = record ? record.redeemed : 0;
+            const hours = record ? record.hours : 0;
             const contract = currentStreamer.contract;
             const divisor = (contract === '瞬_25') ? 24 : 20;
             const fixedFee = getFixedFee(langhua);
@@ -473,6 +492,67 @@
             document.getElementById('resServiceFee').innerText = `NT$ ${Math.round(serviceFeeActual).toLocaleString()}`;
             document.getElementById('resSplitFee').innerText = `NT$ ${splitFeeActual.toLocaleString()}`;
             document.getElementById('resGrandTotal').innerText = `NT$ ${grandTotal.toLocaleString()}`;
+        }
+
+        // 管理員後台試算載入
+        function loadAdminStatement() {
+            const selectedMonth = document.getElementById('selectAdminMonth').value;
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '';
+
+            let companyTotal = 0;
+            
+            // 排除 admin 自己，撈出所有一般直播主
+            const streamers = streamersData.filter(s => s.id !== 'admin');
+
+            streamers.forEach(s => {
+                const record = incomeData.find(item => item.id === s.id && item.month === selectedMonth);
+                const langhua = record ? record.langhua : 0;
+                const redeemed = record ? record.redeemed : 0;
+                const hours = record ? record.hours : 0;
+                const contract = s.contract;
+                const divisor = (contract === '瞬_25') ? 24 : 20;
+                const fixedFee = getFixedFee(langhua);
+
+                let serviceFeeActual = 0;
+                if (hours < 20 || langhua < 100000) {
+                    serviceFeeActual = 0;
+                } else {
+                    const effectiveHours = Math.min(hours, 20);
+                    if (fixedFee === 3200) {
+                        serviceFeeActual = (fixedFee - 1200) * 0.95;
+                    } else {
+                        serviceFeeActual = (fixedFee - (effectiveHours * 100)) * 0.95;
+                    }
+                }
+
+                const netLanghua = Math.max(0, langhua - redeemed);
+                let splitFeeActual = 0;
+                if (divisor > 0) {
+                    const step1 = Math.floor(netLanghua / divisor);
+                    splitFeeActual = Math.ceil(step1 * 0.9 * 0.95);
+                }
+
+                const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
+                companyTotal += rowTotal;
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-gray-50 transition";
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-mono text-gray-500">${s.id}</td>
+                    <td class="py-3 px-3 font-semibold text-gray-800">${s.name}</td>
+                    <td class="py-3 px-3 text-gray-600"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs">${contract}</span></td>
+                    <td class="py-3 px-3 text-gray-700">${langhua.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</td>
+                    <td class="py-3 px-3 text-gray-700">${hours}h</td>
+                    <td class="py-3 px-3 text-gray-600">${Math.round(serviceFeeActual).toLocaleString()}</td>
+                    <td class="py-3 px-3 text-gray-600">${splitFeeActual.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-right font-bold text-indigo-600">NT$ ${rowTotal.toLocaleString()}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('adminGrandTotal').innerText = formatCurrency(companyTotal);
         }
     </script>
 </body>
