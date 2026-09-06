@@ -20,13 +20,13 @@
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-8 px-4 sm:px-6">
-    <div class="max-w-6xl mx-auto">
+    <div class="max-w-7xl mx-auto">
         <!-- 標題區 -->
         <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border border-gray-100">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <div>
                     <h1 class="text-2xl font-bold text-gray-800">🌊 浪花薪資與分潤計算系統</h1>
-                    <p class="text-sm text-gray-500 mt-1">依據最新規則自動計算固定月服務費、服務費實發與分潤實發（時數未達 20 小時歸零，超過以 20 小時計算）</p>
+                    <p class="text-sm text-gray-500 mt-1">哲運娛樂專用結算工具（支援時數檢核、領用扣除、合約版本分潤與對帳單預覽）</p>
                 </div>
                 <button onclick="addRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-lg transition text-sm shadow-sm flex items-center gap-2">
                     <span>+ 新增直播主</span>
@@ -40,15 +40,15 @@
                 <table class="w-full text-left border-collapse" id="salaryTable">
                     <thead>
                         <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
-                            <th class="py-3 px-4 font-semibold">直播主名稱</th>
-                            <th class="py-3 px-4 font-semibold">浪花點數</th>
-                            <th class="py-3 px-4 font-semibold">領用浪花</th>
-                            <th class="py-3 px-4 font-semibold">固定月服務費</th>
-                            <th class="py-3 px-4 font-semibold">時數 / 分潤(%)</th>
-                            <th class="py-3 px-4 font-semibold">服務費實發</th>
-                            <th class="py-3 px-4 font-semibold">分潤實發</th>
-                            <th class="py-3 px-4 font-semibold">總計金額</th>
-                            <th class="py-3 px-4 text-center font-semibold">操作</th>
+                            <th class="py-3 px-3 font-semibold">直播主名稱</th>
+                            <th class="py-3 px-3 font-semibold">浪花點數</th>
+                            <th class="py-3 px-3 font-semibold">領用浪花</th>
+                            <th class="py-3 px-3 font-semibold">固定服務費</th>
+                            <th class="py-3 px-3 font-semibold">時數 / 合約版本</th>
+                            <th class="py-3 px-3 font-semibold">服務費實發</th>
+                            <th class="py-3 px-3 font-semibold">分潤實發</th>
+                            <th class="py-3 px-3 font-semibold">總計金額</th>
+                            <th class="py-3 px-3 text-center font-semibold">操作</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100 text-sm text-gray-700" id="tableBody">
@@ -78,6 +78,20 @@
         </div>
     </div>
 
+    <!-- 對帳單預覽 Modal -->
+    <div id="previewModal" class="fixed inset-0 bg-black/50 hidden items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl max-w-lg w-full p-6 shadow-2xl">
+            <h3 class="text-lg font-bold text-gray-800 mb-2">📋 個人結算對帳單預覽</h3>
+            <p class="text-xs text-gray-500 mb-4">以下為該直播主本月份的詳細結算明細：</p>
+            <div id="previewContent" class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-xs font-mono text-gray-700 whitespace-pre-line max-h-80 overflow-y-auto mb-4">
+                <!-- 動態填入預覽內容 -->
+            </div>
+            <div class="flex justify-end">
+                <button onclick="closeModal()" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg text-sm transition shadow-sm">關閉</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const tiers = [
             { threshold: 6000000, fee: 110000 },
@@ -95,53 +109,52 @@
         ];
 
         function getFixedFee(langhua) {
-            if (langhua < 100000) {
-                return 0;
-            }
+            if (langhua < 100000) return 0;
             for (let t of tiers) {
-                if (langhua >= t.threshold) {
-                    return t.fee;
-                }
+                if (langhua >= t.threshold) return t.fee;
             }
             return 0;
         }
 
         window.onload = function() {
-            // 預設範例：領用浪花預設帶入 0
-            addRow("直播主 A", 1000000, 0, 20, 20);
-            addRow("直播主 B", 50000, 0, 20, 20);
+            addRow("直播主 A", 1000000, 0, 20, "瞬_21");
+            addRow("直播主 B", 500000, 0, 20, "瞬_25");
         };
 
-        function addRow(name = "新直播主", langhua = 100000, redeemed = 0, hours = 20, splitPercent = 20) {
+        function addRow(name = "新直播主", langhua = 100000, redeemed = 0, hours = 20, contract = "瞬_21") {
             const tbody = document.getElementById('tableBody');
             const row = document.createElement('tr');
-            row.className = "hover:bg-gray-50/80 transition";
+            row.className = "hover:bg-gray-50/85 transition";
             
             row.innerHTML = `
-                <td class="py-3 px-4">
-                    <input type="text" value="${name}" class="w-28 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <td class="py-3 px-3">
+                    <input type="text" value="${name}" class="name-input w-28 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </td>
-                <td class="py-3 px-4">
-                    <input type="number" value="${langhua}" oninput="calculate()" class="langhua-input w-24 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" min="0" step="1000">
+                <td class="py-3 px-3">
+                    <input type="number" value="${langhua}" oninput="calculate()" class="langhua-input w-28 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" min="0" step="1000">
                 </td>
-                <td class="py-3 px-4">
+                <td class="py-3 px-3">
                     <input type="number" value="${redeemed}" oninput="calculate()" class="redeemed-input w-24 border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500" min="0" step="1000">
                 </td>
-                <td class="py-3 px-4">
+                <td class="py-3 px-3">
                     <span class="fixed-fee font-medium text-gray-800">0</span>
                 </td>
-                <td class="py-3 px-4">
+                <td class="py-3 px-3">
                     <div class="flex items-center gap-1">
                         <input type="number" value="${hours}" oninput="calculate()" placeholder="時數" class="hours-input w-14 border border-gray-300 rounded px-1 py-1 text-xs" title="時數">
                         <span class="text-gray-400">/</span>
-                        <input type="number" value="${splitPercent}" oninput="calculate()" placeholder="%" class="split-input w-14 border border-gray-300 rounded px-1 py-1 text-xs" title="分潤%">
+                        <select onchange="calculate()" class="contract-select border border-gray-300 rounded px-1.5 py-1 text-xs bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500" title="合約版本">
+                            <option value="瞬_21" ${contract === '瞬_21' ? 'selected' : ''}>瞬_21</option>
+                            <option value="瞬_25" ${contract === '瞬_25' ? 'selected' : ''}>瞬_25</option>
+                        </select>
                     </div>
                 </td>
-                <td class="py-3 px-4 text-gray-600 service-fee-actual">0</td>
-                <td class="py-3 px-4 text-gray-600 split-fee-actual">0</td>
-                <td class="py-3 px-4 font-semibold text-indigo-600 row-total">0</td>
-                <td class="py-3 px-4 text-center">
-                    <button onclick="removeRow(this)" class="text-red-400 hover:text-red-600 text-sm font-medium px-2 py-1 rounded transition">刪除</button>
+                <td class="py-3 px-3 text-gray-600 service-fee-actual">0</td>
+                <td class="py-3 px-3 text-gray-600 split-fee-actual">0</td>
+                <td class="py-3 px-3 font-semibold text-indigo-600 row-total">0</td>
+                <td class="py-3 px-3 text-center flex items-center justify-center gap-1.5">
+                    <button onclick="openPreviewModal(this)" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 text-xs font-medium px-2.5 py-1.5 rounded transition" title="預覽對帳單">預覽</button>
+                    <button onclick="removeRow(this)" class="text-red-400 hover:text-red-600 text-xs font-medium px-2 py-1.5 rounded transition">刪除</button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -166,15 +179,14 @@
                 const langhua = parseFloat(row.querySelector('.langhua-input').value) || 0;
                 const redeemed = parseFloat(row.querySelector('.redeemed-input').value) || 0;
                 const hours = parseFloat(row.querySelector('.hours-input').value) || 0;
-                const splitPercent = parseFloat(row.querySelector('.split-input').value) || 0;
+                const contract = row.querySelector('.contract-select').value;
+                
+                // 瞬_21 係數 20，瞬_25 係數 24
+                const divisor = (contract === '瞬_25') ? 24 : 20;
 
-                // 1. 固定月服務費依原始「浪花點數」決定級距
                 const fixedFee = getFixedFee(langhua);
                 row.querySelector('.fixed-fee').innerText = fixedFee.toLocaleString();
 
-                // 2. 服務費實發計算：
-                //    - 若時數未達 20 小時，直接歸零
-                //    - 若時數超過 20 小時，計算時數上限以 20 小時計（即最多扣 20 * 100）
                 let serviceFeeActual = 0;
                 if (hours < 20 || langhua < 100000) {
                     serviceFeeActual = 0;
@@ -187,14 +199,10 @@
                     }
                 }
 
-                // 3. 分潤實發計算：
-                //    - 扣除領用浪花淨額
-                //    - / 分潤% 後無條件捨去 (Math.floor)
-                //    - * 0.9 * 0.95 後無條件進位 (Math.ceil)
                 const netLanghua = Math.max(0, langhua - redeemed);
                 let splitFeeActual = 0;
-                if (splitPercent > 0) {
-                    const step1 = Math.floor(netLanghua / splitPercent);
+                if (divisor > 0) {
+                    const step1 = Math.floor(netLanghua / divisor);
                     splitFeeActual = Math.ceil(step1 * 0.9 * 0.95);
                 }
 
@@ -208,11 +216,44 @@
                 totalSplit += splitFeeActual;
             });
 
-            const grandTotal = totalService + totalSplit;
-
             document.getElementById('totalServiceFee').innerText = formatCurrency(totalService);
             document.getElementById('totalSplitFee').innerText = formatCurrency(totalSplit);
-            document.getElementById('grandTotal').innerText = formatCurrency(grandTotal);
+            document.getElementById('grandTotal').innerText = formatCurrency(totalService + totalSplit);
+        }
+
+        function openPreviewModal(btn) {
+            const row = btn.closest('tr');
+            const name = row.querySelector('.name-input').value || "直播主";
+            const langhua = parseFloat(row.querySelector('.langhua-input').value) || 0;
+            const redeemed = parseFloat(row.querySelector('.redeemed-input').value) || 0;
+            const fixedFee = row.querySelector('.fixed-fee').innerText;
+            const hours = row.querySelector('.hours-input').value || 0;
+            const contract = row.querySelector('.contract-select').value;
+            const serviceFeeActual = row.querySelector('.service-fee-actual').innerText;
+            const splitFeeActual = row.querySelector('.split-fee-actual').innerText;
+            const rowTotal = row.querySelector('.row-total').innerText;
+
+            const previewText = `【哲運娛樂】${name} - 薪資與分潤結算明細
+----------------------------------------
+• 本月浪花點數：${langhua.toLocaleString()} 點 (級距固定服務費: NT$ ${fixedFee})
+• 領用浪花扣除：${redeemed.toLocaleString()} 點
+• 直播時數 / 合約版本：${hours} 小時 / ${contract}
+----------------------------------------
+• 服務費實發：NT$ ${serviceFeeActual}
+• 分潤實發：NT$ ${splitFeeActual}
+----------------------------------------
+本月總計實領金額：${rowTotal}
+----------------------------------------
+（哲運娛樂經紀有限公司 敬上）`;
+
+            document.getElementById('previewContent').innerText = previewText;
+            document.getElementById('previewModal').classList.remove('hidden');
+            document.getElementById('previewModal').classList.add('flex');
+        }
+
+        function closeModal() {
+            document.getElementById('previewModal').classList.remove('flex');
+            document.getElementById('previewModal').classList.add('hidden');
         }
     </script>
 </body>
