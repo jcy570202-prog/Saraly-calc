@@ -93,7 +93,7 @@
             <!-- 登入表單 -->
             <div id="loginCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 space-y-4 max-w-xl mx-auto">
                 <div>
-                    <label class="block text-sm font-semibold text-gray-700 mb-1">帳號 ID (管理員請輸入 admin)</label>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">帳號 ID (管理員或老闆請輸入對應帳號)</label>
                     <input type="text" id="inputId" placeholder="請輸入 ID" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
                 <div>
@@ -146,10 +146,10 @@
                 </div>
             </div>
 
-            <!-- 管理員大帳號專用：所有人月份總覽面板 -->
+            <!-- 管理員/老闆專用：所有人月份總覽面板 -->
             <div id="adminQueryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sm:p-8 hidden space-y-5">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                    <div><h2 class="text-lg font-bold text-gray-800">👑 哲運管理員後台 - 全體直播主月份總覽</h2></div>
+                    <div><h2 class="text-lg font-bold text-gray-800">👑 哲運管理後台 - 全體直播主月份總覽</h2></div>
                     <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                 </div>
 
@@ -339,7 +339,7 @@
             currentStreamer = streamer;
             document.getElementById('loginCard').classList.add('hidden');
 
-            // 調整這裡：只要 id 是 admin 或 boss，就直接解鎖管理員總覽後台
+            // 支援 admin 與 boss 帳號登入總覽後台
             if (streamer.id === 'admin' || streamer.id === 'boss') {
                 const allMonths = [...new Set(incomeData.map(i => i.month))].sort().reverse();
                 const selectAdminMonth = document.getElementById('selectAdminMonth');
@@ -377,6 +377,7 @@
                 document.getElementById('queryCard').classList.remove('hidden');
             }
         }
+
         function handleLogout() {
             currentStreamer = null;
             document.getElementById('inputId').value = '';
@@ -423,7 +424,8 @@
             tbody.innerHTML = '';
 
             let companyTotal = 0;
-            const streamers = streamersData.filter(s => s.id !== 'admin');
+            // 列表中排除 admin 與 boss
+            const streamers = streamersData.filter(s => s.id !== 'admin' && s.id !== 'boss');
 
             streamers.forEach(s => {
                 const record = incomeData.find(item => item.id === s.id && item.month === selectedMonth);
