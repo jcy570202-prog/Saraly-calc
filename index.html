@@ -234,8 +234,8 @@
             return 0;
         }
 
-        // 統一薪資計算核心 Pure Function
-        function calculateSalary({ langhua, redeemed, hours, contract }) {
+        // 模擬試算專用計算核心 (維持不變)
+        function calculateSimulatorSalary({ langhua, redeemed, hours, contract }) {
             const divisor = (contract === '瞬_25') ? 24 : 20;
             const fixedFee = getFixedFee(langhua);
 
@@ -247,6 +247,42 @@
 
             const netLanghua = Math.max(0, langhua - redeemed);
             let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
+            const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
+
+            return {
+                fixedFee,
+                serviceFeeActual: Math.round(serviceFeeActual),
+                splitFeeActual,
+                rowTotal
+            };
+        }
+
+        // 對帳查詢專用計算核心 (已加入 瞬21+ / 瞬25+ 不乘 0.95 邏輯)
+        function calculateSalary({ langhua, redeemed, hours, contract }) {
+            let divisor = 20;
+            if (contract === '瞬_25' || contract === '瞬_25+') {
+                divisor = 24;
+            }
+            const fixedFee = getFixedFee(langhua);
+
+            let serviceFeeActual = 0;
+            if (hours >= 20 && langhua >= 100000) {
+                const effectiveHours = Math.min(hours, 20);
+                serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
+            }
+
+            const netLanghua = Math.max(0, langhua - redeemed);
+            
+            // 判斷是否為 瞬21+ 或 瞬25+，若是則不乘以 0.95
+            let splitFeeActual = 0;
+            if (divisor > 0) {
+                if (contract === '瞬_21+' || contract === '瞬_25+') {
+                    splitFeeActual = Math.ceil(Math.floor(netLanghua / divisor) * 0.9);
+                } else {
+                    splitFeeActual = Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95);
+                }
+            }
+
             const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
 
             return {
@@ -329,7 +365,7 @@
                 const hours = parseFloat(row.querySelector('.hours-input').value) || 0;
                 const contract = row.querySelector('.contract-select').value;
 
-                const res = calculateSalary({ langhua, redeemed, hours, contract });
+                const res = calculateSimulatorSalary({ langhua, redeemed, hours, contract });
 
                 row.querySelector('.fixed-fee').innerText = res.fixedFee.toLocaleString();
                 row.querySelector('.service-fee-actual').innerText = res.serviceFeeActual.toLocaleString();
@@ -447,7 +483,7 @@
             const langhua = record ? record.langhua : 0;
             const redeemed = record ? record.redeemed : 0;
             const hours = record ? record.hours : 0;
-            const contract = record ? record.contract : '瞬_21'; // 從 income 中讀取該月合約版本
+            const contract = record ? record.contract : '瞬_21';
 
             document.getElementById('welcomeContract').innerText = contract;
 
@@ -471,7 +507,6 @@
 
             let companyTotal = 0;
             
-            // 💡 修改處：只抓取身分是 streamer 且在該選定月份有 incomeData 紀錄的主播
             const streamers = streamersData.filter(s => {
                 if (s.role !== 'streamer') return false;
                 return incomeData.some(item => item.id === s.id && item.month === selectedMonth);
@@ -482,7 +517,7 @@
                 const langhua = record ? record.langhua : 0;
                 const redeemed = record ? record.redeemed : 0;
                 const hours = record ? record.hours : 0;
-                const contract = record ? record.contract : '瞬_21'; // 從 income 中讀取該月合約版本
+                const contract = record ? record.contract : '瞬_21';
 
                 const res = calculateSalary({ langhua, redeemed, hours, contract });
                 companyTotal += res.rowTotal;
