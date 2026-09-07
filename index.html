@@ -112,7 +112,7 @@
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
                     <div>
                         <h2 class="text-base sm:text-lg font-bold text-gray-800">歡迎回來，<span id="welcomeName" class="text-indigo-600"></span> <span class="text-xs text-gray-400 font-normal">(ID: <span id="welcomeId"></span>)</span></h2>
-                        <p class="text-xs text-gray-400 mt-0.5">合約版本：<span id="welcomeContract"></span></p>
+                        <p class="text-xs text-gray-400 mt-0.5">本月合約版本：<span id="welcomeContract"></span></p>
                     </div>
                     <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                 </div>
@@ -161,9 +161,9 @@
                     <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                 </div>
 
-                <!-- 管理員專屬工具列 (僅 admin 權限顯示) -->
+                <!-- 管理員專屬工具列 (僅 system_admin 權限顯示) -->
                 <div id="adminTools" class="hidden flex-col sm:flex-row justify-between items-center gap-3 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100">
-                    <span class="text-xs font-semibold text-indigo-900">⚙️ Admin 數據維護工具：</span>
+                    <span class="text-xs font-semibold text-indigo-900">⚙️ 系統管理員數據維護工具：</span>
                     <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                         <!-- 隱藏的 File Input -->
                         <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
@@ -185,7 +185,7 @@
                                 <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
                                     <th class="py-3 px-3 font-semibold">ID</th>
                                     <th class="py-3 px-3 font-semibold">直播主名稱</th>
-                                    <th class="py-3 px-3 font-semibold">合約</th>
+                                    <th class="py-3 px-3 font-semibold">合約版本</th>
                                     <th class="py-3 px-3 font-semibold">浪花點數</th>
                                     <th class="py-3 px-3 font-semibold">領用扣除</th>
                                     <th class="py-3 px-3 font-semibold">時數</th>
@@ -345,7 +345,7 @@
             document.getElementById('grandTotal').innerText = formatCurrency(totalService + totalSplit);
         }
 
-        // ================= 動態資料與權限判斷 =================
+        // ================= 動態資料與角色權限判斷 =================
         let streamersData = [];
         let incomeData = [];
         let currentStreamer = null;
@@ -374,12 +374,13 @@
             currentStreamer = streamer;
             document.getElementById('loginCard').classList.add('hidden');
 
-            if (streamer.id === 'admin' || streamer.id === 'boss') {
+            // 依據角色 (role) 進行判斷：system_admin, manager, streamer
+            if (streamer.role === 'system_admin' || streamer.role === 'manager') {
                 refreshAdminDropdown();
                 
-                // 🔒 權限控制：僅 admin 顯示匯入與備份工具欄
+                // 🔒 權限控制：僅 system_admin 顯示匯入與備份工具欄
                 const adminTools = document.getElementById('adminTools');
-                if (streamer.id === 'admin') {
+                if (streamer.role === 'system_admin') {
                     adminTools.classList.remove('hidden');
                     adminTools.classList.add('flex');
                 } else {
@@ -392,7 +393,6 @@
             } else {
                 document.getElementById('welcomeName').innerText = streamer.name;
                 document.getElementById('welcomeId').innerText = streamer.id;
-                document.getElementById('welcomeContract').innerText = streamer.contract;
 
                 const months = incomeData.filter(item => item.id === streamer.id).map(item => item.month).sort().reverse();
                 const selectMonth = document.getElementById('selectMonth');
@@ -400,6 +400,7 @@
                 
                 if (months.length === 0) {
                     selectMonth.innerHTML = '<option value="">目前無結算資料</option>';
+                    document.getElementById('welcomeContract').innerText = '無合約紀錄';
                 } else {
                     months.forEach(m => {
                         const [y, mm] = m.split('-');
@@ -446,7 +447,9 @@
             const langhua = record ? record.langhua : 0;
             const redeemed = record ? record.redeemed : 0;
             const hours = record ? record.hours : 0;
-            const contract = currentStreamer.contract;
+            const contract = record ? record.contract : '瞬_21'; // 從 income 中讀取該月合約版本
+
+            document.getElementById('welcomeContract').innerText = contract;
 
             const res = calculateSalary({ langhua, redeemed, hours, contract });
 
@@ -467,14 +470,15 @@
             cardList.innerHTML = '';
 
             let companyTotal = 0;
-            const streamers = streamersData.filter(s => s.id !== 'admin' && s.id !== 'boss');
+            // 改為用 role === 'streamer' 判斷所有主播
+            const streamers = streamersData.filter(s => s.role === 'streamer');
 
             streamers.forEach(s => {
                 const record = incomeData.find(item => item.id === s.id && item.month === selectedMonth);
                 const langhua = record ? record.langhua : 0;
                 const redeemed = record ? record.redeemed : 0;
                 const hours = record ? record.hours : 0;
-                const contract = s.contract;
+                const contract = record ? record.contract : '瞬_21'; // 從 income 中讀取該月合約版本
 
                 const res = calculateSalary({ langhua, redeemed, hours, contract });
                 companyTotal += res.rowTotal;
@@ -524,10 +528,10 @@
             document.getElementById('adminGrandTotal').innerText = formatCurrency(companyTotal);
         }
 
-        // ================= Excel 匯入與 JSON 下載功能 (限 admin) =================
+        // ================= Excel 匯入與 JSON 下載功能 (限 system_admin) =================
         function handleExcelUpload(e) {
-            if (!currentStreamer || currentStreamer.id !== 'admin') {
-                alert("權限不足，僅系統管理員 (admin) 可匯入資料！");
+            if (!currentStreamer || currentStreamer.role !== 'system_admin') {
+                alert("權限不足，僅系統管理員可匯入資料！");
                 return;
             }
 
@@ -555,10 +559,11 @@
                         const langhua = Number(row.langhua || row.Langhua || row['浪花點數'] || row['浪花'] || 0);
                         const redeemed = Number(row.redeemed || row.Redeemed || row['領用浪花'] || row['領用扣除'] || 0);
                         const hours = Number(row.hours || row.Hours || row['直播時數'] || row['時數'] || 0);
+                        const contract = String(row.contract || row.Contract || row['合約版本'] || row['合約'] || '瞬_21').trim();
 
                         if (id && month) {
                             const existIndex = incomeData.findIndex(i => i.id === id && i.month === month);
-                            const newRecord = { id, month, langhua, redeemed, hours };
+                            const newRecord = { id, month, langhua, redeemed, hours, contract };
 
                             if (existIndex >= 0) {
                                 incomeData[existIndex] = newRecord;
@@ -582,8 +587,8 @@
         }
 
         function exportJSONBackup() {
-            if (!currentStreamer || currentStreamer.id !== 'admin') {
-                alert("權限不足，僅系統管理員 (admin) 可下載備份！");
+            if (!currentStreamer || currentStreamer.role !== 'system_admin') {
+                alert("權限不足，僅系統管理員可下載備份！");
                 return;
             }
 
