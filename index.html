@@ -470,8 +470,12 @@
             cardList.innerHTML = '';
 
             let companyTotal = 0;
-            // 改為用 role === 'streamer' 判斷所有主播
-            const streamers = streamersData.filter(s => s.role === 'streamer');
+            
+            // 💡 修改處：只抓取身分是 streamer 且在該選定月份有 incomeData 紀錄的主播
+            const streamers = streamersData.filter(s => {
+                if (s.role !== 'streamer') return false;
+                return incomeData.some(item => item.id === s.id && item.month === selectedMonth);
+            });
 
             streamers.forEach(s => {
                 const record = incomeData.find(item => item.id === s.id && item.month === selectedMonth);
