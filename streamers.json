@@ -1,12 +1,12 @@
 [
-    { "id": "admin", "name": "系統管理員", "contract": "管理員", "password": "82807257" },
-    { "id": "boss", "name": "哲運老闆", "contract": "管理員", "password": "888" },
-    { "id": "2853632", "name": "王郁茹", "contract": "瞬_21", "password": "123" },
-    { "id": "4843183", "name": "宋晨瑋", "contract": "瞬_21", "password": "123" },
-    { "id": "2250346", "name": "李沛瑩", "contract": "瞬_21", "password": "123" },
-    { "id": "3119799", "name": "倪詩涵", "contract": "瞬_21", "password": "123" },
-    { "id": "1437218", "name": "黃婷", "contract": "瞬_25", "password": "123" },
-    { "id": "4994567", "name": "黃微甯", "contract": "瞬_25", "password": "123" },
-    { "id": "1466001", "name": "簡詩蓉", "contract": "瞬_21", "password": "123" },
-    { "id": "2641349", "name": "劉淑美", "contract": "瞬_21", "password": "123" }
+    { "id": "admin", "name": "系統管理員", "password": "82807257" , "role": "system_admin"},
+    { "id": "boss", "name": "哲運老闆", "password": "888" , "role": "manager"},
+    { "id": "2853632", "name": "王郁茹", "password": "123" ,"role": "streamer"},
+    { "id": "4843183", "name": "宋晨瑋", "password": "123" ,"role": "streamer"},
+    { "id": "2250346", "name": "李沛瑩", "password": "123" ,"role": "streamer"},
+    { "id": "3119799", "name": "倪詩涵", "password": "123" ,"role": "streamer"},
+    { "id": "1437218", "name": "黃婷", "password": "123", "role": "streamer"},
+    { "id": "4994567", "name": "黃微甯", "password": "123" ,"role": "streamer"},
+    { "id": "1466001", "name": "簡詩蓉", "password": "123" ,"role": "streamer"},
+    { "id": "2641349", "name": "劉淑美", "password": "123" ,"role": "streamer"}
 ]
