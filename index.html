@@ -54,7 +54,7 @@
                                 <th class="py-3 px-3 font-semibold">浪花點數</th>
                                 <th class="py-3 px-3 font-semibold">領用浪花</th>
                                 <th class="py-3 px-3 font-semibold">固定服務費</th>
-                                <th class="py-3 px-3 font-semibold">時數 / 合約版本</th>
+                                <th class="py-3 px-3 font-semibold">有效天 / 時數 / 合約</th>
                                 <th class="py-3 px-3 font-semibold">服務費實發</th>
                                 <th class="py-3 px-3 font-semibold">分潤實發</th>
                                 <th class="py-3 px-3 font-semibold">總計金額</th>
@@ -133,6 +133,9 @@
                         <span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                        <span>當月有效天數：</span><span id="resDays" class="font-medium text-gray-800">0 天</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
                         <span>當月直播時數：</span><span id="resHours" class="font-medium text-gray-800">0 小時</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
@@ -188,6 +191,7 @@
                                     <th class="py-3 px-3 font-semibold">合約版本</th>
                                     <th class="py-3 px-3 font-semibold">浪花點數</th>
                                     <th class="py-3 px-3 font-semibold">領用扣除</th>
+                                    <th class="py-3 px-3 font-semibold">有效天</th>
                                     <th class="py-3 px-3 font-semibold">時數</th>
                                     <th class="py-3 px-3 font-semibold">服務費實發</th>
                                     <th class="py-3 px-3 font-semibold">分潤實發</th>
@@ -234,13 +238,14 @@
             return 0;
         }
 
-        // 模擬試算專用計算核心 (維持不變)
-        function calculateSimulatorSalary({ langhua, redeemed, hours, contract }) {
+        // 模擬試算專用計算核心 (加入 days >= 15 判斷)
+        function calculateSimulatorSalary({ langhua, redeemed, days, hours, contract }) {
             const divisor = (contract === '瞬_25') ? 24 : 20;
             const fixedFee = getFixedFee(langhua);
 
             let serviceFeeActual = 0;
-            if (hours >= 20 && langhua >= 100000) {
+            // 必須同時滿足 days >= 15, hours >= 20, langhua >= 100000
+            if (days >= 15 && hours >= 20 && langhua >= 100000) {
                 const effectiveHours = Math.min(hours, 20);
                 serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
             }
@@ -257,8 +262,8 @@
             };
         }
 
-        // 對帳查詢專用計算核心 (已加入 瞬21+ / 瞬25+ 不乘 0.95 邏輯)
-        function calculateSalary({ langhua, redeemed, hours, contract }) {
+        // 對帳查詢專用計算核心 (加入 days >= 15 判斷，並支援 瞬21+ / 瞬25+ 不乘 0.95 邏輯)
+        function calculateSalary({ langhua, redeemed, days, hours, contract }) {
             let divisor = 20;
             if (contract === '瞬_25' || contract === '瞬_25+') {
                 divisor = 24;
@@ -266,14 +271,13 @@
             const fixedFee = getFixedFee(langhua);
 
             let serviceFeeActual = 0;
-            if (hours >= 20 && langhua >= 100000) {
+            if (days >= 15 && hours >= 20 && langhua >= 100000) {
                 const effectiveHours = Math.min(hours, 20);
                 serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
             }
 
             const netLanghua = Math.max(0, langhua - redeemed);
             
-            // 判斷是否為 瞬21+ 或 瞬25+，若是則不乘以 0.95
             let splitFeeActual = 0;
             if (divisor > 0) {
                 if (contract === '瞬_21+' || contract === '瞬_25+') {
@@ -313,12 +317,12 @@
         }
 
         window.onload = function() {
-            addRow("直播主A", 905000, 0, 20, "瞬_21");
-            addRow("直播主B", 1000000, 0, 20, "瞬_21");
+            addRow("直播主A", 905000, 0, 15, 20, "瞬_21");
+            addRow("直播主B", 1000000, 0, 15, 20, "瞬_21");
             initData();
         };
 
-        function addRow(name = "新直播主", langhua = 100000, redeemed = 0, hours = 20, contract = "瞬_21") {
+        function addRow(name = "新直播主", langhua = 100000, redeemed = 0, days = 15, hours = 20, contract = "瞬_21") {
             const tbody = document.getElementById('tableBody');
             const row = document.createElement('tr');
             row.className = "hover:bg-gray-50/85 transition";
@@ -329,8 +333,10 @@
                 <td class="py-3 px-3"><span class="fixed-fee font-medium text-gray-800">0</span></td>
                 <td class="py-3 px-3">
                     <div class="flex items-center gap-1">
-                        <input type="number" value="${hours}" oninput="calculate()" class="hours-input w-14 border border-gray-300 rounded px-1 py-1 text-xs">
-                        <span class="text-gray-400">/</span>
+                        <input type="number" value="${days}" oninput="calculate()" class="days-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="天" title="有效天數">
+                        <span class="text-gray-400">天/</span>
+                        <input type="number" value="${hours}" oninput="calculate()" class="hours-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="時" title="直播時數">
+                        <span class="text-gray-400">h</span>
                         <select onchange="calculate()" class="contract-select border border-gray-300 rounded px-1.5 py-1 text-xs bg-white">
                             <option value="瞬_21" ${contract === '瞬_21' ? 'selected' : ''}>瞬_21</option>
                             <option value="瞬_25" ${contract === '瞬_25' ? 'selected' : ''}>瞬_25</option>
@@ -362,10 +368,11 @@
             rows.forEach(row => {
                 const langhua = parseFloat(row.querySelector('.langhua-input').value) || 0;
                 const redeemed = parseFloat(row.querySelector('.redeemed-input').value) || 0;
+                const days = parseFloat(row.querySelector('.days-input').value) || 0;
                 const hours = parseFloat(row.querySelector('.hours-input').value) || 0;
                 const contract = row.querySelector('.contract-select').value;
 
-                const res = calculateSimulatorSalary({ langhua, redeemed, hours, contract });
+                const res = calculateSimulatorSalary({ langhua, redeemed, days, hours, contract });
 
                 row.querySelector('.fixed-fee').innerText = res.fixedFee.toLocaleString();
                 row.querySelector('.service-fee-actual').innerText = res.serviceFeeActual.toLocaleString();
@@ -410,11 +417,9 @@
             currentStreamer = streamer;
             document.getElementById('loginCard').classList.add('hidden');
 
-            // 依據角色 (role) 進行判斷：system_admin, manager, streamer
             if (streamer.role === 'system_admin' || streamer.role === 'manager') {
                 refreshAdminDropdown();
                 
-                // 🔒 權限控制：僅 system_admin 顯示匯入與備份工具欄
                 const adminTools = document.getElementById('adminTools');
                 if (streamer.role === 'system_admin') {
                     adminTools.classList.remove('hidden');
@@ -482,16 +487,18 @@
             
             const langhua = record ? record.langhua : 0;
             const redeemed = record ? record.redeemed : 0;
+            const days = record ? (record.days !== undefined ? record.days : 15) : 0;
             const hours = record ? record.hours : 0;
             const contract = record ? record.contract : '瞬_21';
 
             document.getElementById('welcomeContract').innerText = contract;
 
-            const res = calculateSalary({ langhua, redeemed, hours, contract });
+            const res = calculateSalary({ langhua, redeemed, days, hours, contract });
 
             document.getElementById('resLanghua').innerText = `${langhua.toLocaleString()} 點`;
             document.getElementById('resFixedFee').innerText = `NT$ ${res.fixedFee.toLocaleString()}`;
             document.getElementById('resRedeemed').innerText = `${redeemed.toLocaleString()} 點`;
+            document.getElementById('resDays').innerText = `${days} 天`;
             document.getElementById('resHours').innerText = `${hours} 小時`;
             document.getElementById('resServiceFee').innerText = `NT$ ${res.serviceFeeActual.toLocaleString()}`;
             document.getElementById('resSplitFee').innerText = `NT$ ${res.splitFeeActual.toLocaleString()}`;
@@ -516,10 +523,11 @@
                 const record = incomeData.find(item => item.id === s.id && item.month === selectedMonth);
                 const langhua = record ? record.langhua : 0;
                 const redeemed = record ? record.redeemed : 0;
+                const days = record ? (record.days !== undefined ? record.days : 15) : 0;
                 const hours = record ? record.hours : 0;
                 const contract = record ? record.contract : '瞬_21';
 
-                const res = calculateSalary({ langhua, redeemed, hours, contract });
+                const res = calculateSalary({ langhua, redeemed, days, hours, contract });
                 companyTotal += res.rowTotal;
 
                 // 1. 桌面版表格列
@@ -531,6 +539,7 @@
                     <td class="py-3 px-3 text-gray-600"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs">${contract}</span></td>
                     <td class="py-3 px-3 text-gray-700">${langhua.toLocaleString()}</td>
                     <td class="py-3 px-3 text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</td>
+                    <td class="py-3 px-3 text-gray-700">${days}天</td>
                     <td class="py-3 px-3 text-gray-700">${hours}h</td>
                     <td class="py-3 px-3 text-gray-600">${res.serviceFeeActual.toLocaleString()}</td>
                     <td class="py-3 px-3 text-gray-600">${res.splitFeeActual.toLocaleString()}</td>
@@ -552,6 +561,7 @@
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <div>浪花點數：<span class="font-medium text-gray-900">${langhua.toLocaleString()}</span></div>
                         <div>領用扣除：<span class="font-medium text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</span></div>
+                        <div>有效天數：<span class="font-medium text-gray-900">${days} 天</span></div>
                         <div>直播時數：<span class="font-medium text-gray-900">${hours} 小時</span></div>
                         <div>服務費實發：<span class="font-medium text-gray-900">${res.serviceFeeActual.toLocaleString()}</span></div>
                         <div>分潤實發：<span class="font-medium text-gray-900">${res.splitFeeActual.toLocaleString()}</span></div>
@@ -597,12 +607,13 @@
                         const month = String(row.month || row.Month || row['月份'] || '').trim();
                         const langhua = Number(row.langhua || row.Langhua || row['浪花點數'] || row['浪花'] || 0);
                         const redeemed = Number(row.redeemed || row.Redeemed || row['領用浪花'] || row['領用扣除'] || 0);
+                        const days = Number(row.days || row.Days || row['有效天數'] || row['天數'] || 15);
                         const hours = Number(row.hours || row.Hours || row['直播時數'] || row['時數'] || 0);
                         const contract = String(row.contract || row.Contract || row['合約版本'] || row['合約'] || '瞬_21').trim();
 
                         if (id && month) {
                             const existIndex = incomeData.findIndex(i => i.id === id && i.month === month);
-                            const newRecord = { id, month, langhua, redeemed, hours, contract };
+                            const newRecord = { id, month, langhua, redeemed, days, hours, contract };
 
                             if (existIndex >= 0) {
                                 incomeData[existIndex] = newRecord;
