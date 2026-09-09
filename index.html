@@ -15,12 +15,18 @@
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+        @media print {
+            body * { visibility: hidden; }
+            #printableStatement, #printableStatement * { visibility: visible; }
+            #printableStatement { position: absolute; left: 0; top: 0; width: 100%; border: none !important; box-shadow: none !important; }
+            .no-print { display: none !important; }
+        }
     </style>
 </head>
 <body class="bg-gray-50 min-h-screen py-6 px-3 sm:py-8 sm:px-6">
     <div class="max-w-7xl mx-auto">
         <!-- 頂部切換頁籤 -->
-        <div class="flex justify-center mb-6">
+        <div class="flex justify-center mb-6 no-print">
             <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200 inline-flex gap-2 w-full sm:w-auto">
                 <button onclick="switchTab('simulator')" id="tabSimulator" class="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm">
                     🧮 業績模擬試算
@@ -87,13 +93,13 @@
 
         <!-- ================= 區塊二：對帳與管理員查詢 ================= -->
         <div id="sectionStatement" class="hidden max-w-4xl mx-auto space-y-6">
-            <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 text-center">
+            <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 text-center no-print">
                 <h1 class="text-xl sm:text-2xl font-bold text-gray-800">🌊 哲運娛樂 - 對帳查詢系統</h1>
                 <p class="text-xs sm:text-sm text-gray-500 mt-1">請輸入 ID 與密碼登入查詢</p>
             </div>
 
             <!-- 登入表單 -->
-            <div id="loginCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-4 max-w-xl mx-auto">
+            <div id="loginCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-4 max-w-xl mx-auto no-print">
                 <div>
                     <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">帳號 ID (管理員或老闆請輸入對應帳號)</label>
                     <input type="text" id="inputId" placeholder="請輸入 ID" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
@@ -107,54 +113,68 @@
                 </button>
             </div>
 
-            <!-- 一般直播主查詢面板 -->
+            <!-- 一般直播主查詢面板 (含列印包覆區塊 id="printableStatement") -->
             <div id="queryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5 max-w-xl mx-auto">
-                <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                    <div>
-                        <h2 class="text-base sm:text-lg font-bold text-gray-800">歡迎回來，<span id="welcomeName" class="text-indigo-600"></span> <span class="text-xs text-gray-400 font-normal">(ID: <span id="welcomeId"></span>)</span></h2>
-                        <p class="text-xs text-gray-400 mt-0.5">本月合約版本：<span id="welcomeContract"></span></p>
+                <div id="printableStatement" class="space-y-5 bg-white p-2 rounded-xl">
+                    <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                        <div>
+                            <h2 class="text-base sm:text-lg font-bold text-gray-800">歡迎回來，<span id="welcomeName" class="text-indigo-600"></span> <span class="text-xs text-gray-400 font-normal">(ID: <span id="welcomeId"></span>)</span></h2>
+                            <p class="text-xs text-gray-400 mt-0.5">本月合約版本：<span id="welcomeContract"></span></p>
+                        </div>
+                        <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition no-print">登出</button>
                     </div>
-                    <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
+
+                    <div class="no-print">
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">選擇查詢月份</label>
+                        <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600">
+                        <div class="text-center font-bold text-gray-800 text-base pb-2 border-b border-gray-200 hidden sm:block print:block">哲運娛樂經紀 - 直播主對帳明細單</div>
+                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                            <span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                            <span>級距固定服務費：</span><span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                            <span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                            <span>當月有效天數：</span><span id="resDays" class="font-medium text-gray-800">0 天</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                            <span>當月直播時數：</span><span id="resHours" class="font-medium text-gray-800">0 小時</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                            <span>服務費實發：</span><span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span>
+                        </div>
+                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                            <span>分潤實發：</span><span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span>
+                        </div>
+                        <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl p-4 text-white flex justify-between items-center mt-4">
+                            <div><p class="text-xs text-indigo-200 uppercase tracking-wider">本月總計實領金額</p></div>
+                            <div class="text-lg sm:text-2xl font-bold text-amber-300" id="resGrandTotal">NT$ 0</div>
+                        </div>
+                        <div id="confirmStatusText" class="text-xs text-center text-gray-500 pt-2"></div>
+                    </div>
                 </div>
 
-                <div>
-                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">選擇查詢月份</label>
-                    <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
-                </div>
-
-                <div class="bg-gray-50 rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600">
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>級距固定服務費：</span><span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>當月有效天數：</span><span id="resDays" class="font-medium text-gray-800">0 天</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>當月直播時數：</span><span id="resHours" class="font-medium text-gray-800">0 小時</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>服務費實發：</span><span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                        <span>分潤實發：</span><span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span>
-                    </div>
-                    <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl p-4 text-white flex justify-between items-center mt-4">
-                        <div><p class="text-xs text-indigo-200 uppercase tracking-wider">本月總計實領金額</p></div>
-                        <div class="text-lg sm:text-2xl font-bold text-amber-300" id="resGrandTotal">NT$ 0</div>
-                    </div>
+                <!-- 互動操作按鈕 (列印與確認) -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-2 no-print">
+                    <button id="btnConfirmStatement" onclick="toggleConfirmStatement()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2">
+                        ✅ 確認對帳單無誤
+                    </button>
+                    <button onclick="window.print()" class="flex-1 bg-gray-800 hover:bg-gray-900 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2">
+                        🖨️ 列印 / 產出 PDF 對帳單
+                    </button>
                 </div>
             </div>
 
             <!-- 管理員/老闆專用面板 -->
             <div id="adminQueryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3">
-                    <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽</h2></div>
+                    <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽與確認狀態</h2></div>
                     <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                 </div>
 
@@ -191,11 +211,10 @@
                                     <th class="py-3 px-3 font-semibold">合約版本</th>
                                     <th class="py-3 px-3 font-semibold">浪花點數</th>
                                     <th class="py-3 px-3 font-semibold">領用扣除</th>
-                                    <th class="py-3 px-3 font-semibold">有效天</th>
-                                    <th class="py-3 px-3 font-semibold">時數</th>
-                                    <th class="py-3 px-3 font-semibold">服務費實發</th>
-                                    <th class="py-3 px-3 font-semibold">分潤實發</th>
-                                    <th class="py-3 px-3 font-semibold text-right">總計金額</th>
+                                    <th class="py-3 px-3 font-semibold">有效天/時數</th>
+                                    <th class="py-3 px-3 font-semibold">總計金額</th>
+                                    <th class="py-3 px-3 font-semibold text-center">對帳狀態</th>
+                                    <th class="py-3 px-3 font-semibold text-right">管理操作</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-gray-100 text-gray-700" id="adminTableBody"></tbody>
@@ -238,13 +257,12 @@
             return 0;
         }
 
-        // 模擬試算專用計算核心 (加入 days >= 15 判斷)
+        // 模擬試算專用計算核心
         function calculateSimulatorSalary({ langhua, redeemed, days, hours, contract }) {
             const divisor = (contract === '瞬_25') ? 24 : 20;
             const fixedFee = getFixedFee(langhua);
 
             let serviceFeeActual = 0;
-            // 必須同時滿足 days >= 15, hours >= 20, langhua >= 100000
             if (days >= 15 && hours >= 20 && langhua >= 100000) {
                 const effectiveHours = Math.min(hours, 20);
                 serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
@@ -254,15 +272,10 @@
             let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
             const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
 
-            return {
-                fixedFee,
-                serviceFeeActual: Math.round(serviceFeeActual),
-                splitFeeActual,
-                rowTotal
-            };
+            return { fixedFee, serviceFeeActual: Math.round(serviceFeeActual), splitFeeActual, rowTotal };
         }
 
-        // 對帳查詢專用計算核心 (加入 days >= 15 判斷，並支援 瞬21+ / 瞬25+ 不乘 0.95 邏輯)
+        // 對帳查詢專用計算核心
         function calculateSalary({ langhua, redeemed, days, hours, contract }) {
             let divisor = 20;
             if (contract === '瞬_25' || contract === '瞬_25+') {
@@ -289,12 +302,7 @@
 
             const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
 
-            return {
-                fixedFee,
-                serviceFeeActual: Math.round(serviceFeeActual),
-                splitFeeActual,
-                rowTotal
-            };
+            return { fixedFee, serviceFeeActual: Math.round(serviceFeeActual), splitFeeActual, rowTotal };
         }
 
         function switchTab(tab) {
@@ -333,9 +341,9 @@
                 <td class="py-3 px-3"><span class="fixed-fee font-medium text-gray-800">0</span></td>
                 <td class="py-3 px-3">
                     <div class="flex items-center gap-1">
-                        <input type="number" value="${days}" oninput="calculate()" class="days-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="天" title="有效天數">
+                        <input type="number" value="${days}" oninput="calculate()" class="days-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="天">
                         <span class="text-gray-400">天/</span>
-                        <input type="number" value="${hours}" oninput="calculate()" class="hours-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="時" title="直播時數">
+                        <input type="number" value="${hours}" oninput="calculate()" class="hours-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="時">
                         <span class="text-gray-400">h</span>
                         <select onchange="calculate()" class="contract-select border border-gray-300 rounded px-1.5 py-1 text-xs bg-white">
                             <option value="瞬_21" ${contract === '瞬_21' ? 'selected' : ''}>瞬_21</option>
@@ -400,7 +408,7 @@
                 const resI = await fetch('income.json');
                 incomeData = await resI.json();
             } catch (e) {
-                console.warn("無法讀取外部 JSON，請確保透過本地伺服器或網頁伺服器執行。");
+                console.warn("無法讀取外部 JSON，請確保透過本地伺服器執行。");
             }
         }
 
@@ -503,6 +511,54 @@
             document.getElementById('resServiceFee').innerText = `NT$ ${res.serviceFeeActual.toLocaleString()}`;
             document.getElementById('resSplitFee').innerText = `NT$ ${res.splitFeeActual.toLocaleString()}`;
             document.getElementById('resGrandTotal').innerText = `NT$ ${res.rowTotal.toLocaleString()}`;
+
+            // 更新按鈕與確認狀態顯示
+            const btnConfirm = document.getElementById('btnConfirmStatement');
+            const statusText = document.getElementById('confirmStatusText');
+            if (record && record.confirmed) {
+                btnConfirm.innerText = "🔒 已確認對帳單 (點擊取消確認)";
+                btnConfirm.className = "flex-1 bg-amber-600 hover:bg-amber-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2";
+                statusText.innerText = `狀態：已於 ${record.confirmedAt || '先前'} 確認無誤`;
+            } else {
+                btnConfirm.innerText = "✅ 確認對帳單無誤";
+                btnConfirm.className = "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2";
+                statusText.innerText = "狀態：尚未確認";
+            }
+        }
+
+        function toggleConfirmStatement() {
+            if (!currentStreamer) return;
+            const selectedMonth = document.getElementById('selectMonth').value;
+            const record = incomeData.find(item => item.id === currentStreamer.id && item.month === selectedMonth);
+            if (!record) return;
+
+            if (record.confirmed) {
+                if (confirm("確定要取消對帳確認嗎？")) {
+                    record.confirmed = false;
+                    record.confirmedAt = null;
+                }
+            } else {
+                if (confirm("確認這張對帳單金額無誤嗎？確認後將記錄狀態供後台查核。")) {
+                    record.confirmed = true;
+                    record.confirmedAt = new Date().toLocaleString();
+                }
+            }
+            loadStatement();
+        }
+
+        // 管理員後台反確認操作
+        function adminToggleConfirm(id, month) {
+            const record = incomeData.find(item => item.id === id && item.month === month);
+            if (!record) return;
+            
+            if (record.confirmed) {
+                record.confirmed = false;
+                record.confirmedAt = null;
+            } else {
+                record.confirmed = true;
+                record.confirmedAt = new Date().toLocaleString() + " (管理員代為確認)";
+            }
+            loadAdminStatement();
         }
 
         function loadAdminStatement() {
@@ -526,9 +582,16 @@
                 const days = record ? (record.days !== undefined ? record.days : 15) : 0;
                 const hours = record ? record.hours : 0;
                 const contract = record ? record.contract : '瞬_21';
+                const confirmed = record ? record.confirmed : false;
 
                 const res = calculateSalary({ langhua, redeemed, days, hours, contract });
                 companyTotal += res.rowTotal;
+
+                const statusBadge = confirmed 
+                    ? `<span class="bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full text-xs font-semibold">已確認</span>` 
+                    : `<span class="bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full text-xs font-semibold">未確認</span>`;
+
+                const actionBtn = `<button onclick="adminToggleConfirm('${s.id}', '${selectedMonth}')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1 rounded-lg transition">${confirmed ? '解除確認' : '強制確認'}</button>`;
 
                 // 1. 桌面版表格列
                 const tr = document.createElement('tr');
@@ -539,11 +602,10 @@
                     <td class="py-3 px-3 text-gray-600"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs">${contract}</span></td>
                     <td class="py-3 px-3 text-gray-700">${langhua.toLocaleString()}</td>
                     <td class="py-3 px-3 text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</td>
-                    <td class="py-3 px-3 text-gray-700">${days}天</td>
-                    <td class="py-3 px-3 text-gray-700">${hours}h</td>
-                    <td class="py-3 px-3 text-gray-600">${res.serviceFeeActual.toLocaleString()}</td>
-                    <td class="py-3 px-3 text-gray-600">${res.splitFeeActual.toLocaleString()}</td>
-                    <td class="py-3 px-3 text-right font-bold text-indigo-600">NT$ ${res.rowTotal.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-gray-700">${days}天/${hours}h</td>
+                    <td class="py-3 px-3 font-bold text-indigo-600">NT$ ${res.rowTotal.toLocaleString()}</td>
+                    <td class="py-3 px-3 text-center">${statusBadge}</td>
+                    <td class="py-3 px-3 text-right">${actionBtn}</td>
                 `;
                 tbody.appendChild(tr);
 
@@ -556,19 +618,22 @@
                             <span class="font-bold text-gray-900 text-sm">${s.name}</span>
                             <span class="text-gray-400 ml-1">(ID: ${s.id})</span>
                         </div>
-                        <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-medium">${contract}</span>
+                        <div class="flex items-center gap-2">
+                            ${statusBadge}
+                            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-medium">${contract}</span>
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <div>浪花點數：<span class="font-medium text-gray-900">${langhua.toLocaleString()}</span></div>
                         <div>領用扣除：<span class="font-medium text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</span></div>
                         <div>有效天數：<span class="font-medium text-gray-900">${days} 天</span></div>
                         <div>直播時數：<span class="font-medium text-gray-900">${hours} 小時</span></div>
-                        <div>服務費實發：<span class="font-medium text-gray-900">${res.serviceFeeActual.toLocaleString()}</span></div>
-                        <div>分潤實發：<span class="font-medium text-gray-900">${res.splitFeeActual.toLocaleString()}</span></div>
                     </div>
                     <div class="flex justify-between items-center pt-2 border-t border-gray-200 mt-2">
-                        <span class="font-semibold text-gray-800">本月總計</span>
-                        <span class="font-bold text-base text-indigo-600">NT$ ${res.rowTotal.toLocaleString()}</span>
+                        <div>
+                            <span class="font-semibold text-gray-800">總計：<span class="text-indigo-600 font-bold">NT$ ${res.rowTotal.toLocaleString()}</span></span>
+                        </div>
+                        <div>${actionBtn}</div>
                     </div>
                 `;
                 cardList.appendChild(card);
@@ -577,10 +642,10 @@
             document.getElementById('adminGrandTotal').innerText = formatCurrency(companyTotal);
         }
 
-        // ================= Excel 匯入與 JSON 下載功能 (限 system_admin) =================
+        // ================= Excel 匯入與 JSON 下載功能 =================
         function handleExcelUpload(e) {
             if (!currentStreamer || currentStreamer.role !== 'system_admin') {
-                alert("權限不足，僅系統管理員可匯入資料！");
+                alert("權限不足！");
                 return;
             }
 
@@ -592,31 +657,25 @@
                 try {
                     const data = new Uint8Array(evt.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonArray = XLSX.utils.sheet_to_json(worksheet);
-
-                    if (jsonArray.length === 0) {
-                        alert("上傳的 Excel 檔案內沒有資料！");
-                        return;
-                    }
 
                     let importedCount = 0;
                     jsonArray.forEach(row => {
                         const id = String(row.id || row.ID || row['帳號'] || '').trim();
                         const month = String(row.month || row.Month || row['月份'] || '').trim();
                         const langhua = Number(row.langhua || row.Langhua || row['浪花點數'] || row['浪花'] || 0);
-                        const redeemed = Number(row.redeemed || row.Redeemed || row['領用浪花'] || row['領用扣除'] || 0);
-                        const days = Number(row.days || row.Days || row['有效天數'] || row['天數'] || 15);
-                        const hours = Number(row.hours || row.Hours || row['直播時數'] || row['時數'] || 0);
-                        const contract = String(row.contract || row.Contract || row['合約版本'] || row['合約'] || '瞬_21').trim();
+                        const redeemed = Number(row.redeemed || row.Redeemed || row['領用浪花'] || 0);
+                        const days = Number(row.days || row.Days || row['有效天數'] || 15);
+                        const hours = Number(row.hours || row.Hours || row['直播時數'] || 0);
+                        const contract = String(row.contract || row.Contract || row['合約版本'] || '瞬_21').trim();
 
                         if (id && month) {
                             const existIndex = incomeData.findIndex(i => i.id === id && i.month === month);
-                            const newRecord = { id, month, langhua, redeemed, days, hours, contract };
+                            const newRecord = { id, month, langhua, redeemed, days, hours, contract, confirmed: false };
 
                             if (existIndex >= 0) {
-                                incomeData[existIndex] = newRecord;
+                                incomeData[existIndex] = { ...incomeData[existIndex], langhua, redeemed, days, hours, contract };
                             } else {
                                 incomeData.push(newRecord);
                             }
@@ -629,19 +688,14 @@
                     loadAdminStatement();
                     e.target.value = '';
                 } catch (err) {
-                    alert("Excel 檔案解析失敗，請確認檔案格式是否正確。");
-                    console.error(err);
+                    alert("Excel 檔案解析失敗。");
                 }
             };
             reader.readAsArrayBuffer(file);
         }
 
         function exportJSONBackup() {
-            if (!currentStreamer || currentStreamer.role !== 'system_admin') {
-                alert("權限不足，僅系統管理員可下載備份！");
-                return;
-            }
-
+            if (!currentStreamer || currentStreamer.role !== 'system_admin') return;
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(incomeData, null, 4));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
