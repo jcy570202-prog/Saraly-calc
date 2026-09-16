@@ -180,7 +180,7 @@
                 </button>
             </div>
 
-            <!-- 一般直播主查詢面板 (帶動態文字浮水印) -->
+            <!-- 一般直播主查詢面板 (含中間 ZheYun.png 浮水印) -->
             <div id="queryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5 max-w-xl mx-auto">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                     <div>
@@ -190,11 +190,11 @@
                     <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                 </div>
 
-                <!-- 加上 relative 與 overflow-hidden 的浮水印容器 -->
+                <!-- 加上 relative 與 overflow-hidden 的容器 -->
                 <div id="printableArea" class="relative bg-white rounded-2xl p-2 overflow-hidden">
-                    <!-- 動態文字浮水印底圖層 -->
-                    <div id="watermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-10 select-none overflow-hidden">
-                        <!-- JS 會自動在這裡產生重複的浮水印文字 -->
+                    <!-- ZheYun.png 圖片浮水印置中層 -->
+                    <div class="absolute inset-0 pointer-events-none z-0 flex items-center justify-center select-none overflow-hidden">
+                        <img src="ZheYun.png" alt="浮水印" class="w-48 sm:w-64 opacity-10 object-contain">
                     </div>
 
                     <!-- 內容層 (z-10 確保浮在浮水印上方) -->
@@ -209,7 +209,7 @@
                             <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                         </div>
 
-                        <div class="bg-white/90 backdrop-blur-[1px] rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600 shadow-sm">
+                        <div class="bg-white/70 backdrop-blur-[1px] rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600 shadow-sm">
                             <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
                                 <span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span>
                             </div>
@@ -244,7 +244,7 @@
                 </button>
             </div>
 
-            <!-- 管理員/老闆專用面板 (帶動態文字浮水印) -->
+            <!-- 管理員/老闆專用面板 (含中間 ZheYun.png 浮水印) -->
             <div id="adminQueryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                     <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽</h2></div>
@@ -254,11 +254,11 @@
                     </div>
                 </div>
 
-                <!-- 加上 relative 與 overflow-hidden 的浮水印容器 -->
+                <!-- 加上 relative 與 overflow-hidden 的容器 -->
                 <div id="adminPrintableArea" class="relative bg-white rounded-2xl p-2 space-y-5 overflow-hidden">
-                    <!-- 動態文字浮水印底圖層 -->
-                    <div id="adminWatermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-10 select-none overflow-hidden">
-                        <!-- JS 會自動在這裡產生重複的浮水印文字 -->
+                    <!-- ZheYun.png 圖片浮水印置中層 -->
+                    <div class="absolute inset-0 pointer-events-none z-0 flex items-center justify-center select-none overflow-hidden">
+                        <img src="ZheYun.png" alt="浮水印" class="w-64 sm:w-96 opacity-10 object-contain">
                     </div>
 
                     <!-- 內容層 (z-10 確保浮在浮水印上方) -->
@@ -355,7 +355,7 @@
                         </div>
 
                         <!-- 桌面版顯示表格 (半透明背景以完美襯托浮水印) -->
-                        <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/90 backdrop-blur-[1px]">
+                        <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/70 backdrop-blur-[1px]">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse text-sm">
                                     <thead>
@@ -405,27 +405,6 @@
             { threshold: 100000, fee: 3200 },
             { threshold: 0, fee: 0 }
         ];
-
-        // 動態產生浮水印函數
-        function initWatermarks() {
-            const watermarkText = "哲運娛樂經紀有限公司"; // 可在此自由修改公司名稱或動態文字
-            const containers = [
-                document.getElementById('watermarkBg'),
-                document.getElementById('adminWatermarkBg')
-            ];
-
-            containers.forEach(container => {
-                if (!container) return;
-                container.innerHTML = '';
-                // 產生多個重複的浮水印填滿背景
-                for (let i = 0; i < 8; i++) {
-                    const item = document.createElement('div');
-                    item.className = "transform -rotate-45 text-gray-400 text-base sm:text-lg font-bold tracking-widest p-8 sm:p-12 whitespace-nowrap";
-                    item.innerText = watermarkText;
-                    container.appendChild(item);
-                }
-            });
-        }
 
         function toggleTierTable() {
             const content = document.getElementById('tierTableContent');
@@ -534,7 +513,6 @@
             addRow("直播主A", 905000, 0, 15, 20, "瞬_21");
             addRow("直播主B", 1000000, 0, 15, 20, "瞬_21");
             initData();
-            initWatermarks(); // 初始化浮水印
         };
 
         function addRow(name = "新直播主", langhua = 100000, redeemed = 0, days = 15, hours = 20, contract = "瞬_21") {
