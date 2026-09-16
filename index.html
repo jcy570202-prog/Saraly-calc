@@ -24,33 +24,36 @@
             body {
                 background: white !important;
             }
+            .watermark-bg img {
+                opacity: 0.15 !important; /* 列印時加深浮水印確保清晰 */
+            }
         }
 
-        /* 浮水印容器與圖片設定：確保絕對置中、低透明度且不干擾點擊與文字 */
+        /* 浮水印容器與圖片設定：強制定位與最高相容性 */
         .watermark-container {
-            position: relative;
+            position: relative !important;
         }
         .watermark-bg {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
+            position: absolute !important;
+            inset: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            pointer-events: none !important;
+            z-index: 10 !important;
+            overflow: hidden !important;
         }
         .watermark-bg img {
-            width: 55%;
-            max-width: 400px;
-            opacity: 0.08; /* 浮水印透明度，可依需求微調 */
-            object-fit: contain;
-            user-select: none;
+            width: 55% !important;
+            max-width: 400px !important;
+            opacity: 0.12 !important; /* 調高至 0.12 確保肉眼清晰可見 */
+            object-fit: contain !important;
+            user-select: none !important;
         }
-        /* 確保內容層高於浮水印圖層 */
+        /* 確保內容層高於浮水印圖層但背景透出 */
         .watermark-content {
-            position: relative;
-            z-index: 1;
+            position: relative !important;
+            z-index: 20 !important;
         }
     </style>
 </head>
@@ -235,7 +238,7 @@
                             <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                         </div>
 
-                        <div class="bg-gray-50/90 backdrop-blur-[2px] rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600 shadow-sm">
+                        <div class="bg-white/95 backdrop-blur-[1px] rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600 shadow-sm">
                             <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
                                 <span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span>
                             </div>
@@ -380,7 +383,7 @@
                         </div>
 
                         <!-- 桌面版顯示表格 (半透明背景以完美襯托浮水印) -->
-                        <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/90 backdrop-blur-[2px]">
+                        <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/95 backdrop-blur-[1px]">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse text-sm">
                                     <thead>
