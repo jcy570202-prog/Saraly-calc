@@ -29,7 +29,21 @@
                 left: 0;
                 top: 0;
                 width: 100%;
+                /* 浮水印背景設定 */
+                background-image: url('ZheYun.png');
+                background-repeat: no-repeat;
+                background-position: center center;
+                background-size: 50% auto; /* 可依喜好調整浮水印大小：例如 40% 或 50% */
             }
+            /* 讓對帳單內容保持不透明，避免被浮水印遮擋文字 */
+            #printableArea > div {
+                position: relative;
+                z-index: 2;
+                background-color: rgba(255, 255, 255, 0.85); /* 半透明白底保護文字清晰度 */
+                padding: 20px;
+                border-radius: 1rem;
+            }
+
             /* 管理員後台整頁列印專用 */
             #adminPrintableArea, #adminPrintableArea * {
                 visibility: visible;
