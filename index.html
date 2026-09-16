@@ -74,7 +74,7 @@
                 </div>
             </div>
 
-            <!-- 新增：各級距服務費對照表面板 -->
+            <!-- 各級距服務費對照表面板 -->
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
                 <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleTierTable()">
                     <div class="flex items-center gap-2">
@@ -281,7 +281,6 @@
 
                     <!-- 管理員專屬工具列 (僅 system_admin 權限顯示) -->
                     <div id="adminTools" class="hidden flex-col sm:flex-row justify-between items-center gap-3 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 no-print">
-
                         <span class="text-xs font-semibold text-indigo-900">⚙️ 系統管理員數據維護工具：</span>
                         <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                             <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
@@ -294,8 +293,8 @@
                         </div>
                     </div>
 
-                    <!-- 新增：系統管理員專屬的 Excel 匯入格式與範例說明面板（預設收合） -->
-                    <div class="bg-white rounded-2xl border border-indigo-100 p-5 space-y-3 no-print shadow-sm">
+                    <!-- 系統管理員專屬的 Excel 匯入格式與範例說明面板（預設隱藏，僅 system_admin 可見） -->
+                    <div id="formatTableCard" class="bg-white rounded-2xl border border-indigo-100 p-5 space-y-3 no-print shadow-sm hidden">
                         <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleFormatTable()">
                             <div class="flex items-center gap-2">
                                 <span class="text-base">📋</span>
@@ -390,7 +389,7 @@
                         </div>
                     </div>
 
-                    <!-- 手機版專屬卡片清單容器 (列印時自動隱藏，避免與表格重複) -->
+                    <!-- 手機版專屬卡片清單容器 -->
                     <div class="block sm:hidden space-y-3 print:hidden" id="adminCardList"></div>
 
                     <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 text-white flex justify-between items-center">
@@ -418,7 +417,6 @@
             { threshold: 0, fee: 0 }
         ];
 
-        // 切換各級距對照表的展開與收合
         function toggleTierTable() {
             const content = document.getElementById('tierTableContent');
             const icon = document.getElementById('tierToggleIcon');
@@ -431,7 +429,6 @@
             }
         }
 
-        // 切換格式說明面板的展開與收合
         function toggleFormatTable() {
             const content = document.getElementById('formatTableContent');
             const icon = document.getElementById('formatToggleIcon');
@@ -627,12 +624,16 @@
                 refreshAdminDropdown();
                 
                 const adminTools = document.getElementById('adminTools');
+                const formatTableCard = document.getElementById('formatTableCard');
+
                 if (streamer.role === 'system_admin') {
                     adminTools.classList.remove('hidden');
                     adminTools.classList.add('flex');
+                    if (formatTableCard) formatTableCard.classList.remove('hidden'); // 僅系統管理員可見
                 } else {
                     adminTools.classList.add('hidden');
                     adminTools.classList.remove('flex');
+                    if (formatTableCard) formatTableCard.classList.add('hidden'); // 經理隱藏
                 }
 
                 document.getElementById('adminQueryCard').classList.remove('hidden');
@@ -699,7 +700,6 @@
 
             document.getElementById('welcomeContract').innerText = contract;
 
-            // 更新列印頂部資訊
             const [y, mm] = selectedMonth ? selectedMonth.split('-') : ['----', '--'];
             document.getElementById('printMonthText').innerText = `${y}年${parseInt(mm)}月`;
             document.getElementById('printNameText').innerText = currentStreamer.name;
