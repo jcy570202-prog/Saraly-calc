@@ -193,11 +193,11 @@
                 <!-- 加上 relative 與 overflow-hidden 的浮水印容器 -->
                 <div id="printableArea" class="relative bg-white rounded-2xl p-2 overflow-hidden">
                     <!-- 動態文字浮水印底圖層 -->
-                    <div id="watermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-10 select-none overflow-hidden">
+                    <div id="watermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden">
                         <!-- JS 會自動在這裡產生重複的浮水印文字 -->
                     </div>
 
-                    <!-- 內容層 (z-10 確保浮在浮水印上方) -->
+                    <!-- 內容層 (z-10 確保浮在浮水印上方，使用 bg-white/90 讓浮水印微透) -->
                     <div class="relative z-10 space-y-4">
                         <div class="text-center pb-2 border-b border-gray-200 hidden print:block">
                             <h1 class="text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 直播主對帳單</h1>
@@ -257,7 +257,7 @@
                 <!-- 加上 relative 與 overflow-hidden 的浮水印容器 -->
                 <div id="adminPrintableArea" class="relative bg-white rounded-2xl p-2 space-y-5 overflow-hidden">
                     <!-- 動態文字浮水印底圖層 -->
-                    <div id="adminWatermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-10 select-none overflow-hidden">
+                    <div id="adminWatermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden">
                         <!-- JS 會自動在這裡產生重複的浮水印文字 -->
                     </div>
 
@@ -408,7 +408,7 @@
 
         // 動態產生浮水印函數
         function initWatermarks() {
-            const watermarkText = "哲運娛樂經紀有限公司"; // 可在此自由修改公司名稱或動態文字
+            const watermarkText = "哲運娛樂經紀有限公司";
             const containers = [
                 document.getElementById('watermarkBg'),
                 document.getElementById('adminWatermarkBg')
@@ -417,10 +417,9 @@
             containers.forEach(container => {
                 if (!container) return;
                 container.innerHTML = '';
-                // 產生多個重複的浮水印填滿背景
-                for (let i = 0; i < 8; i++) {
+                for (let i = 0; i < 12; i++) {
                     const item = document.createElement('div');
-                    item.className = "transform -rotate-45 text-gray-400 text-base sm:text-lg font-bold tracking-widest p-8 sm:p-12 whitespace-nowrap";
+                    item.className = "transform -rotate-45 text-gray-400 text-sm sm:text-base font-bold tracking-widest p-10 sm:p-14 whitespace-nowrap";
                     item.innerText = watermarkText;
                     container.appendChild(item);
                 }
@@ -534,7 +533,7 @@
             addRow("直播主A", 905000, 0, 15, 20, "瞬_21");
             addRow("直播主B", 1000000, 0, 15, 20, "瞬_21");
             initData();
-            initWatermarks(); // 初始化浮水印
+            initWatermarks();
         };
 
         function addRow(name = "新直播主", langhua = 100000, redeemed = 0, days = 15, hours = 20, contract = "瞬_21") {
