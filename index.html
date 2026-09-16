@@ -16,11 +16,41 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
         
-        /* 列印專屬設定：僅隱藏不需要列印的操作介面與選單 */
+        /* 列印與浮水印專屬樣式設定 */
         @media print {
             .no-print {
                 display: none !important;
             }
+            body {
+                background: white !important;
+            }
+        }
+
+        /* 浮水印容器與圖片設定：確保絕對置中、低透明度且不干擾點擊與文字 */
+        .watermark-container {
+            position: relative;
+        }
+        .watermark-bg {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .watermark-bg img {
+            width: 55%;
+            max-width: 400px;
+            opacity: 0.08; /* 浮水印透明度，可依需求微調 */
+            object-fit: contain;
+            user-select: none;
+        }
+        /* 確保內容層高於浮水印圖層 */
+        .watermark-content {
+            position: relative;
+            z-index: 1;
         }
     </style>
 </head>
@@ -177,7 +207,7 @@
                 </button>
             </div>
 
-            <!-- 一般直播主查詢面板 -->
+            <!-- 一般直播主查詢面板 (帶 ZHEYUN.PNG 浮水印) -->
             <div id="queryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5 max-w-xl mx-auto">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                     <div>
@@ -187,42 +217,50 @@
                     <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                 </div>
 
-                <div id="printableArea" class="space-y-4">
-                    <div class="text-center pb-2 border-b border-gray-200 hidden print:block">
-                        <h1 class="text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 直播主對帳單</h1>
-                        <p class="text-xs text-gray-500 mt-1">查詢月份：<span id="printMonthText"></span> | 直播主：<span id="printNameText"></span> (ID: <span id="printIdText"></span>)</p>
+                <div id="printableArea" class="watermark-container bg-white rounded-2xl p-2">
+                    <!-- ZHEYUN.PNG 去背浮水印底圖層 -->
+                    <div class="watermark-bg">
+                        <img src="ZHEYUN.PNG" alt="哲運娛樂浮水印">
                     </div>
 
-                    <div class="no-print">
-                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">選擇查詢月份</label>
-                        <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
-                    </div>
+                    <!-- 內容層 -->
+                    <div class="watermark-content space-y-4">
+                        <div class="text-center pb-2 border-b border-gray-200 hidden print:block">
+                            <h1 class="text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 直播主對帳單</h1>
+                            <p class="text-xs text-gray-500 mt-1">查詢月份：<span id="printMonthText"></span> | 直播主：<span id="printNameText"></span> (ID: <span id="printIdText"></span>)</p>
+                        </div>
 
-                    <div class="bg-gray-50 rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600">
-                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                            <span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span>
+                        <div class="no-print">
+                            <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1.5">選擇查詢月份</label>
+                            <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                         </div>
-                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                            <span>級距固定服務費：</span><span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span>
-                        </div>
-                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                            <span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span>
-                        </div>
-                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                            <span>當月有效天數：</span><span id="resDays" class="font-medium text-gray-800">0 天</span>
-                        </div>
-                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                            <span>當月直播時數：</span><span id="resHours" class="font-medium text-gray-800">0 小時</span>
-                        </div>
-                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                            <span>服務費實發：</span><span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span>
-                        </div>
-                        <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                            <span>分潤實發：</span><span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span>
-                        </div>
-                        <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl p-4 text-white flex justify-between items-center mt-4">
-                            <div><p class="text-xs text-indigo-200 uppercase tracking-wider">本月總計實領金額</p></div>
-                            <div class="text-lg sm:text-2xl font-bold text-amber-300" id="resGrandTotal">NT$ 0</div>
+
+                        <div class="bg-gray-50/90 backdrop-blur-[2px] rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600 shadow-sm">
+                            <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                <span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                <span>級距固定服務費：</span><span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                <span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                <span>當月有效天數：</span><span id="resDays" class="font-medium text-gray-800">0 天</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                <span>當月直播時數：</span><span id="resHours" class="font-medium text-gray-800">0 小時</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                <span>服務費實發：</span><span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span>
+                            </div>
+                            <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                <span>分潤實發：</span><span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span>
+                            </div>
+                            <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl p-4 text-white flex justify-between items-center mt-4">
+                                <div><p class="text-xs text-indigo-200 uppercase tracking-wider">本月總計實領金額</p></div>
+                                <div class="text-lg sm:text-2xl font-bold text-amber-300" id="resGrandTotal">NT$ 0</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -232,7 +270,7 @@
                 </button>
             </div>
 
-            <!-- 管理員/老闆專用面板 -->
+            <!-- 管理員/老闆專用面板 (帶 ZHEYUN.PNG 浮水印) -->
             <div id="adminQueryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                     <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽</h2></div>
@@ -242,134 +280,135 @@
                     </div>
                 </div>
 
-                <div id="adminPrintableArea" class="space-y-5">
-                    <div class="text-center pb-2 border-b border-gray-200 hidden print:block">
-                        <h1 class="text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 全公司月度結算總覽表</h1>
-                        <p class="text-xs text-gray-500 mt-1">結算月份：<span id="printAdminMonthText"></span></p>
+                <div id="adminPrintableArea" class="watermark-container bg-white rounded-2xl p-2 space-y-5">
+                    <!-- ZHEYUN.PNG 去背浮水印底圖層 -->
+                    <div class="watermark-bg">
+                        <img src="ZHEYUN.PNG" alt="哲運娛樂浮水印">
                     </div>
 
-                    <!-- 選擇總覽月份 -->
-                    <div class="w-full sm:w-64 no-print">
-                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">選擇總覽月份</label>
-                        <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
-                    </div>
-
-                    <!-- 管理員專屬工具列 (僅 system_admin 權限顯示) -->
-                    <div id="adminTools" class="hidden flex-col sm:flex-row justify-between items-center gap-3 bg-indigo-50/50 p-4 rounded-xl border border-indigo-100 no-print">
-                        <span class="text-xs font-semibold text-indigo-900">⚙️ 系統管理員數據維護工具：</span>
-                        <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                            <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
-                            <button onclick="document.getElementById('excelInput').click()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
-                                📂 匯入 Excel/CSV 報表
-                            </button>
-                            <button onclick="exportJSONBackup()" class="flex-1 sm:flex-none bg-gray-800 hover:bg-gray-900 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
-                                💾 下載 JSON 備份檔
-                            </button>
+                    <!-- 內容層 -->
+                    <div class="watermark-content space-y-5">
+                        <div class="text-center pb-2 border-b border-gray-200 hidden print:block">
+                            <h1 class="text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 全公司月度結算總覽表</h1>
+                            <p class="text-xs text-gray-500 mt-1">結算月份：<span id="printAdminMonthText"></span></p>
                         </div>
-                    </div>
 
-                    <!-- 系統管理員專屬的 Excel 匯入格式與範例說明面板（預設隱藏，僅 system_admin 可見） -->
-                    <div id="formatTableCard" class="bg-white rounded-2xl border border-indigo-100 p-5 space-y-3 no-print shadow-sm hidden">
-                        <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleFormatTable()">
-                            <div class="flex items-center gap-2">
-                                <span class="text-base">📋</span>
-                                <h3 class="text-sm font-bold text-gray-800">匯入 Excel / CSV 報表格式範例與說明</h3>
+                        <!-- 選擇總覽月份 -->
+                        <div class="w-full sm:w-64 no-print">
+                            <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">選擇總覽月份</label>
+                            <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
+                        </div>
+
+                        <!-- 管理員專屬工具列 (僅 system_admin 權限顯示) -->
+                        <div id="adminTools" class="hidden flex-col sm:flex-row justify-between items-center gap-3 bg-indigo-50/80 backdrop-blur-[2px] p-4 rounded-xl border border-indigo-100 no-print">
+                            <span class="text-xs font-semibold text-indigo-900">⚙️ 系統管理員數據維護工具：</span>
+                            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                                <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
+                                <button onclick="document.getElementById('excelInput').click()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
+                                    📂 匯入 Excel/CSV 報表
+                                </button>
+                                <button onclick="exportJSONBackup()" class="flex-1 sm:flex-none bg-gray-800 hover:bg-gray-900 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
+                                    💾 下載 JSON 備份檔
+                                </button>
                             </div>
-                            <span id="formatToggleIcon" class="text-xs text-indigo-600 font-medium bg-indigo-50 px-3 py-1 rounded-lg transition">展開 ▼</span>
                         </div>
-                        
-                        <div id="formatTableContent" class="hidden space-y-3 pt-3 border-t border-gray-100">
-                            <p class="text-xs text-gray-500">
-                                系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。欄位名稱支援中文或英文（如下表所示），系統會自動抓取對應欄位進行資料新增或更新。
-                            </p>
+
+                        <!-- 系統管理員專屬的 Excel 匯入格式與範例說明面板 -->
+                        <div id="formatTableCard" class="bg-white/95 backdrop-blur-[2px] rounded-2xl border border-indigo-100 p-5 space-y-3 no-print shadow-sm hidden">
+                            <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleFormatTable()">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-base">📋</span>
+                                    <h3 class="text-sm font-bold text-gray-800">匯入 Excel / CSV 報表格式範例與說明</h3>
+                                </div>
+                                <span id="formatToggleIcon" class="text-xs text-indigo-600 font-medium bg-indigo-50 px-3 py-1 rounded-lg transition">展開 ▼</span>
+                            </div>
                             
-                            <div class="border border-gray-200 rounded-xl overflow-hidden">
-                                <table class="w-full text-left border-collapse text-xs">
+                            <div id="formatTableContent" class="hidden space-y-3 pt-3 border-t border-gray-100">
+                                <p class="text-xs text-gray-500">
+                                    系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。欄位名稱支援中文或英文，系統會自動抓取對應欄位進行資料新增或更新。
+                                </p>
+                                
+                                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                    <table class="w-full text-left border-collapse text-xs">
+                                        <thead>
+                                            <tr class="bg-gray-50 text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                                                <th class="py-2.5 px-3 font-semibold">欄位名稱 (中文支援)</th>
+                                                <th class="py-2.5 px-3 font-semibold">欄位名稱 (英文支援)</th>
+                                                <th class="py-2.5 px-3 font-semibold">格式與說明</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100 text-gray-700">
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">帳號 / ID</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">id</td>
+                                                <td class="py-2 px-3">必填。直播主的唯一編號。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">月份</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">month</td>
+                                                <td class="py-2 px-3">必填。格式須為 <code>YYYY-MM</code>（例如：<code>2026-05</code>）。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">浪花點數 / 浪花</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">langhua</td>
+                                                <td class="py-2 px-3">數值。當月累積的浪花總點數。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">領用浪花 / 領用扣除</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">redeemed</td>
+                                                <td class="py-2 px-3">數值。當月領用扣除的點數（若無則填 0）。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">有效天數 / 天數</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">days</td>
+                                                <td class="py-2 px-3">數值。當月直播有效天數。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">直播時數 / 時數</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">hours</td>
+                                                <td class="py-2 px-3">數值。當月總直播時數。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">合約版本 / 合約</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">contract</td>
+                                                <td class="py-2 px-3">文字。僅支援：<code>瞬_21</code>、<code>瞬_25</code>。</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 桌面版顯示表格 (半透明背景以完美襯托浮水印) -->
+                        <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/90 backdrop-blur-[2px]">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left border-collapse text-sm">
                                     <thead>
-                                        <tr class="bg-gray-50 text-gray-600 uppercase tracking-wider border-b border-gray-200">
-                                            <th class="py-2.5 px-3 font-semibold">欄位名稱 (中文支援)</th>
-                                            <th class="py-2.5 px-3 font-semibold">欄位名稱 (英文支援)</th>
-                                            <th class="py-2.5 px-3 font-semibold">格式與說明</th>
+                                        <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
+                                            <th class="py-3 px-3 font-semibold">ID</th>
+                                            <th class="py-3 px-3 font-semibold">直播主名稱</th>
+                                            <th class="py-3 px-3 font-semibold">合約版本</th>
+                                            <th class="py-3 px-3 font-semibold">浪花點數</th>
+                                            <th class="py-3 px-3 font-semibold">領用扣除</th>
+                                            <th class="py-3 px-3 font-semibold">有效天</th>
+                                            <th class="py-3 px-3 font-semibold">時數</th>
+                                            <th class="py-3 px-3 font-semibold">服務費實發</th>
+                                            <th class="py-3 px-3 font-semibold">分潤實發</th>
+                                            <th class="py-3 px-3 font-semibold text-right">總計金額</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y divide-gray-100 text-gray-700">
-                                        <tr>
-                                            <td class="py-2 px-3 font-medium text-indigo-600">帳號 / ID</td>
-                                            <td class="py-2 px-3 font-mono text-gray-500">id</td>
-                                            <td class="py-2 px-3">必填。直播主的唯一編號（需與 <code>streamers.json</code> 中的 ID 一致）。</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2 px-3 font-medium text-indigo-600">月份</td>
-                                            <td class="py-2 px-3 font-mono text-gray-500">month</td>
-                                            <td class="py-2 px-3">必填。格式須為 <code>YYYY-MM</code>（例如：<code>2026-05</code>）。</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2 px-3 font-medium text-indigo-600">浪花點數 / 浪花</td>
-                                            <td class="py-2 px-3 font-mono text-gray-500">langhua</td>
-                                            <td class="py-2 px-3">數值。當月累積的浪花總點數。</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2 px-3 font-medium text-indigo-600">領用浪花 / 領用扣除</td>
-                                            <td class="py-2 px-3 font-mono text-gray-500">redeemed</td>
-                                            <td class="py-2 px-3">數值。當月領用扣除的點數（若無則填 0）。</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2 px-3 font-medium text-indigo-600">有效天數 / 天數</td>
-                                            <td class="py-2 px-3 font-mono text-gray-500">days</td>
-                                            <td class="py-2 px-3">數值。當月直播有效天數（預設通常為 15）。</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2 px-3 font-medium text-indigo-600">直播時數 / 時數</td>
-                                            <td class="py-2 px-3 font-mono text-gray-500">hours</td>
-                                            <td class="py-2 px-3">數值。當月總直播時數。</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="py-2 px-3 font-medium text-indigo-600">合約版本 / 合約</td>
-                                            <td class="py-2 px-3 font-mono text-gray-500">contract</td>
-                                            <td class="py-2 px-3">文字。僅支援：<code>瞬_21</code>、<code>瞬_25</code>。</td>
-                                        </tr>
-                                    </tbody>
+                                    <tbody class="divide-y divide-gray-100 text-gray-700" id="adminTableBody"></tbody>
                                 </table>
                             </div>
-
-                            <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-1">
-                                <p class="font-semibold text-gray-700">💡 Excel 表格填寫範例（第一列為表頭）：</p>
-                                <p class="font-mono text-gray-600">id | month | langhua | redeemed | days | hours | contract</p>
-                                <p class="font-mono text-gray-600">A001 | 2026-05 | 1050000 | 0 | 15 | 20 | 瞬_21</p>
-                                <p class="font-mono text-gray-600">A002 | 2026-05 | 800000 | 50000 | 16 | 22 | 瞬_25</p>
-                            </div>
                         </div>
-                    </div>
 
-                    <!-- 桌面版顯示表格 -->
-                    <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden">
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-left border-collapse text-sm">
-                                <thead>
-                                    <tr class="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider border-b border-gray-200">
-                                        <th class="py-3 px-3 font-semibold">ID</th>
-                                        <th class="py-3 px-3 font-semibold">直播主名稱</th>
-                                        <th class="py-3 px-3 font-semibold">合約版本</th>
-                                        <th class="py-3 px-3 font-semibold">浪花點數</th>
-                                        <th class="py-3 px-3 font-semibold">領用扣除</th>
-                                        <th class="py-3 px-3 font-semibold">有效天</th>
-                                        <th class="py-3 px-3 font-semibold">時數</th>
-                                        <th class="py-3 px-3 font-semibold">服務費實發</th>
-                                        <th class="py-3 px-3 font-semibold">分潤實發</th>
-                                        <th class="py-3 px-3 font-semibold text-right">總計金額</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-100 text-gray-700" id="adminTableBody"></tbody>
-                            </table>
+                        <!-- 手機版專屬卡片清單容器 -->
+                        <div class="block sm:hidden space-y-3 print:hidden" id="adminCardList"></div>
+
+                        <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 text-white flex justify-between items-center">
+                            <div><p class="text-xs text-indigo-200 uppercase tracking-wider">當月全公司總支出金額</p></div>
+                            <div class="text-xl sm:text-2xl font-bold text-amber-300" id="adminGrandTotal">NT$ 0</div>
                         </div>
-                    </div>
-
-                    <!-- 手機版專屬卡片清單容器 -->
-                    <div class="block sm:hidden space-y-3 print:hidden" id="adminCardList"></div>
-
-                    <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 text-white flex justify-between items-center">
-                        <div><p class="text-xs text-indigo-200 uppercase tracking-wider">當月全公司總支出金額</p></div>
-                        <div class="text-xl sm:text-2xl font-bold text-amber-300" id="adminGrandTotal">NT$ 0</div>
                     </div>
                 </div>
             </div>
