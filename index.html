@@ -293,72 +293,79 @@
                             </button>
                         </div>
                     </div>
-                    <!-- 新增：系統管理員專屬的 Excel 匯入格式與範例說明面板 -->
-<div class="bg-white rounded-2xl border border-indigo-100 p-5 space-y-3 no-print shadow-sm">
-    <div class="flex items-center gap-2">
-        <span class="text-base">📋</span>
-        <h3 class="text-sm font-bold text-gray-800">匯入 Excel / CSV 報表格式範例與說明</h3>
-    </div>
-    <p class="text-xs text-gray-500">
-        系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。欄位名稱支援中文或英文（如下表所示），系統會自動抓取對應欄位進行資料新增或更新。
-    </p>
-    
-    <div class="border border-gray-200 rounded-xl overflow-hidden">
-        <table class="w-full text-left border-collapse text-xs">
-            <thead>
-                <tr class="bg-gray-50 text-gray-600 uppercase tracking-wider border-b border-gray-200">
-                    <th class="py-2.5 px-3 font-semibold">欄位名稱 (中文支援)</th>
-                    <th class="py-2.5 px-3 font-semibold">欄位名稱 (英文支援)</th>
-                    <th class="py-2.5 px-3 font-semibold">格式與說明</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100 text-gray-700">
-                <tr>
-                    <td class="py-2 px-3 font-medium text-indigo-600">帳號 / ID</td>
-                    <td class="py-2 px-3 font-mono text-gray-500">id</td>
-                    <td class="py-2 px-3">必填。直播主的唯一編號（需與 <code>streamers.json</code> 中的 ID 一致）。</td>
-                </tr>
-                <tr>
-                    <td class="py-2 px-3 font-medium text-indigo-600">月份</td>
-                    <td class="py-2 px-3 font-mono text-gray-500">month</td>
-                    <td class="py-2 px-3">必填。格式須為 <code>YYYY-MM</code>（例如：<code>2026-05</code>）。</td>
-                </tr>
-                <tr>
-                    <td class="py-2 px-3 font-medium text-indigo-600">浪花點數 / 浪花</td>
-                    <td class="py-2 px-3 font-mono text-gray-500">langhua</td>
-                    <td class="py-2 px-3">數值。當月累積的浪花總點數。</td>
-                </tr>
-                <tr>
-                    <td class="py-2 px-3 font-medium text-indigo-600">領用浪花 / 領用扣除</td>
-                    <td class="py-2 px-3 font-mono text-gray-500">redeemed</td>
-                    <td class="py-2 px-3">數值。當月領用扣除的點數（若無則填 0）。</td>
-                </tr>
-                <tr>
-                    <td class="py-2 px-3 font-medium text-indigo-600">有效天數 / 天數</td>
-                    <td class="py-2 px-3 font-mono text-gray-500">days</td>
-                    <td class="py-2 px-3">數值。當月直播有效天數（預設通常為 15）。</td>
-                </tr>
-                <tr>
-                    <td class="py-2 px-3 font-medium text-indigo-600">直播時數 / 時數</td>
-                    <td class="py-2 px-3 font-mono text-gray-500">hours</td>
-                    <td class="py-2 px-3">數值。當月總直播時數。</td>
-                </tr>
-                <tr>
-                    <td class="py-2 px-3 font-medium text-indigo-600">合約版本 / 合約</td>
-                    <td class="py-2 px-3 font-mono text-gray-500">contract</td>
-                    <td class="py-2 px-3">文字。例如：<code>瞬_21</code>、<code>瞬_25</code>、<code>瞬_21+</code>、<code>瞬_25+</code>。</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 
-    <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-1">
-        <p class="font-semibold text-gray-700">💡 Excel 表格填寫範例（第一列為表頭）：</p>
-        <p class="font-mono text-gray-600">id | month | langhua | redeemed | days | hours | contract</p>
-        <p class="font-mono text-gray-600">A001 | 2026-05 | 1050000 | 0 | 15 | 20 | 瞬_21</p>
-        <p class="font-mono text-gray-600">A002 | 2026-05 | 800000 | 50000 | 16 | 22 | 瞬_25</p>
-    </div>
-</div>
+                    <!-- 新增：系統管理員專屬的 Excel 匯入格式與範例說明面板（預設收合） -->
+                    <div class="bg-white rounded-2xl border border-indigo-100 p-5 space-y-3 no-print shadow-sm">
+                        <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleFormatTable()">
+                            <div class="flex items-center gap-2">
+                                <span class="text-base">📋</span>
+                                <h3 class="text-sm font-bold text-gray-800">匯入 Excel / CSV 報表格式範例與說明</h3>
+                            </div>
+                            <span id="formatToggleIcon" class="text-xs text-indigo-600 font-medium bg-indigo-50 px-3 py-1 rounded-lg transition">展開 ▼</span>
+                        </div>
+                        
+                        <div id="formatTableContent" class="hidden space-y-3 pt-3 border-t border-gray-100">
+                            <p class="text-xs text-gray-500">
+                                系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。欄位名稱支援中文或英文（如下表所示），系統會自動抓取對應欄位進行資料新增或更新。
+                            </p>
+                            
+                            <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead>
+                                        <tr class="bg-gray-50 text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                                            <th class="py-2.5 px-3 font-semibold">欄位名稱 (中文支援)</th>
+                                            <th class="py-2.5 px-3 font-semibold">欄位名稱 (英文支援)</th>
+                                            <th class="py-2.5 px-3 font-semibold">格式與說明</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-100 text-gray-700">
+                                        <tr>
+                                            <td class="py-2 px-3 font-medium text-indigo-600">帳號 / ID</td>
+                                            <td class="py-2 px-3 font-mono text-gray-500">id</td>
+                                            <td class="py-2 px-3">必填。直播主的唯一編號（需與 <code>streamers.json</code> 中的 ID 一致）。</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 px-3 font-medium text-indigo-600">月份</td>
+                                            <td class="py-2 px-3 font-mono text-gray-500">month</td>
+                                            <td class="py-2 px-3">必填。格式須為 <code>YYYY-MM</code>（例如：<code>2026-05</code>）。</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 px-3 font-medium text-indigo-600">浪花點數 / 浪花</td>
+                                            <td class="py-2 px-3 font-mono text-gray-500">langhua</td>
+                                            <td class="py-2 px-3">數值。當月累積的浪花總點數。</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 px-3 font-medium text-indigo-600">領用浪花 / 領用扣除</td>
+                                            <td class="py-2 px-3 font-mono text-gray-500">redeemed</td>
+                                            <td class="py-2 px-3">數值。當月領用扣除的點數（若無則填 0）。</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 px-3 font-medium text-indigo-600">有效天數 / 天數</td>
+                                            <td class="py-2 px-3 font-mono text-gray-500">days</td>
+                                            <td class="py-2 px-3">數值。當月直播有效天數（預設通常為 15）。</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 px-3 font-medium text-indigo-600">直播時數 / 時數</td>
+                                            <td class="py-2 px-3 font-mono text-gray-500">hours</td>
+                                            <td class="py-2 px-3">數值。當月總直播時數。</td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 px-3 font-medium text-indigo-600">合約版本 / 合約</td>
+                                            <td class="py-2 px-3 font-mono text-gray-500">contract</td>
+                                            <td class="py-2 px-3">文字。僅支援：<code>瞬_21</code>、<code>瞬_25</code>。</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="bg-gray-50 p-3 rounded-xl border border-gray-200 text-xs space-y-1">
+                                <p class="font-semibold text-gray-700">💡 Excel 表格填寫範例（第一列為表頭）：</p>
+                                <p class="font-mono text-gray-600">id | month | langhua | redeemed | days | hours | contract</p>
+                                <p class="font-mono text-gray-600">A001 | 2026-05 | 1050000 | 0 | 15 | 20 | 瞬_21</p>
+                                <p class="font-mono text-gray-600">A002 | 2026-05 | 800000 | 50000 | 16 | 22 | 瞬_25</p>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- 桌面版顯示表格 -->
                     <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden">
@@ -424,6 +431,19 @@
             }
         }
 
+        // 切換格式說明面板的展開與收合
+        function toggleFormatTable() {
+            const content = document.getElementById('formatTableContent');
+            const icon = document.getElementById('formatToggleIcon');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.innerText = '收合 ▲';
+            } else {
+                content.classList.add('hidden');
+                icon.innerText = '展開 ▼';
+            }
+        }
+
         function getFixedFee(langhua) {
             if (langhua < 100000) return 0;
             for (let t of tiers) {
@@ -456,7 +476,7 @@
 
         function calculateSalary({ langhua, redeemed, days, hours, contract }) {
             let divisor = 20;
-            if (contract === '瞬_25' || contract === '瞬_25+') {
+            if (contract === '瞬_25') {
                 divisor = 24;
             }
             const fixedFee = getFixedFee(langhua);
@@ -471,11 +491,7 @@
             
             let splitFeeActual = 0;
             if (divisor > 0) {
-                if (contract === '瞬_21+' || contract === '瞬_25+') {
-                    splitFeeActual = Math.ceil(Math.floor(netLanghua / divisor) * 0.9);
-                } else {
-                    splitFeeActual = Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95);
-                }
+                splitFeeActual = Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95);
             }
 
             const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
