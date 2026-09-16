@@ -16,39 +16,8 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
         
-        /* 列印專屬設定：當觸發 window.print() 時生效 */
+        /* 列印專屬設定：僅隱藏不需要列印的操作介面與選單 */
         @media print {
-            body * {
-                visibility: hidden;
-            }
-            #printableArea, #printableArea * {
-                visibility: visible;
-            }
-            #printableArea {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
-            /* 讓對帳單內容保持不透明，避免被浮水印遮擋文字 */
-            #printableArea > div {
-                position: relative;
-                z-index: 2;
-                background-color: rgba(255, 255, 255, 0.9); /* 半透明白底保護文字清晰度 */
-                padding: 20px;
-                border-radius: 1rem;
-            }
-
-            /* 管理員後台整頁列印專用 */
-            #adminPrintableArea, #adminPrintableArea * {
-                visibility: visible;
-            }
-            #adminPrintableArea {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-            }
             .no-print {
                 display: none !important;
             }
@@ -218,14 +187,8 @@
                     <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                 </div>
 
-                <!-- 列印範圍開始 (加入實體浮水印圖片，列印時自動顯示) -->
-                <div id="printableArea" class="space-y-4 relative overflow-hidden">
-                    <!-- 列印專屬浮水印實體元素 -->
-                    <div class="hidden print:flex absolute inset-0 items-center justify-center pointer-events-none z-0">
-                        <img src="ZheYun.png" alt="ZheYun Watermark" class="w-1/2 opacity-15 select-none">
-                    </div>
-
-                    <div class="text-center pb-2 border-b border-gray-200 hidden print:block relative z-10">
+                <div id="printableArea" class="space-y-4">
+                    <div class="text-center pb-2 border-b border-gray-200 hidden print:block">
                         <h1 class="text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 直播主對帳單</h1>
                         <p class="text-xs text-gray-500 mt-1">查詢月份：<span id="printMonthText"></span> | 直播主：<span id="printNameText"></span> (ID: <span id="printIdText"></span>)</p>
                     </div>
@@ -235,7 +198,7 @@
                         <select id="selectMonth" onchange="loadStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                     </div>
 
-                    <div class="bg-gray-50/90 rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600 relative z-10">
+                    <div class="bg-gray-50 rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600">
                         <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
                             <span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span>
                         </div>
@@ -263,7 +226,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- 列印範圍結束 -->
 
                 <button onclick="window.print()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition shadow-sm text-sm no-print">
                     🖨️ 列印本月對帳單 (另存為 PDF)
@@ -280,14 +242,8 @@
                     </div>
                 </div>
 
-                <!-- 管理員列印專用包覆區塊 (加入實體浮水印圖片，列印時自動顯示) -->
-                <div id="adminPrintableArea" class="space-y-5 relative overflow-hidden">
-                    <!-- 管理員報表列印專屬浮水印實體元素 -->
-                    <div class="hidden print:flex absolute inset-0 items-center justify-center pointer-events-none z-0">
-                        <img src="ZheYun.png" alt="ZheYun Watermark" class="w-1/2 opacity-15 select-none">
-                    </div>
-
-                    <div class="text-center pb-2 border-b border-gray-200 hidden print:block relative z-10">
+                <div id="adminPrintableArea" class="space-y-5">
+                    <div class="text-center pb-2 border-b border-gray-200 hidden print:block">
                         <h1 class="text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 全公司月度結算總覽表</h1>
                         <p class="text-xs text-gray-500 mt-1">結算月份：<span id="printAdminMonthText"></span></p>
                     </div>
@@ -386,7 +342,7 @@
                     </div>
 
                     <!-- 桌面版顯示表格 -->
-                    <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden relative z-10 bg-white/90">
+                    <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden">
                         <div class="overflow-x-auto">
                             <table class="w-full text-left border-collapse text-sm">
                                 <thead>
@@ -411,7 +367,7 @@
                     <!-- 手機版專屬卡片清單容器 -->
                     <div class="block sm:hidden space-y-3 print:hidden" id="adminCardList"></div>
 
-                    <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 text-white flex justify-between items-center relative z-10">
+                    <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 text-white flex justify-between items-center">
                         <div><p class="text-xs text-indigo-200 uppercase tracking-wider">當月全公司總支出金額</p></div>
                         <div class="text-xl sm:text-2xl font-bold text-amber-300" id="adminGrandTotal">NT$ 0</div>
                     </div>
@@ -648,11 +604,11 @@
                 if (streamer.role === 'system_admin') {
                     adminTools.classList.remove('hidden');
                     adminTools.classList.add('flex');
-                    if (formatTableCard) formatTableCard.classList.remove('hidden'); // 僅系統管理員可見
+                    if (formatTableCard) formatTableCard.classList.remove('hidden');
                 } else {
                     adminTools.classList.add('hidden');
                     adminTools.classList.remove('flex');
-                    if (formatTableCard) formatTableCard.classList.add('hidden'); // 經理隱藏
+                    if (formatTableCard) formatTableCard.classList.add('hidden');
                 }
 
                 document.getElementById('adminQueryCard').classList.remove('hidden');
