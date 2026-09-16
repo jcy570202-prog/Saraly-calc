@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>浪花薪資計算與對帳系統 - 哲運娛樂</title>
     
-    <link rel="icon" href="icon.png" type="image/png">
+    <link rel="icon" href="icon.png" type="icon.png">
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#4f46e5">
@@ -180,7 +180,7 @@
                 </button>
             </div>
 
-            <!-- 一般直播主查詢面板 (含中間 ZheYun.png 浮水印) -->
+            <!-- 一般直播主查詢面板 (含文字斜向浮水印) -->
             <div id="queryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5 max-w-xl mx-auto">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                     <div>
@@ -192,9 +192,14 @@
 
                 <!-- 加上 relative 與 overflow-hidden 的容器 -->
                 <div id="printableArea" class="relative bg-white rounded-2xl p-2 overflow-hidden">
-                    <!-- ZheYun.png 圖片浮水印置中層 -->
-                    <div class="absolute inset-0 pointer-events-none z-0 flex items-center justify-center select-none overflow-hidden">
-                        <img src="ZheYun.png" alt="浮水印" class="w-48 sm:w-64 opacity-10 object-contain">
+                    <!-- 文字斜向重複浮水印層 -->
+                    <div class="absolute inset-0 pointer-events-none z-0 flex items-center justify-center select-none overflow-hidden opacity-10">
+                        <div class="transform -rotate-12 whitespace-nowrap text-2xl sm:text-3xl font-black text-indigo-900 tracking-widest leading-relaxed">
+                            哲運娛樂 ZHEYUN ENTERTAINMENT 哲運娛樂 ZHEYUN ENTERTAINMENT<br>
+                            ZHEYUN ENTERTAINMENT 哲運娛樂 ZHEYUN ENTERTAINMENT 哲運娛樂<br>
+                            哲運娛樂 ZHEYUN ENTERTAINMENT 哲運娛樂 ZHEYUN ENTERTAINMENT<br>
+                            ZHEYUN ENTERTAINMENT 哲運娛樂 ZHEYUN ENTERTAINMENT 哲運娛樂
+                        </div>
                     </div>
 
                     <!-- 內容層 (z-10 確保浮在浮水印上方) -->
@@ -244,7 +249,7 @@
                 </button>
             </div>
 
-            <!-- 管理員/老闆專用面板 (含中間 ZheYun.png 浮水印) -->
+            <!-- 管理員/老闆專用面板 (含文字斜向浮水印) -->
             <div id="adminQueryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                     <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽</h2></div>
@@ -256,9 +261,14 @@
 
                 <!-- 加上 relative 與 overflow-hidden 的容器 -->
                 <div id="adminPrintableArea" class="relative bg-white rounded-2xl p-2 space-y-5 overflow-hidden">
-                    <!-- ZheYun.png 圖片浮水印置中層 -->
-                    <div class="absolute inset-0 pointer-events-none z-0 flex items-center justify-center select-none overflow-hidden">
-                        <img src="ZheYun.png" alt="浮水印" class="w-64 sm:w-96 opacity-10 object-contain">
+                    <!-- 文字斜向重複浮水印層 -->
+                    <div class="absolute inset-0 pointer-events-none z-0 flex items-center justify-center select-none overflow-hidden opacity-10">
+                        <div class="transform -rotate-12 whitespace-nowrap text-3xl sm:text-4xl font-black text-indigo-900 tracking-widest leading-relaxed">
+                            哲運娛樂經紀管理報表 ZHEYUN ENTERTAINMENT<br>
+                            ZHEYUN ENTERTAINMENT 哲運娛樂經紀管理報表<br>
+                            哲運娛樂經紀管理報表 ZHEYUN ENTERTAINMENT<br>
+                            ZHEYUN ENTERTAINMENT 哲運娛樂經紀管理報表
+                        </div>
                     </div>
 
                     <!-- 內容層 (z-10 確保浮在浮水印上方) -->
@@ -354,8 +364,8 @@
                             </div>
                         </div>
 
-                        <!-- 桌面版顯示表格 (半透明背景以完美襯托浮水印) -->
-                        <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/70 backdrop-blur-[1px]">
+                        <!-- 桌面版顯示表格 (半透明背景以完美襯托文字浮水印) -->
+                        <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/80 backdrop-blur-[1px]">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse text-sm">
                                     <thead>
