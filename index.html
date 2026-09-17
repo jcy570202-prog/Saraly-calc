@@ -198,15 +198,16 @@
 
                     <!-- 加上 relative 與 overflow-hidden 的主容器，作為浮水印基準 -->
                     <div id="printableArea" class="relative bg-white rounded-2xl p-4 sm:p-6 overflow-hidden border border-gray-100 space-y-4">
-                        <!-- 絕對定位的完整浮水印圖層 (pointer-events-none 確保不影響點擊，opacity-15 讓浮水印清晰可見但不影響文字閱讀) -->
+                        <!-- 絕對定位的完整浮水印圖層 -->
                         <div id="watermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden">
                             <!-- JS 自動生成重複浮水印 -->
                         </div>
 
-                        <!-- 內容層 (z-10 確保浮在浮水印上方，半透明底色讓浮水印完美透出) -->
+                        <!-- 內容層 (z-10 確保浮在浮水印上方) -->
                         <div class="relative z-10 space-y-4">
                             <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
-                                <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-30 h-30 object-contain rounded-lg shadow-sm border border-gray-100">
+                                <!-- 修正處：將 w-30 h-30 改為 w-16 h-16 sm:w-20 sm:h-20 -->
+                                <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg shadow-sm border border-gray-100 bg-white p-1">
                                 <div>
                                     <h1 class="text-base sm:text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 直播主對帳單</h1>
                                     <p class="text-xs text-gray-500 mt-0.5">查詢月份：<span id="printMonthText"></span> | 直播主：<span id="printNameText"></span> (ID: <span id="printIdText"></span>)</p>
@@ -274,7 +275,8 @@
                     <!-- 內容層 (z-10 確保浮在浮水印上方) -->
                     <div class="relative z-10 space-y-5">
                         <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
-                            <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-30 h-30 object-contain rounded-lg shadow-sm border border-gray-100">
+                            <!-- 修正處：將 w-30 h-30 改為 w-16 h-16 sm:w-20 sm:h-20 -->
+                            <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg shadow-sm border border-gray-100 bg-white p-1">
                             <div>
                                 <h1 class="text-base sm:text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 全公司月度結算總覽表</h1>
                                 <p class="text-xs text-gray-500 mt-0.5">結算月份：<span id="printAdminMonthText"></span></p>
