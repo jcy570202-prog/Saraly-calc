@@ -24,7 +24,6 @@
             body {
                 background: white !important;
             }
-            /* 列印時確保浮水印正常顯現 */
             #printableArea, #adminPrintableArea, #platformStatementArea {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -71,54 +70,18 @@
                 </div>
                 <div id="tierTableContent" class="hidden mt-4 pt-4 border-t border-gray-100">
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 text-xs">
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">10萬點以下</p>
-                            <p class="font-bold text-gray-700 mt-0.5">NT$ 0</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">10萬點</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 3,200</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">20萬點</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 6,000</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">40萬點</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 12,000</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">50萬點</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 16,000</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">75萬點</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 24,000</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">100萬點</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 32,000</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">200萬點</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 52,000</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">300萬點</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 68,000</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">400萬點</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 84,000</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">500萬點</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 100,000</p>
-                        </div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
-                            <p class="text-gray-400">600萬點以上</p>
-                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 110,000</p>
-                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">10萬點以下</p><p class="font-bold text-gray-700 mt-0.5">NT$ 0</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">10萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 3,200</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">20萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 6,000</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">40萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 12,000</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">50萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 16,000</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">75萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 24,000</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">100萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 32,000</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">200萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 52,000</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">300萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 68,000</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">400萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 84,000</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">500萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 100,000</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">600萬點以上</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 110,000</p></div>
                     </div>
                 </div>
             </div>
@@ -147,18 +110,9 @@
             <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 sm:p-6 text-white">
                 <h2 class="text-base sm:text-lg font-semibold mb-4 text-indigo-200">📊 總計與報表摘要</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                        <p class="text-xs text-indigo-200 uppercase tracking-wider">總服務費實發</p>
-                        <p class="text-xl sm:text-2xl font-bold mt-1" id="totalServiceFee">NT$ 0</p>
-                    </div>
-                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-                        <p class="text-xs text-indigo-200 uppercase tracking-wider">總分潤實發</p>
-                        <p class="text-xl sm:text-2xl font-bold mt-1" id="totalSplitFee">NT$ 0</p>
-                    </div>
-                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-indigo-400/30">
-                        <p class="text-xs text-indigo-200 uppercase tracking-wider">總支出金額 (總計)</p>
-                        <p class="text-xl sm:text-2xl font-bold text-amber-300 mt-1" id="grandTotal">NT$ 0</p>
-                    </div>
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm"><p class="text-xs text-indigo-200 uppercase tracking-wider">總服務費實發</p><p class="text-xl sm:text-2xl font-bold mt-1" id="totalServiceFee">NT$ 0</p></div>
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm"><p class="text-xs text-indigo-200 uppercase tracking-wider">總分潤實發</p><p class="text-xl sm:text-2xl font-bold mt-1" id="totalSplitFee">NT$ 0</p></div>
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-indigo-400/30"><p class="text-xs text-indigo-200 uppercase tracking-wider">總支出金額 (總計)</p><p class="text-xl sm:text-2xl font-bold text-amber-300 mt-1" id="grandTotal">NT$ 0</p></div>
                 </div>
             </div>
         </div>
@@ -180,9 +134,7 @@
                     <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">密碼 (Password)</label>
                     <input type="password" id="inputPassword" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter') handleLogin()" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 </div>
-                <button onclick="handleLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm tracking-wide">
-                    登入查詢
-                </button>
+                <button onclick="handleLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm tracking-wide">登入查詢</button>
             </div>
 
             <!-- 一般直播主查詢面板 -->
@@ -214,27 +166,13 @@
                             </div>
 
                             <div class="bg-white/85 backdrop-blur-[1px] rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600 shadow-sm">
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                                    <span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span>
-                                </div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                                    <span>級距固定服務費：</span><span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span>
-                                </div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                                    <span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span>
-                                </div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                                    <span>當月有效天數：</span><span id="resDays" class="font-medium text-gray-800">0 天</span>
-                                </div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                                    <span>當月直播時數：</span><span id="resHours" class="font-medium text-gray-800">0 小時</span>
-                                </div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                                    <span>服務費實發：</span><span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span>
-                                </div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
-                                    <span>分潤實發：</span><span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span>
-                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span></div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>級距固定服務費：</span><span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span></div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span></div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>當月有效天數：</span><span id="resDays" class="font-medium text-gray-800">0 天</span></div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>當月直播時數：</span><span id="resHours" class="font-medium text-gray-800">0 小時</span></div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>服務費實發：</span><span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span></div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>分潤實發：</span><span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span></div>
                                 <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl p-4 text-white flex justify-between items-center mt-4">
                                     <div><p class="text-xs text-indigo-200 uppercase tracking-wider">本月總計實領金額</p></div>
                                     <div class="text-lg sm:text-2xl font-bold text-amber-300" id="resGrandTotal">NT$ 0</div>
@@ -256,7 +194,7 @@
                     <div class="flex items-center gap-2">
                         <button onclick="window.print()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">🖨 列印全公司總覽報表</button>
                         <!-- 僅系統管理員 (system_admin) 才顯示此按鈕 -->
-                        <button id="btnPlatformStatement" onclick="openPlatformStatementModal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm hidden">列平台對帳單</button>
+                        <button id="btnPlatformStatement" onclick="openPlatformStatementModal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm hidden">列印平台對帳單</button>
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                     </div>
                 </div>
@@ -278,34 +216,25 @@
                             <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white/95 focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                         </div>
 
-                        <!-- 系統管理員專屬工具列 (僅 system_admin 顯示) -->
+                        <!-- 系統管理員專屬工具列 -->
                         <div id="adminTools" class="hidden flex-col sm:flex-row justify-between items-center gap-3 bg-indigo-50/90 backdrop-blur-[2px] p-4 rounded-xl border border-indigo-100 no-print">
                             <span class="text-xs font-semibold text-indigo-900">⚙ 系統管理員數據維護工具：</span>
                             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                                 <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
-                                <button onclick="document.getElementById('excelInput').click()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
-                                    📂 匯入 Excel/CSV 報表
-                                </button>
-                                <button onclick="exportJSONBackup()" class="flex-1 sm:flex-none bg-gray-800 hover:bg-gray-900 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
-                                    💾 下載 JSON 備份檔
-                                </button>
+                                <button onclick="document.getElementById('excelInput').click()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">📂 匯入 Excel/CSV 報表</button>
+                                <button onclick="exportJSONBackup()" class="flex-1 sm:flex-none bg-gray-800 hover:bg-gray-900 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">💾 下載 JSON 備份檔</button>
                             </div>
                         </div>
 
                         <!-- 系統管理員專屬的 Excel 說明面板 -->
                         <div id="formatTableCard" class="bg-white/95 backdrop-blur-[2px] rounded-2xl border border-indigo-100 p-5 space-y-3 no-print shadow-sm hidden">
                             <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleFormatTable()">
-                                <div class="flex items-center gap-2">
-                                    <span class="text-base">📋</span>
-                                    <h3 class="text-sm font-bold text-gray-800">匯入 Excel / CSV 報表格式範例與說明</h3>
-                                </div>
+                                <div class="flex items-center gap-2"><span class="text-base">📋</span><h3 class="text-sm font-bold text-gray-800">匯入 Excel / CSV 報表格式範例與說明</h3></div>
                                 <span id="formatToggleIcon" class="text-xs text-indigo-600 font-medium bg-indigo-50 px-3 py-1 rounded-lg transition">展開 ▼</span>
                             </div>
                             
                             <div id="formatTableContent" class="hidden space-y-3 pt-3 border-t border-gray-100">
-                                <p class="text-xs text-gray-500">
-                                    系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。
-                                </p>
+                                <p class="text-xs text-gray-500">系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。</p>
                                 <div class="border border-gray-200 rounded-xl overflow-hidden">
                                     <table class="w-full text-left border-collapse text-xs">
                                         <thead>
@@ -316,41 +245,13 @@
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-gray-100 text-gray-700">
-                                            <tr>
-                                                <td class="py-2 px-3 font-medium text-indigo-600">帳號 / ID</td>
-                                                <td class="py-2 px-3 font-mono text-gray-500">id</td>
-                                                <td class="py-2 px-3">必填。直播主的唯一編號。</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="py-2 px-3 font-medium text-indigo-600">月份</td>
-                                                <td class="py-2 px-3 font-mono text-gray-500">month</td>
-                                                <td class="py-2 px-3">必填。格式須為 <code>YYYY-MM</code>。</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="py-2 px-3 font-medium text-indigo-600">浪花點數 / 浪花</td>
-                                                <td class="py-2 px-3 font-mono text-gray-500">langhua</td>
-                                                <td class="py-2 px-3">數值。當月累積的浪花總點數。</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="py-2 px-3 font-medium text-indigo-600">領用浪花 / 領用扣除</td>
-                                                <td class="py-2 px-3 font-mono text-gray-500">redeemed</td>
-                                                <td class="py-2 px-3">數值。當月領用扣除的點數。</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="py-2 px-3 font-medium text-indigo-600">有效天數 / 天數</td>
-                                                <td class="py-2 px-3 font-mono text-gray-500">days</td>
-                                                <td class="py-2 px-3">數值。當月直播有效天數。</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="py-2 px-3 font-medium text-indigo-600">直播時數 / 時數</td>
-                                                <td class="py-2 px-3 font-mono text-gray-500">hours</td>
-                                                <td class="py-2 px-3">數值。當月總直播時數。</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="py-2 px-3 font-medium text-indigo-600">合約版本 / 合約</td>
-                                                <td class="py-2 px-3 font-mono text-gray-500">contract</td>
-                                                <td class="py-2 px-3">文字。僅支援：<code>瞬_21</code>、<code>瞬_25</code>。</td>
-                                            </tr>
+                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">帳號 / ID</td><td class="py-2 px-3 font-mono text-gray-500">id</td><td class="py-2 px-3">必填。直播主的唯一編號。</td></tr>
+                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">月份</td><td class="py-2 px-3 font-mono text-gray-500">month</td><td class="py-2 px-3">必填。格式須為 <code>YYYY-MM</code>。</td></tr>
+                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">浪花點數 / 浪花</td><td class="py-2 px-3 font-mono text-gray-500">langhua</td><td class="py-2 px-3">數值。當月累積的浪花總點數。</td></tr>
+                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">領用浪花 / 領用扣除</td><td class="py-2 px-3 font-mono text-gray-500">redeemed</td><td class="py-2 px-3">數值。當月領用扣除的點數。</td></tr>
+                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">有效天數 / 天數</td><td class="py-2 px-3 font-mono text-gray-500">days</td><td class="py-2 px-3">數值。當月直播有效天數。</td></tr>
+                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">直播時數 / 時數</td><td class="py-2 px-3 font-mono text-gray-500">hours</td><td class="py-2 px-3">數值。當月總直播時數。</td></tr>
+                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">合約版本 / 合約</td><td class="py-2 px-3 font-mono text-gray-500">contract</td><td class="py-2 px-3">文字。僅支援：<code>瞬_21</code>、<code>瞬_25</code>。</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -409,40 +310,20 @@
                     <p class="text-xs text-gray-500" id="platformModalTitleMonth">哲運娛樂經紀有限公司 - 結算發票請款明細</p>
                 </div>
                 <div class="space-y-2.5 text-xs sm:text-sm">
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100">
-                        <span>主播服務費用（未稅）：</span>
-                        <span class="font-medium text-gray-900" id="modalServiceFee">NT$ 0</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100">
-                        <span>虛擬禮物收入分成（未稅）：</span>
-                        <span class="font-medium text-gray-900" id="modalGiftSplit">NT$ 0</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100 bg-gray-50 px-2 rounded">
-                        <span class="font-semibold text-gray-800">營業額總計（未稅）：</span>
-                        <span class="font-bold text-indigo-600" id="modalSubtotal">NT$ 0</span>
-                    </div>
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100">
-                        <span>加值營業稅 5%：</span>
-                        <span class="font-medium text-gray-900" id="modalTax">NT$ 0</span>
-                    </div>
-                    <div class="flex justify-between py-2 border-t border-gray-200 bg-indigo-50/50 px-2 rounded">
-                        <span class="font-bold text-gray-900">發票金額（含稅）：</span>
-                        <span class="font-bold text-base text-indigo-700" id="modalTotalTaxIncluded">NT$ 0</span>
-                    </div>
-                    <div class="flex justify-between py-1 text-xs text-gray-500">
-                        <span>中文大寫：</span>
-                        <span class="font-medium text-gray-700" id="modalChineseNum">零元整</span>
-                    </div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100"><span>主播服務費用（未稅）：</span><span class="font-medium text-gray-900" id="modalServiceFee">NT$ 0</span></div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100"><span>虛擬禮物收入分成（未稅）：</span><span class="font-medium text-gray-900" id="modalGiftSplit">NT$ 0</span></div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100 bg-gray-50 px-2 rounded"><span class="font-semibold text-gray-800">營業額總計（未稅）：</span><span class="font-bold text-indigo-600" id="modalSubtotal">NT$ 0</span></div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100"><span>加值營業稅 5%：</span><span class="font-medium text-gray-900" id="modalTax">NT$ 0</span></div>
+                    <div class="flex justify-between py-2 border-t border-gray-200 bg-indigo-50/50 px-2 rounded"><span class="font-bold text-gray-900">發票金額（含稅）：</span><span class="font-bold text-base text-indigo-700" id="modalTotalTaxIncluded">NT$ 0</span></div>
+                    <div class="flex justify-between py-1 text-xs text-gray-500"><span>中文大寫：</span><span class="font-medium text-gray-700" id="modalChineseNum">零元整</span></div>
                 </div>
             </div>
 
             <div class="flex gap-3 pt-2">
                 <button onclick="printPlatformStatement()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition text-sm shadow-sm">
-                    🖨️ 直接列印此對帳單
+                    🖨️ 列印平台對帳單
                 </button>
-                <button onclick="closePlatformStatementModal()" class="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-2.5 rounded-xl transition text-sm">
-                    關閉
-                </button>
+                <button onclick="closePlatformStatementModal()" class="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-2.5 rounded-xl transition text-sm">關閉</button>
             </div>
         </div>
     </div>
@@ -465,11 +346,7 @@
 
         function initWatermarks() {
             const watermarkText = "哲運娛樂經紀有限公司";
-            const containers = [
-                document.getElementById('watermarkBg'),
-                document.getElementById('adminWatermarkBg')
-            ];
-
+            const containers = [document.getElementById('watermarkBg'), document.getElementById('adminWatermarkBg')];
             containers.forEach(container => {
                 if (!container) return;
                 container.innerHTML = '';
@@ -485,84 +362,49 @@
         function toggleTierTable() {
             const content = document.getElementById('tierTableContent');
             const icon = document.getElementById('tierToggleIcon');
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                icon.innerText = '收合 ▲';
-            } else {
-                content.classList.add('hidden');
-                icon.innerText = '展開 ▼';
-            }
+            if (content.classList.contains('hidden')) { content.classList.remove('hidden'); icon.innerText = '收合 ▲'; }
+            else { content.classList.add('hidden'); icon.innerText = '展開 ▼'; }
         }
 
         function toggleFormatTable() {
             const content = document.getElementById('formatTableContent');
             const icon = document.getElementById('formatToggleIcon');
-            if (content.classList.contains('hidden')) {
-                content.classList.remove('hidden');
-                icon.innerText = '收合 ▲';
-            } else {
-                content.classList.add('hidden');
-                icon.innerText = '展開 ▼';
-            }
+            if (content.classList.contains('hidden')) { content.classList.remove('hidden'); icon.innerText = '收合 ▲'; }
+            else { content.classList.add('hidden'); icon.innerText = '展開 ▼'; }
         }
 
         function getFixedFee(langhua) {
             if (langhua < 100000) return 0;
-            for (let t of tiers) {
-                if (langhua >= t.threshold) return t.fee;
-            }
+            for (let t of tiers) { if (langhua >= t.threshold) return t.fee; }
             return 0;
         }
 
         function calculateSimulatorSalary({ langhua, redeemed, days, hours, contract }) {
             const divisor = (contract === '瞬_25') ? 24 : 20;
             const fixedFee = getFixedFee(langhua);
-
             let serviceFeeActual = 0;
             if (days >= 15 && hours >= 20 && langhua >= 100000) {
                 const effectiveHours = Math.min(hours, 20);
                 serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
             }
-
             const netLanghua = Math.max(0, langhua - redeemed);
             let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
             const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
-
-            return {
-                fixedFee,
-                serviceFeeActual: Math.round(serviceFeeActual),
-                splitFeeActual,
-                rowTotal
-            };
+            return { fixedFee, serviceFeeActual: Math.round(serviceFeeActual), splitFeeActual, rowTotal };
         }
 
         function calculateSalary({ langhua, redeemed, days, hours, contract }) {
-            let divisor = 20;
-            if (contract === '瞬_25') {
-                divisor = 24;
-            }
+            let divisor = (contract === '瞬_25') ? 24 : 20;
             const fixedFee = getFixedFee(langhua);
-
             let serviceFeeActual = 0;
             if (days >= 15 && hours >= 20 && langhua >= 100000) {
                 const effectiveHours = Math.min(hours, 20);
                 serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
             }
-
             const netLanghua = Math.max(0, langhua - redeemed);
-            let splitFeeActual = 0;
-            if (divisor > 0) {
-                splitFeeActual = Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95);
-            }
-
+            let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
             const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
-
-            return {
-                fixedFee,
-                serviceFeeActual: Math.round(serviceFeeActual),
-                splitFeeActual,
-                rowTotal
-            };
+            return { fixedFee, serviceFeeActual: Math.round(serviceFeeActual), splitFeeActual, rowTotal };
         }
 
         function switchTab(tab) {
@@ -570,17 +412,14 @@
             const btnStmt = document.getElementById('tabStatement');
             const secSim = document.getElementById('sectionSimulator');
             const secStmt = document.getElementById('sectionStatement');
-
             if (tab === 'simulator') {
                 btnSim.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm";
                 btnStmt.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900";
-                secSim.classList.remove('hidden');
-                secStmt.classList.add('hidden');
+                secSim.classList.remove('hidden'); secStmt.classList.add('hidden');
             } else {
                 btnStmt.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm";
                 btnSim.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900";
-                secStmt.classList.remove('hidden');
-                secSim.classList.add('hidden');
+                secStmt.classList.remove('hidden'); secSim.classList.add('hidden');
             }
         }
 
@@ -602,9 +441,9 @@
                 <td class="py-3 px-3"><span class="fixed-fee font-medium text-gray-800">0</span></td>
                 <td class="py-3 px-3">
                     <div class="flex items-center gap-1">
-                        <input type="number" value="${days}" oninput="calculate()" class="days-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="天" title="有效天數">
+                        <input type="number" value="${days}" oninput="calculate()" class="days-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="天">
                         <span class="text-gray-400">天/</span>
-                        <input type="number" value="${hours}" oninput="calculate()" class="hours-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="時" title="直播時數">
+                        <input type="number" value="${hours}" oninput="calculate()" class="hours-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="時">
                         <span class="text-gray-400">h</span>
                         <select onchange="calculate()" class="contract-select border border-gray-300 rounded px-1.5 py-1 text-xs bg-white">
                             <option value="瞬_21" ${contract === '瞬_21' ? 'selected' : ''}>瞬_21</option>
@@ -621,37 +460,26 @@
             calculate();
         }
 
-        function removeRow(btn) {
-            btn.closest('tr').remove();
-            calculate();
-        }
-
-        function formatCurrency(num) {
-            return "NT$ " + Math.round(num).toLocaleString();
-        }
+        function removeRow(btn) { btn.closest('tr').remove(); calculate(); }
+        function formatCurrency(num) { return "NT$ " + Math.round(num).toLocaleString(); }
 
         function calculate() {
             const rows = document.querySelectorAll('#tableBody tr');
             let totalService = 0, totalSplit = 0;
-
             rows.forEach(row => {
                 const langhua = parseFloat(row.querySelector('.langhua-input').value) || 0;
                 const redeemed = parseFloat(row.querySelector('.redeemed-input').value) || 0;
                 const days = parseFloat(row.querySelector('.days-input').value) || 0;
                 const hours = parseFloat(row.querySelector('.hours-input').value) || 0;
                 const contract = row.querySelector('.contract-select').value;
-
                 const res = calculateSimulatorSalary({ langhua, redeemed, days, hours, contract });
-
                 row.querySelector('.fixed-fee').innerText = res.fixedFee.toLocaleString();
                 row.querySelector('.service-fee-actual').innerText = res.serviceFeeActual.toLocaleString();
                 row.querySelector('.split-fee-actual').innerText = res.splitFeeActual.toLocaleString();
                 row.querySelector('.row-total').innerText = formatCurrency(res.rowTotal);
-
                 totalService += res.serviceFeeActual;
                 totalSplit += res.splitFeeActual;
             });
-
             document.getElementById('totalServiceFee').innerText = formatCurrency(totalService);
             document.getElementById('totalSplitFee').innerText = formatCurrency(totalSplit);
             document.getElementById('grandTotal').innerText = formatCurrency(totalService + totalSplit);
@@ -663,61 +491,45 @@
 
         async function initData() {
             try {
-                const resS = await fetch('streamers.json');
-                streamersData = await resS.json();
-                const resI = await fetch('income.json');
-                incomeData = await resI.json();
-            } catch (e) {
-                console.warn("無法讀取外部 JSON，請確保透過本地伺服器或網頁伺服器執行。");
-            }
+                const resS = await fetch('streamers.json'); streamersData = await resS.json();
+                const resI = await fetch('income.json'); incomeData = await resI.json();
+            } catch (e) { console.warn("無法讀取外部 JSON。"); }
         }
 
         function handleLogin() {
             const idInput = document.getElementById('inputId').value.trim();
             const passInput = document.getElementById('inputPassword').value.trim();
-
             const streamer = streamersData.find(s => s.id === idInput && s.password === passInput);
-            if (!streamer) {
-                alert("ID 或密碼錯誤，請重新輸入！");
-                return;
-            }
-
+            if (!streamer) { alert("ID 或密碼錯誤，請重新輸入！"); return; }
             currentStreamer = streamer;
             document.getElementById('loginCard').classList.add('hidden');
 
             if (streamer.role === 'system_admin' || streamer.role === 'manager') {
                 refreshAdminDropdown();
-                
                 const adminTools = document.getElementById('adminTools');
                 const formatTableCard = document.getElementById('formatTableCard');
                 const adminCols = document.querySelectorAll('.admin-only-col');
                 const btnPlatformStatement = document.getElementById('btnPlatformStatement');
 
                 if (streamer.role === 'system_admin') {
-                    adminTools.classList.remove('hidden');
-                    adminTools.classList.add('flex');
+                    adminTools.classList.remove('hidden'); adminTools.classList.add('flex');
                     if (formatTableCard) formatTableCard.classList.remove('hidden');
                     adminCols.forEach(el => el.classList.remove('hidden'));
-                    if (btnPlatformStatement) btnPlatformStatement.classList.remove('hidden'); // 僅系統管理員顯示
+                    if (btnPlatformStatement) btnPlatformStatement.classList.remove('hidden');
                 } else {
-                    // 若為老闆 (manager) 角色，隱藏管理員工具、服務費(級距)、分潤兩行欄位，以及列平台對帳單按鈕
-                    adminTools.classList.add('hidden');
-                    adminTools.classList.remove('flex');
+                    adminTools.classList.add('hidden'); adminTools.classList.remove('flex');
                     if (formatTableCard) formatTableCard.classList.add('hidden');
                     adminCols.forEach(el => el.classList.add('hidden'));
                     if (btnPlatformStatement) btnPlatformStatement.classList.add('hidden');
                 }
-
                 document.getElementById('adminQueryCard').classList.remove('hidden');
                 loadAdminStatement();
             } else {
                 document.getElementById('welcomeName').innerText = streamer.name;
                 document.getElementById('welcomeId').innerText = streamer.id;
-
                 const months = incomeData.filter(item => item.id === streamer.id).map(item => item.month).sort().reverse();
                 const selectMonth = document.getElementById('selectMonth');
                 selectMonth.innerHTML = '';
-                
                 if (months.length === 0) {
                     selectMonth.innerHTML = '<option value="">目前無結算資料</option>';
                     document.getElementById('welcomeContract').innerText = '無合約紀錄';
@@ -725,8 +537,7 @@
                     months.forEach(m => {
                         const [y, mm] = m.split('-');
                         const opt = document.createElement('option');
-                        opt.value = m;
-                        opt.innerText = `${y}年${parseInt(mm)}月`;
+                        opt.value = m; opt.innerText = `${y}年${parseInt(mm)}月`;
                         selectMonth.appendChild(opt);
                     });
                     loadStatement();
@@ -752,8 +563,7 @@
             allMonths.forEach(m => {
                 const [y, mm] = m.split('-');
                 const opt = document.createElement('option');
-                opt.value = m;
-                opt.innerText = `${y}年${parseInt(mm)}月`;
+                opt.value = m; opt.innerText = `${y}年${parseInt(mm)}月`;
                 if (m === currentSelected) opt.selected = true;
                 selectAdminMonth.appendChild(opt);
             });
@@ -763,7 +573,6 @@
             if (!currentStreamer) return;
             const selectedMonth = document.getElementById('selectMonth').value;
             const record = incomeData.find(item => item.id === currentStreamer.id && item.month === selectedMonth);
-            
             const langhua = record ? record.langhua : 0;
             const redeemed = record ? record.redeemed : 0;
             const days = record ? (record.days !== undefined ? record.days : 15) : 0;
@@ -771,14 +580,12 @@
             const contract = record ? record.contract : '瞬_21';
 
             document.getElementById('welcomeContract').innerText = contract;
-
             const [y, mm] = selectedMonth ? selectedMonth.split('-') : ['----', '--'];
             document.getElementById('printMonthText').innerText = `${y}年${parseInt(mm)}月`;
             document.getElementById('printNameText').innerText = currentStreamer.name;
             document.getElementById('printIdText').innerText = currentStreamer.id;
 
             const res = calculateSalary({ langhua, redeemed, days, hours, contract });
-
             document.getElementById('resLanghua').innerText = `${langhua.toLocaleString()} 點`;
             document.getElementById('resFixedFee').innerText = `NT$ ${res.fixedFee.toLocaleString()}`;
             document.getElementById('resRedeemed').innerText = `${redeemed.toLocaleString()} 點`;
@@ -793,16 +600,15 @@
             const selectedMonth = document.getElementById('selectAdminMonth').value;
             const [y, mm] = selectedMonth ? selectedMonth.split('-') : ['----', '--'];
             document.getElementById('printAdminMonthText').innerText = `${y}年${parseInt(mm)}月`;
-            
-            // 同步更新平台對帳單標題月份
             document.getElementById('platformModalTitleMonth').innerText = `哲運娛樂經紀有限公司 - ${y}年${parseInt(mm)}月發票請款明細`;
 
             const tbody = document.getElementById('adminTableBody');
             const cardList = document.getElementById('adminCardList');
-            tbody.innerHTML = '';
-            cardList.innerHTML = '';
+            tbody.innerHTML = ''; cardList.innerHTML = '';
 
             let companyTotal = 0;
+            let totalServiceFeeActualSum = 0;
+            let totalSplitFeeActualSum = 0;
             const isAdmin = currentStreamer && currentStreamer.role === 'system_admin';
             
             const streamers = streamersData.filter(s => {
@@ -819,13 +625,14 @@
                 const contract = record ? record.contract : '瞬_21';
 
                 const res = calculateSalary({ langhua, redeemed, days, hours, contract });
-                
                 const tierFee = res.fixedFee;
                 const divisor = (contract === '瞬_25') ? 24 : 20;
                 const netLanghua = Math.max(0, langhua - redeemed);
                 const rawSplit = divisor > 0 ? Math.floor(netLanghua / divisor) : 0;
 
                 companyTotal += res.rowTotal;
+                totalServiceFeeActualSum += res.serviceFeeActual;
+                totalSplitFeeActualSum += res.splitFeeActual;
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition";
@@ -847,21 +654,10 @@
 
                 const card = document.createElement('div');
                 card.className = "bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 text-xs text-gray-700";
-                
-                let adminCardDetails = '';
-                if (isAdmin) {
-                    adminCardDetails = `
-                        <div>服務費 (級距)：<span class="font-medium text-indigo-600">NT$ ${tierFee.toLocaleString()}</span></div>
-                        <div>分潤 (未扣趴數)：<span class="font-medium text-emerald-600">${rawSplit.toLocaleString()}</span></div>
-                    `;
-                }
-
+                let adminCardDetails = isAdmin ? `<div>服務費 (級距)：<span class="font-medium text-indigo-600">NT$ ${tierFee.toLocaleString()}</span></div><div>分潤 (未扣趴數)：<span class="font-medium text-emerald-600">${rawSplit.toLocaleString()}</span></div>` : '';
                 card.innerHTML = `
                     <div class="flex justify-between items-center border-b border-gray-200 pb-2">
-                        <div>
-                            <span class="font-bold text-gray-900 text-sm">${s.name}</span>
-                            <span class="text-gray-400 ml-1">(ID: ${s.id})</span>
-                        </div>
+                        <div><span class="font-bold text-gray-900 text-sm">${s.name}</span><span class="text-gray-400 ml-1">(ID: ${s.id})</span></div>
                         <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-medium">${contract}</span>
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
@@ -882,57 +678,72 @@
             });
 
             document.getElementById('adminGrandTotal').innerText = formatCurrency(companyTotal);
+
+            // 計算平台對帳單數值 (1. 服務費加總, 2. 分潤加總, 3. 5%營業稅與含稅總計)
+            const serviceFeeSum = totalServiceFeeActualSum;
+            const giftSplitSum = totalSplitFeeActualSum;
+            const subtotal = serviceFeeSum + giftSplitSum;
+            const tax = Math.round(subtotal * 0.05);
+            const totalTaxIncluded = subtotal + tax;
+
+            document.getElementById('modalServiceFee').innerText = `NT$ ${serviceFeeSum.toLocaleString()}`;
+            document.getElementById('modalGiftSplit').innerText = `NT$ ${giftSplitSum.toLocaleString()}`;
+            document.getElementById('modalSubtotal').innerText = `NT$ ${subtotal.toLocaleString()}`;
+            document.getElementById('modalTax').innerText = `NT$ ${tax.toLocaleString()}`;
+            document.getElementById('modalTotalTaxIncluded').innerText = `NT$ ${totalTaxIncluded.toLocaleString()}`;
+            document.getElementById('modalChineseNum').innerText = numberToChineseCurrency(totalTaxIncluded);
         }
 
-        // 開啟平台對帳單 Modal
-        function openPlatformStatementModal() {
-            document.getElementById('platformStatementModal').classList.remove('hidden');
+        // 數字轉中文大寫金額輔助函式
+        function numberToChineseCurrency(n) {
+            if (n === 0) return "零元整";
+            const fraction = ['角', '分'];
+            const digit = ['零', '壹', '貳', '參', '肆', '伍', '陸', '柒', '捌', '玖'];
+            const unit = [['元', '萬', '億'], ['', '拾', '佰', '仟']];
+            let head = n < 0 ? '欠' : '';
+            n = Math.abs(n);
+            let s = '';
+            for (let i = 0; i < fraction.length; i++) {
+                s += (digit[Math.floor(n * 10 * Math.pow(10, i)) % 10] + fraction[i]).replace(/零./, '');
+            }
+            s = s || '整';
+            n = Math.floor(n);
+            for (let i = 0; i < unit[0].length && n > 0; i++) {
+                let p = '';
+                for (let j = 0; j < unit[1].length && n > 0; j++) {
+                    p = digit[n % 10] + unit[1][j] + p;
+                    n = Math.floor(n / 10);
+                }
+                s = p.replace(/(零.)*零$/, '').replace(/^$/, '零') + unit[0][i] + s;
+            }
+            return head + s.replace(/(零.)*零元/, '元').replace(/(零.)+/g, '零').replace(/^整$/, '零元整');
         }
 
-        // 關閉平台對帳單 Modal
-        function closePlatformStatementModal() {
-            document.getElementById('platformStatementModal').classList.add('hidden');
-        }
+        function openPlatformStatementModal() { document.getElementById('platformStatementModal').classList.remove('hidden'); }
+        function closePlatformStatementModal() { document.getElementById('platformStatementModal').classList.add('hidden'); }
 
-        // 列印平台對帳單
         function printPlatformStatement() {
             const printContent = document.getElementById('platformStatementArea').innerHTML;
             const originalBody = document.body.innerHTML;
-
-            document.body.innerHTML = `
-                <div style="padding: 40px; font-family: sans-serif; max-width: 700px; margin: 0 auto;">
-                    ${printContent}
-                </div>
-            `;
+            document.body.innerHTML = `<div style="padding: 40px; font-family: sans-serif; max-width: 700px; margin: 0 auto;">${printContent}</div>`;
             window.print();
             document.body.innerHTML = originalBody;
-            window.location.reload(); // 重新載入以恢復畫面狀態與事件綁定
+            window.location.reload();
         }
 
         function handleExcelUpload(e) {
-            if (!currentStreamer || currentStreamer.role !== 'system_admin') {
-                alert("權限不足，僅系統管理員可匯入資料！");
-                return;
-            }
-
+            if (!currentStreamer || currentStreamer.role !== 'system_admin') { alert("權限不足！"); return; }
             const file = e.target.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(evt) {
                 try {
                     const data = new Uint8Array(evt.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
-                    const firstSheetName = workbook.SheetNames[0];
-                    const worksheet = workbook.Sheets[firstSheetName];
+                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
                     const jsonArray = XLSX.utils.sheet_to_json(worksheet);
-
-                    if (jsonArray.length === 0) {
-                        alert("上傳的 Excel 檔案內沒有資料！");
-                        return;
-                    }
-
-                    let importedCount = 0;
+                    if (jsonArray.length === 0) { alert("檔案內無資料！"); return; }
+                    let count = 0;
                     jsonArray.forEach(row => {
                         const id = String(row.id || row.ID || row['帳號'] || '').trim();
                         const month = String(row.month || row.Month || row['月份'] || '').trim();
@@ -941,38 +752,25 @@
                         const days = Number(row.days || row.Days || row['有效天數'] || row['天數'] || 15);
                         const hours = Number(row.hours || row.Hours || row['直播時數'] || row['時數'] || 0);
                         const contract = String(row.contract || row.Contract || row['合約版本'] || row['合約'] || '瞬_21').trim();
-
                         if (id && month) {
                             const existIndex = incomeData.findIndex(i => i.id === id && i.month === month);
                             const newRecord = { id, month, langhua, redeemed, days, hours, contract };
-
-                            if (existIndex >= 0) {
-                                incomeData[existIndex] = newRecord;
-                            } else {
-                                incomeData.push(newRecord);
-                            }
-                            importedCount++;
+                            if (existIndex >= 0) incomeData[existIndex] = newRecord;
+                            else incomeData.push(newRecord);
+                            count++;
                         }
                     });
-
-                    alert(`成功匯入/更新 ${importedCount} 筆資料！`);
+                    alert(`成功匯入/更新 ${count} 筆資料！`);
                     refreshAdminDropdown();
                     loadAdminStatement();
                     e.target.value = '';
-                } catch (err) {
-                    alert("Excel 檔案解析失敗，請確認檔案格式是否正確。");
-                    console.error(err);
-                }
+                } catch (err) { alert("Excel 解析失敗。"); console.error(err); }
             };
             reader.readAsArrayBuffer(file);
         }
 
         function exportJSONBackup() {
-            if (!currentStreamer || currentStreamer.role !== 'system_admin') {
-                alert("權限不足，僅系統管理員可下載備份！");
-                return;
-            }
-
+            if (!currentStreamer || currentStreamer.role !== 'system_admin') { alert("權限不足！"); return; }
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(incomeData, null, 4));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
