@@ -310,8 +310,10 @@
                     <p class="text-xs text-gray-500" id="platformModalTitleMonth">哲運娛樂經紀有限公司 - 結算發票請款明細</p>
                 </div>
                 <div class="space-y-2.5 text-xs sm:text-sm">
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100"><span>主播服務費用（未稅）：</span><span class="font-medium text-gray-900" id="modalServiceFee">NT$ 0</span></div>
-                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100"><span>虛擬禮物收入分成（未稅）：</span><span class="font-medium text-gray-900" id="modalGiftSplit">NT$ 0</span></div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100"><span>主播服務費用（含稅）：</span><span class="font-medium text-gray-900" id="modalServiceFeeTaxIncluded">NT$ 0</span></div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100"><span>主播服務費用（未稅）：</span><span class="font-medium text-gray-600" id="modalServiceFeeExTax">NT$ 0</span></div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100"><span>虛擬禮物收入分成（含稅）：</span><span class="font-medium text-gray-900" id="modalGiftSplitTaxIncluded">NT$ 0</span></div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100"><span>虛擬禮物收入分成（未稅）：</span><span class="font-medium text-gray-600" id="modalGiftSplitExTax">NT$ 0</span></div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-100 bg-gray-50 px-2 rounded"><span class="font-semibold text-gray-800">營業額總計（未稅）：</span><span class="font-bold text-indigo-600" id="modalSubtotal">NT$ 0</span></div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-100"><span>加值營業稅 5%：</span><span class="font-medium text-gray-900" id="modalTax">NT$ 0</span></div>
                     <div class="flex justify-between py-2 border-t border-gray-200 bg-indigo-50/50 px-2 rounded"><span class="font-bold text-gray-900">發票金額（含稅）：</span><span class="font-bold text-base text-indigo-700" id="modalTotalTaxIncluded">NT$ 0</span></div>
@@ -607,8 +609,8 @@
             tbody.innerHTML = ''; cardList.innerHTML = '';
 
             let companyTotal = 0;
-            let totalServiceFeeSum = 0;  // 平台對帳用：未稅服務費加總（級距固定服務費）
-            let totalGiftSplitSum = 0;   // 平台對帳用：未稅分潤加總（原始分潤點數）
+            let totalServiceFeeSum = 0;  // 平台對帳用：服務費加總（含稅）
+            let totalGiftSplitSum = 0;   // 平台對帳用：分潤加總（含稅）
             const isAdmin = currentStreamer && currentStreamer.role === 'system_admin';
             
             const streamers = streamersData.filter(s => {
@@ -632,7 +634,7 @@
 
                 companyTotal += res.rowTotal;
                 
-                // 累積平台對帳專用數值：使用服務費（級距標準）與未扣減系數的原始分潤
+                // 累積平台對帳專用數值：使用服務費（級距標準）與原始分潤（皆視為含稅）
                 totalServiceFeeSum += tierFee;
                 totalGiftSplitSum += rawSplit;
 
@@ -681,17 +683,21 @@
 
             document.getElementById('adminGrandTotal').innerText = formatCurrency(companyTotal);
 
-            // 平台對帳單數值計算：用未稅服務費加總與未稅分潤加總
-            const subtotal = totalServiceFeeSum + totalGiftSplitSum;
-            const tax = Math.round(subtotal * 0.05);
-            const totalTaxIncluded = subtotal + tax;
+            // 平台對帳單數值計算：服務費與分潤皆為含稅，需各自回推未稅，再相加得出未稅營業額，後續計算 5% 稅額
+            const serviceFeeEx = totalServiceFeeSum / 1.05;
+            const giftSplitEx = totalGiftSplitSum / 1.05;
+            const subtotal = serviceFeeEx + giftSplitEx;
+            const tax = subtotal * 0.05;
+            const totalTaxIncluded = totalServiceFeeSum + totalGiftSplitSum;
 
-            document.getElementById('modalServiceFee').innerText = `NT$ ${totalServiceFeeSum.toLocaleString()}`;
-            document.getElementById('modalGiftSplit').innerText = `NT$ ${totalGiftSplitSum.toLocaleString()}`;
-            document.getElementById('modalSubtotal').innerText = `NT$ ${subtotal.toLocaleString()}`;
-            document.getElementById('modalTax').innerText = `NT$ ${tax.toLocaleString()}`;
-            document.getElementById('modalTotalTaxIncluded').innerText = `NT$ ${totalTaxIncluded.toLocaleString()}`;
-            document.getElementById('modalChineseNum').innerText = numberToChineseCurrency(totalTaxIncluded);
+            document.getElementById('modalServiceFeeTaxIncluded').innerText = `NT$ ${totalServiceFeeSum.toLocaleString()}`;
+            document.getElementById('modalServiceFeeExTax').innerText = `NT$ ${Math.round(serviceFeeEx).toLocaleString()}`;
+            document.getElementById('modalGiftSplitTaxIncluded').innerText = `NT$ ${totalGiftSplitSum.toLocaleString()}`;
+            document.getElementById('modalGiftSplitExTax').innerText = `NT$ ${Math.round(giftSplitEx).toLocaleString()}`;
+            document.getElementById('modalSubtotal').innerText = `NT$ ${Math.round(subtotal).toLocaleString()}`;
+            document.getElementById('modalTax').innerText = `NT$ ${Math.round(tax).toLocaleString()}`;
+            document.getElementById('modalTotalTaxIncluded').innerText = `NT$ ${Math.round(totalTaxIncluded).toLocaleString()}`;
+            document.getElementById('modalChineseNum').innerText = numberToChineseCurrency(Math.round(totalTaxIncluded));
         }
 
         // 數字轉中文大寫金額輔助函式
