@@ -607,8 +607,8 @@
             tbody.innerHTML = ''; cardList.innerHTML = '';
 
             let companyTotal = 0;
-            let totalServiceFeeActualSum = 0;
-            let totalSplitFeeActualSum = 0;
+            let totalServiceFeeSum = 0;  // 平台對帳用：未稅服務費加總（級距固定服務費）
+            let totalGiftSplitSum = 0;   // 平台對帳用：未稅分潤加總（原始分潤點數）
             const isAdmin = currentStreamer && currentStreamer.role === 'system_admin';
             
             const streamers = streamersData.filter(s => {
@@ -631,8 +631,10 @@
                 const rawSplit = divisor > 0 ? Math.floor(netLanghua / divisor) : 0;
 
                 companyTotal += res.rowTotal;
-                totalServiceFeeActualSum += res.serviceFeeActual;
-                totalSplitFeeActualSum += res.splitFeeActual;
+                
+                // 累積平台對帳專用數值：使用服務費（級距標準）與未扣減系數的原始分潤
+                totalServiceFeeSum += tierFee;
+                totalGiftSplitSum += rawSplit;
 
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition";
@@ -679,15 +681,13 @@
 
             document.getElementById('adminGrandTotal').innerText = formatCurrency(companyTotal);
 
-            // 計算平台對帳單數值 (1. 服務費加總, 2. 分潤加總, 3. 5%營業稅與含稅總計)
-            const serviceFeeSum = totalServiceFeeActualSum;
-            const giftSplitSum = totalSplitFeeActualSum;
-            const subtotal = serviceFeeSum + giftSplitSum;
+            // 平台對帳單數值計算：用未稅服務費加總與未稅分潤加總
+            const subtotal = totalServiceFeeSum + totalGiftSplitSum;
             const tax = Math.round(subtotal * 0.05);
             const totalTaxIncluded = subtotal + tax;
 
-            document.getElementById('modalServiceFee').innerText = `NT$ ${serviceFeeSum.toLocaleString()}`;
-            document.getElementById('modalGiftSplit').innerText = `NT$ ${giftSplitSum.toLocaleString()}`;
+            document.getElementById('modalServiceFee').innerText = `NT$ ${totalServiceFeeSum.toLocaleString()}`;
+            document.getElementById('modalGiftSplit').innerText = `NT$ ${totalGiftSplitSum.toLocaleString()}`;
             document.getElementById('modalSubtotal').innerText = `NT$ ${subtotal.toLocaleString()}`;
             document.getElementById('modalTax').innerText = `NT$ ${tax.toLocaleString()}`;
             document.getElementById('modalTotalTaxIncluded').innerText = `NT$ ${totalTaxIncluded.toLocaleString()}`;
