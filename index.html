@@ -25,7 +25,7 @@
                 background: white !important;
             }
             /* 列印時確保浮水印正常顯現 */
-            #printableArea, #adminPrintableArea {
+            #printableArea, #adminPrintableArea, #platformStatementArea {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -254,7 +254,9 @@
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                     <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽</h2></div>
                     <div class="flex items-center gap-2">
-                        <button onclick="window.print()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">🖨️️ 列印全公司總覽報表</button>
+                        <button onclick="window.print()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">🖨 列印全公司總覽報表</button>
+                        <!-- 新增的列平台對帳單按鈕 (位於登出按鈕左邊) -->
+                        <button onclick="openPlatformStatementModal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">列平台對帳單</button>
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                     </div>
                 </div>
@@ -278,7 +280,7 @@
 
                         <!-- 系統管理員專屬工具列 (僅 system_admin 顯示) -->
                         <div id="adminTools" class="hidden flex-col sm:flex-row justify-between items-center gap-3 bg-indigo-50/90 backdrop-blur-[2px] p-4 rounded-xl border border-indigo-100 no-print">
-                            <span class="text-xs font-semibold text-indigo-900">⚙️ 系統管理員數據維護工具：</span>
+                            <span class="text-xs font-semibold text-indigo-900">⚙️️ 系統管理員數據維護工具：</span>
                             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                                 <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
                                 <button onclick="document.getElementById('excelInput').click()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
@@ -390,6 +392,58 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 平台對帳單彈跳視窗 (Modal) -->
+    <div id="platformStatementModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <h3 class="text-base font-bold text-gray-800">平台對帳單及發票明細預覽</h3>
+                <button onclick="closePlatformStatementModal()" class="text-gray-400 hover:text-gray-600 text-sm font-semibold">✕</button>
+            </div>
+
+            <div id="platformStatementArea" class="relative bg-white border border-gray-200 rounded-xl p-5 space-y-4 text-sm text-gray-700">
+                <div class="text-center space-y-1 pb-3 border-b border-gray-200">
+                    <h2 class="font-bold text-base text-gray-900">平台對帳單及發票明細</h2>
+                    <p class="text-xs text-gray-500" id="platformModalTitleMonth">哲運娛樂經紀有限公司 - 2026年9月發票請款明細</p>
+                </div>
+                <div class="space-y-2.5 text-xs sm:text-sm">
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100">
+                        <span>主播服務費用（未稅）：</span>
+                        <span class="font-medium text-gray-900" id="modalServiceFee">NT$ 187,810</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100">
+                        <span>虛擬禮物收入分成（未稅）：</span>
+                        <span class="font-medium text-gray-900" id="modalGiftSplit">NT$ 361,404</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100 bg-gray-50 px-2 rounded">
+                        <span class="font-semibold text-gray-800">營業額總計（未稅）：</span>
+                        <span class="font-bold text-indigo-600" id="modalSubtotal">NT$ 549,214</span>
+                    </div>
+                    <div class="flex justify-between py-1 border-b border-dashed border-gray-100">
+                        <span>加值營業稅 5%：</span>
+                        <span class="font-medium text-gray-900" id="modalTax">NT$ 27,461</span>
+                    </div>
+                    <div class="flex justify-between py-2 border-t border-gray-200 bg-indigo-50/50 px-2 rounded">
+                        <span class="font-bold text-gray-900">發票金額（含稅）：</span>
+                        <span class="font-bold text-base text-indigo-700" id="modalTotalTaxIncluded">NT$ 576,675</span>
+                    </div>
+                    <div class="flex justify-between py-1 text-xs text-gray-500">
+                        <span>中文大寫：</span>
+                        <span class="font-medium text-gray-700" id="modalChineseNum">伍拾柒萬陸仟陸佰柒拾伍元</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <button onclick="printPlatformStatement()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition text-sm shadow-sm">
+                    🖨️ 直接列印此對帳單
+                </button>
+                <button onclick="closePlatformStatementModal()" class="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-2.5 rounded-xl transition text-sm">
+                    關閉
+                </button>
             </div>
         </div>
     </div>
@@ -737,6 +791,9 @@
             const selectedMonth = document.getElementById('selectAdminMonth').value;
             const [y, mm] = selectedMonth ? selectedMonth.split('-') : ['----', '--'];
             document.getElementById('printAdminMonthText').innerText = `${y}年${parseInt(mm)}月`;
+            
+            // 同步更新平台對帳單標題月份
+            document.getElementById('platformModalTitleMonth').innerText = `哲運娛樂經紀有限公司 - ${y}年${parseInt(mm)}月發票請款明細`;
 
             const tbody = document.getElementById('adminTableBody');
             const cardList = document.getElementById('adminCardList');
@@ -789,7 +846,6 @@
                 const card = document.createElement('div');
                 card.className = "bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 text-xs text-gray-700";
                 
-                // 手機版卡片內容：依權限決定是否顯示服務費與分潤欄位
                 let adminCardDetails = '';
                 if (isAdmin) {
                     adminCardDetails = `
@@ -824,6 +880,31 @@
             });
 
             document.getElementById('adminGrandTotal').innerText = formatCurrency(companyTotal);
+        }
+
+        // 開啟平台對帳單 Modal
+        function openPlatformStatementModal() {
+            document.getElementById('platformStatementModal').classList.remove('hidden');
+        }
+
+        // 關閉平台對帳單 Modal
+        function closePlatformStatementModal() {
+            document.getElementById('platformStatementModal').classList.add('hidden');
+        }
+
+        // 列印平台對帳單
+        function printPlatformStatement() {
+            const printContent = document.getElementById('platformStatementArea').innerHTML;
+            const originalBody = document.body.innerHTML;
+
+            document.body.innerHTML = `
+                <div style="padding: 40px; font-family: sans-serif; max-width: 700px; margin: 0 auto;">
+                    ${printContent}
+                </div>
+            `;
+            window.print();
+            document.body.innerHTML = originalBody;
+            window.location.reload(); // 重新載入以恢復畫面狀態與事件綁定
         }
 
         function handleExcelUpload(e) {
