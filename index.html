@@ -185,7 +185,7 @@
                 </button>
             </div>
 
-            <!-- 一般直播主查詢面板 (帶完整鋪滿的浮水印) -->
+            <!-- 一般直播主查詢面板 -->
             <div id="queryCard" class="hidden max-w-xl mx-auto">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-5">
                     <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
@@ -196,14 +196,9 @@
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                     </div>
 
-                    <!-- 加上 relative 與 overflow-hidden 的主容器，作為浮水印基準 -->
                     <div id="printableArea" class="relative bg-white rounded-2xl p-4 sm:p-6 overflow-hidden border border-gray-100 space-y-4">
-                        <!-- 絕對定位的完整浮水印圖層 -->
-                        <div id="watermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden">
-                            <!-- JS 自動生成重複浮水印 -->
-                        </div>
+                        <div id="watermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden"></div>
 
-                        <!-- 內容層 (z-10 確保浮在浮水印上方) -->
                         <div class="relative z-10 space-y-4">
                             <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
                                 <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg shadow-sm border border-gray-100 bg-white p-1">
@@ -254,24 +249,19 @@
                 </div>
             </div>
 
-            <!-- 管理員/老闆專用面板 (帶完整鋪滿的浮水印) -->
+            <!-- 管理員/老闆專用面板 -->
             <div id="adminQueryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                     <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽</h2></div>
                     <div class="flex items-center gap-2">
-                        <button onclick="window.print()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">🖨️ 列印全公司總覽報表</button>
+                        <button onclick="window.print()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">🖨️️ 列印全公司總覽報表</button>
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                     </div>
                 </div>
 
-                <!-- 加上 relative 與 overflow-hidden 的主容器 -->
                 <div id="adminPrintableArea" class="relative bg-white rounded-2xl p-4 sm:p-6 space-y-5 overflow-hidden border border-gray-100">
-                    <!-- 絕對定位的完整浮水印圖層 -->
-                    <div id="adminWatermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden">
-                        <!-- JS 自動生成重複浮水印 -->
-                    </div>
+                    <div id="adminWatermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden"></div>
 
-                    <!-- 內容層 (z-10 確保浮在浮水印上方) -->
                     <div class="relative z-10 space-y-5">
                         <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
                             <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg shadow-sm border border-gray-100 bg-white p-1">
@@ -281,13 +271,12 @@
                             </div>
                         </div>
 
-                        <!-- 選擇總覽月份 -->
                         <div class="w-full sm:w-64 no-print">
                             <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">選擇總覽月份</label>
                             <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white/95 focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                         </div>
 
-                        <!-- 管理員專屬工具列 (僅 system_admin 權限顯示) -->
+                        <!-- 系統管理員專屬工具列 (僅 system_admin 顯示) -->
                         <div id="adminTools" class="hidden flex-col sm:flex-row justify-between items-center gap-3 bg-indigo-50/90 backdrop-blur-[2px] p-4 rounded-xl border border-indigo-100 no-print">
                             <span class="text-xs font-semibold text-indigo-900">⚙️ 系統管理員數據維護工具：</span>
                             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -301,7 +290,7 @@
                             </div>
                         </div>
 
-                        <!-- 系統管理員專屬的 Excel 匯入格式與範例說明面板 -->
+                        <!-- 系統管理員專屬的 Excel 說明面板 -->
                         <div id="formatTableCard" class="bg-white/95 backdrop-blur-[2px] rounded-2xl border border-indigo-100 p-5 space-y-3 no-print shadow-sm hidden">
                             <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleFormatTable()">
                                 <div class="flex items-center gap-2">
@@ -313,9 +302,8 @@
                             
                             <div id="formatTableContent" class="hidden space-y-3 pt-3 border-t border-gray-100">
                                 <p class="text-xs text-gray-500">
-                                    系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。欄位名稱支援中文或英文，系統會自動抓取對應欄位進行資料新增或更新。
+                                    系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。
                                 </p>
-                                
                                 <div class="border border-gray-200 rounded-xl overflow-hidden">
                                     <table class="w-full text-left border-collapse text-xs">
                                         <thead>
@@ -334,7 +322,7 @@
                                             <tr>
                                                 <td class="py-2 px-3 font-medium text-indigo-600">月份</td>
                                                 <td class="py-2 px-3 font-mono text-gray-500">month</td>
-                                                <td class="py-2 px-3">必填。格式須為 <code>YYYY-MM</code>（例如：<code>2026-05</code>）。</td>
+                                                <td class="py-2 px-3">必填。格式須為 <code>YYYY-MM</code>。</td>
                                             </tr>
                                             <tr>
                                                 <td class="py-2 px-3 font-medium text-indigo-600">浪花點數 / 浪花</td>
@@ -344,7 +332,7 @@
                                             <tr>
                                                 <td class="py-2 px-3 font-medium text-indigo-600">領用浪花 / 領用扣除</td>
                                                 <td class="py-2 px-3 font-mono text-gray-500">redeemed</td>
-                                                <td class="py-2 px-3">數值。當月領用扣除的點數（若無則填 0）。</td>
+                                                <td class="py-2 px-3">數值。當月領用扣除的點數。</td>
                                             </tr>
                                             <tr>
                                                 <td class="py-2 px-3 font-medium text-indigo-600">有效天數 / 天數</td>
@@ -367,7 +355,7 @@
                             </div>
                         </div>
 
-                        <!-- 桌面版顯示表格 (已新增 服務費、分潤 兩行欄位) -->
+                        <!-- 桌面版顯示表格 (若為老闆登入，會自動隱藏「服務費」與「分潤」兩行) -->
                         <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/85 backdrop-blur-[1px]">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse text-sm">
@@ -380,8 +368,9 @@
                                             <th class="py-3 px-3 font-semibold">領用扣除</th>
                                             <th class="py-3 px-3 font-semibold">有效天</th>
                                             <th class="py-3 px-3 font-semibold">時數</th>
-                                            <th class="py-3 px-3 font-semibold">服務費 (級距)</th>
-                                            <th class="py-3 px-3 font-semibold">分潤</th>
+                                            <!-- 僅 system_admin 顯示這兩行 -->
+                                            <th class="py-3 px-3 font-semibold admin-only-col">服務費 (級距)</th>
+                                            <th class="py-3 px-3 font-semibold admin-only-col">分潤</th>
                                             <th class="py-3 px-3 font-semibold">服務費實發</th>
                                             <th class="py-3 px-3 font-semibold">分潤實發</th>
                                             <th class="py-3 px-3 font-semibold text-right">總計金額</th>
@@ -392,7 +381,7 @@
                             </div>
                         </div>
 
-                        <!-- 手機版專屬卡片清單容器 (已同步加入 服務費 與 分潤 資訊) -->
+                        <!-- 手機版專屬卡片清單容器 (若為老闆登入，會自動隱藏該兩項細節) -->
                         <div class="block sm:hidden space-y-3 print:hidden" id="adminCardList"></div>
 
                         <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 text-white flex justify-between items-center">
@@ -421,7 +410,6 @@
             { threshold: 0, fee: 0 }
         ];
 
-        // 動態產生浮水印函數（鋪滿整個容器）
         function initWatermarks() {
             const watermarkText = "哲運娛樂經紀有限公司";
             const containers = [
@@ -509,7 +497,6 @@
             }
 
             const netLanghua = Math.max(0, langhua - redeemed);
-            
             let splitFeeActual = 0;
             if (divisor > 0) {
                 splitFeeActual = Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95);
@@ -650,15 +637,19 @@
                 
                 const adminTools = document.getElementById('adminTools');
                 const formatTableCard = document.getElementById('formatTableCard');
+                const adminCols = document.querySelectorAll('.admin-only-col');
 
                 if (streamer.role === 'system_admin') {
                     adminTools.classList.remove('hidden');
                     adminTools.classList.add('flex');
                     if (formatTableCard) formatTableCard.classList.remove('hidden');
+                    adminCols.forEach(el => el.classList.remove('hidden'));
                 } else {
+                    // 若為老闆 (manager) 角色，隱藏管理員工具與服務費(級距)、分潤兩行欄位
                     adminTools.classList.add('hidden');
                     adminTools.classList.remove('flex');
                     if (formatTableCard) formatTableCard.classList.add('hidden');
+                    adminCols.forEach(el => el.classList.add('hidden'));
                 }
 
                 document.getElementById('adminQueryCard').classList.remove('hidden');
@@ -753,6 +744,7 @@
             cardList.innerHTML = '';
 
             let companyTotal = 0;
+            const isAdmin = currentStreamer && currentStreamer.role === 'system_admin';
             
             const streamers = streamersData.filter(s => {
                 if (s.role !== 'streamer') return false;
@@ -769,11 +761,7 @@
 
                 const res = calculateSalary({ langhua, redeemed, days, hours, contract });
                 
-                // 依照要求計算分潤與級距服務費：
-                // 1. 級距固定服務費 (如浪花200,000對應6,000)
                 const tierFee = res.fixedFee;
-                
-                // 2. 分潤計算：(浪花 - 領用) / 20 或 24，完全捨去小數
                 const divisor = (contract === '瞬_25') ? 24 : 20;
                 const netLanghua = Math.max(0, langhua - redeemed);
                 const rawSplit = divisor > 0 ? Math.floor(netLanghua / divisor) : 0;
@@ -790,8 +778,8 @@
                     <td class="py-3 px-3 text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</td>
                     <td class="py-3 px-3 text-gray-700">${days}天</td>
                     <td class="py-3 px-3 text-gray-700">${hours}h</td>
-                    <td class="py-3 px-3 font-medium text-indigo-600">NT$ ${tierFee.toLocaleString()}</td>
-                    <td class="py-3 px-3 font-medium text-emerald-600">${rawSplit.toLocaleString()}</td>
+                    <td class="py-3 px-3 font-medium text-indigo-600 ${isAdmin ? '' : 'hidden'}">NT$ ${tierFee.toLocaleString()}</td>
+                    <td class="py-3 px-3 font-medium text-emerald-600 ${isAdmin ? '' : 'hidden'}">${rawSplit.toLocaleString()}</td>
                     <td class="py-3 px-3 text-gray-600">${res.serviceFeeActual.toLocaleString()}</td>
                     <td class="py-3 px-3 text-gray-600">${res.splitFeeActual.toLocaleString()}</td>
                     <td class="py-3 px-3 text-right font-bold text-indigo-600">NT$ ${res.rowTotal.toLocaleString()}</td>
@@ -800,6 +788,16 @@
 
                 const card = document.createElement('div');
                 card.className = "bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 text-xs text-gray-700";
+                
+                // 手機版卡片內容：依權限決定是否顯示服務費與分潤欄位
+                let adminCardDetails = '';
+                if (isAdmin) {
+                    adminCardDetails = `
+                        <div>服務費 (級距)：<span class="font-medium text-indigo-600">NT$ ${tierFee.toLocaleString()}</span></div>
+                        <div>分潤 (未扣趴數)：<span class="font-medium text-emerald-600">${rawSplit.toLocaleString()}</span></div>
+                    `;
+                }
+
                 card.innerHTML = `
                     <div class="flex justify-between items-center border-b border-gray-200 pb-2">
                         <div>
@@ -813,8 +811,7 @@
                         <div>領用扣除：<span class="font-medium text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</span></div>
                         <div>有效天數：<span class="font-medium text-gray-900">${days} 天</span></div>
                         <div>直播時數：<span class="font-medium text-gray-900">${hours} 小時</span></div>
-                        <div>服務費 (級距)：<span class="font-medium text-indigo-600">NT$ ${tierFee.toLocaleString()}</span></div>
-                        <div>分潤 (未扣趴數)：<span class="font-medium text-emerald-600">${rawSplit.toLocaleString()}</span></div>
+                        ${adminCardDetails}
                         <div>服務費實發：<span class="font-medium text-gray-900">${res.serviceFeeActual.toLocaleString()}</span></div>
                         <div>分潤實發：<span class="font-medium text-gray-900">${res.splitFeeActual.toLocaleString()}</span></div>
                     </div>
