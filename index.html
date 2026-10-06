@@ -24,7 +24,8 @@
             body {
                 background: white !important;
             }
-            #printableArea, #adminPrintableArea, #langPlatformPrintableArea {
+            /* 列印時確保浮水印正常顯現 */
+            #printableArea, #adminPrintableArea {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -35,15 +36,12 @@
     <div class="max-w-7xl mx-auto">
         <!-- 頂部切換頁籤 -->
         <div class="flex justify-center mb-6 no-print">
-            <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200 inline-flex gap-2 w-full sm:w-auto overflow-x-auto">
-                <button onclick="switchTab('simulator')" id="tabSimulator" class="px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm whitespace-nowrap">
+            <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200 inline-flex gap-2 w-full sm:w-auto">
+                <button onclick="switchTab('simulator')" id="tabSimulator" class="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm">
                     🧮 業績模擬試算
                 </button>
-                <button onclick="switchTab('statement')" id="tabStatement" class="px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                    📋 對帳查詢系統 (管理/直播主)
-                </button>
-                <button onclick="switchTab('langPlatform')" id="tabLangPlatform" class="px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900 whitespace-nowrap">
-                    🌊 浪平台專屬對帳單
+                <button onclick="switchTab('statement')" id="tabStatement" class="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900">
+                    📋 對帳查詢系統
                 </button>
             </div>
         </div>
@@ -73,18 +71,54 @@
                 </div>
                 <div id="tierTableContent" class="hidden mt-4 pt-4 border-t border-gray-100">
                     <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2.5 text-xs">
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">10萬點以下</p><p class="font-bold text-gray-700 mt-0.5">NT$ 0</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">10萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 3,200</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">20萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 6,000</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">40萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 12,000</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">50萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 16,000</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">75萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 24,000</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">100萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 32,000</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">200萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 52,000</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">300萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 68,000</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">400萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 84,000</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">500萬點</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 100,000</p></div>
-                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center"><p class="text-gray-400">600萬點以上</p><p class="font-bold text-indigo-600 mt-0.5">NT$ 110,000</p></div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">10萬點以下</p>
+                            <p class="font-bold text-gray-700 mt-0.5">NT$ 0</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">10萬點</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 3,200</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">20萬點</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 6,000</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">40萬點</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 12,000</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">50萬點</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 16,000</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">75萬點</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 24,000</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">100萬點</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 32,000</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">200萬點</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 52,000</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">300萬點</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 68,000</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">400萬點</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 84,000</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">500萬點</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 100,000</p>
+                        </div>
+                        <div class="bg-gray-50 p-2.5 rounded-xl border border-gray-200 text-center">
+                            <p class="text-gray-400">600萬點以上</p>
+                            <p class="font-bold text-indigo-600 mt-0.5">NT$ 110,000</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -113,20 +147,30 @@
             <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 sm:p-6 text-white">
                 <h2 class="text-base sm:text-lg font-semibold mb-4 text-indigo-200">📊 總計與報表摘要</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
-                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm"><p class="text-xs text-indigo-200 uppercase tracking-wider">總服務費實發</p><p class="text-xl sm:text-2xl font-bold mt-1" id="totalServiceFee">NT$ 0</p></div>
-                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm"><p class="text-xs text-indigo-200 uppercase tracking-wider">總分潤實發</p><p class="text-xl sm:text-2xl font-bold mt-1" id="totalSplitFee">NT$ 0</p></div>
-                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-indigo-400/30"><p class="text-xs text-indigo-200 uppercase tracking-wider">總支出金額 (總計)</p><p class="text-xl sm:text-2xl font-bold text-amber-300 mt-1" id="grandTotal">NT$ 0</p></div>
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                        <p class="text-xs text-indigo-200 uppercase tracking-wider">總服務費實發</p>
+                        <p class="text-xl sm:text-2xl font-bold mt-1" id="totalServiceFee">NT$ 0</p>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
+                        <p class="text-xs text-indigo-200 uppercase tracking-wider">總分潤實發</p>
+                        <p class="text-xl sm:text-2xl font-bold mt-1" id="totalSplitFee">NT$ 0</p>
+                    </div>
+                    <div class="bg-white/10 rounded-xl p-4 backdrop-blur-sm border border-indigo-400/30">
+                        <p class="text-xs text-indigo-200 uppercase tracking-wider">總支出金額 (總計)</p>
+                        <p class="text-xl sm:text-2xl font-bold text-amber-300 mt-1" id="grandTotal">NT$ 0</p>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- ================= 區塊二：對帳與管理員查詢 (完全保持原貌) ================= -->
+        <!-- ================= 區塊二：對帳與管理員查詢 ================= -->
         <div id="sectionStatement" class="hidden max-w-4xl mx-auto space-y-6">
             <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 text-center no-print">
                 <h1 class="text-xl sm:text-2xl font-bold text-gray-800">🌊 哲運娛樂 - 對帳查詢系統</h1>
                 <p class="text-xs sm:text-sm text-gray-500 mt-1">請輸入 ID 與密碼登入查詢</p>
             </div>
 
+            <!-- 登入表單 -->
             <div id="loginCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-4 max-w-xl mx-auto no-print">
                 <div>
                     <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">帳號 ID (管理員或老闆請輸入對應帳號)</label>
@@ -141,7 +185,7 @@
                 </button>
             </div>
 
-            <!-- 一般直播主查詢面板 -->
+            <!-- 一般直播主查詢面板 (帶完整鋪滿的浮水印) -->
             <div id="queryCard" class="hidden max-w-xl mx-auto">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-5">
                     <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
@@ -152,9 +196,14 @@
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                     </div>
 
+                    <!-- 加上 relative 與 overflow-hidden 的主容器，作為浮水印基準 -->
                     <div id="printableArea" class="relative bg-white rounded-2xl p-4 sm:p-6 overflow-hidden border border-gray-100 space-y-4">
-                        <div id="watermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden"></div>
+                        <!-- 絕對定位的完整浮水印圖層 -->
+                        <div id="watermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden">
+                            <!-- JS 自動生成重複浮水印 -->
+                        </div>
 
+                        <!-- 內容層 (z-10 確保浮在浮水印上方) -->
                         <div class="relative z-10 space-y-4">
                             <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
                                 <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg shadow-sm border border-gray-100 bg-white p-1">
@@ -170,13 +219,27 @@
                             </div>
 
                             <div class="bg-white/85 backdrop-blur-[1px] rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600 shadow-sm">
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span></div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>級距固定服務費：</span><span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span></div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span></div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>當月有效天數：</span><span id="resDays" class="font-medium text-gray-800">0 天</span></div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>當月直播時數：</span><span id="resHours" class="font-medium text-gray-800">0 小時</span></div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>服務費實發：</span><span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span></div>
-                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>分潤實發：</span><span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span></div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                    <span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                    <span>級距固定服務費：</span><span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                    <span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                    <span>當月有效天數：</span><span id="resDays" class="font-medium text-gray-800">0 天</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                    <span>當月直播時數：</span><span id="resHours" class="font-medium text-gray-800">0 小時</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                    <span>服務費實發：</span><span id="resServiceFee" class="font-medium text-gray-800">NT$ 0</span>
+                                </div>
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200">
+                                    <span>分潤實發：</span><span id="resSplitFee" class="font-medium text-gray-800">NT$ 0</span>
+                                </div>
                                 <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-xl p-4 text-white flex justify-between items-center mt-4">
                                     <div><p class="text-xs text-indigo-200 uppercase tracking-wider">本月總計實領金額</p></div>
                                     <div class="text-lg sm:text-2xl font-bold text-amber-300" id="resGrandTotal">NT$ 0</div>
@@ -191,7 +254,7 @@
                 </div>
             </div>
 
-            <!-- 管理員/老闆專用面板 -->
+            <!-- 管理員/老闆專用面板 (帶完整鋪滿的浮水印) -->
             <div id="adminQueryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                     <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽</h2></div>
@@ -201,9 +264,14 @@
                     </div>
                 </div>
 
+                <!-- 加上 relative 與 overflow-hidden 的主容器 -->
                 <div id="adminPrintableArea" class="relative bg-white rounded-2xl p-4 sm:p-6 space-y-5 overflow-hidden border border-gray-100">
-                    <div id="adminWatermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden"></div>
+                    <!-- 絕對定位的完整浮水印圖層 -->
+                    <div id="adminWatermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden">
+                        <!-- JS 自動生成重複浮水印 -->
+                    </div>
 
+                    <!-- 內容層 (z-10 確保浮在浮水印上方) -->
                     <div class="relative z-10 space-y-5">
                         <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
                             <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg shadow-sm border border-gray-100 bg-white p-1">
@@ -213,11 +281,13 @@
                             </div>
                         </div>
 
+                        <!-- 選擇總覽月份 -->
                         <div class="w-full sm:w-64 no-print">
                             <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">選擇總覽月份</label>
                             <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white/95 focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                         </div>
 
+                        <!-- 管理員專屬工具列 (僅 system_admin 權限顯示) -->
                         <div id="adminTools" class="hidden flex-col sm:flex-row justify-between items-center gap-3 bg-indigo-50/90 backdrop-blur-[2px] p-4 rounded-xl border border-indigo-100 no-print">
                             <span class="text-xs font-semibold text-indigo-900">⚙️ 系統管理員數據維護工具：</span>
                             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
@@ -231,6 +301,7 @@
                             </div>
                         </div>
 
+                        <!-- 系統管理員專屬的 Excel 匯入格式與範例說明面板 -->
                         <div id="formatTableCard" class="bg-white/95 backdrop-blur-[2px] rounded-2xl border border-indigo-100 p-5 space-y-3 no-print shadow-sm hidden">
                             <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleFormatTable()">
                                 <div class="flex items-center gap-2">
@@ -239,11 +310,64 @@
                                 </div>
                                 <span id="formatToggleIcon" class="text-xs text-indigo-600 font-medium bg-indigo-50 px-3 py-1 rounded-lg transition">展開 ▼</span>
                             </div>
+                            
                             <div id="formatTableContent" class="hidden space-y-3 pt-3 border-t border-gray-100">
-                                <p class="text-xs text-gray-500">系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。</p>
+                                <p class="text-xs text-gray-500">
+                                    系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。欄位名稱支援中文或英文，系統會自動抓取對應欄位進行資料新增或更新。
+                                </p>
+                                
+                                <div class="border border-gray-200 rounded-xl overflow-hidden">
+                                    <table class="w-full text-left border-collapse text-xs">
+                                        <thead>
+                                            <tr class="bg-gray-50 text-gray-600 uppercase tracking-wider border-b border-gray-200">
+                                                <th class="py-2.5 px-3 font-semibold">欄位名稱 (中文支援)</th>
+                                                <th class="py-2.5 px-3 font-semibold">欄位名稱 (英文支援)</th>
+                                                <th class="py-2.5 px-3 font-semibold">格式與說明</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-100 text-gray-700">
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">帳號 / ID</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">id</td>
+                                                <td class="py-2 px-3">必填。直播主的唯一編號。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">月份</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">month</td>
+                                                <td class="py-2 px-3">必填。格式須為 <code>YYYY-MM</code>（例如：<code>2026-05</code>）。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">浪花點數 / 浪花</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">langhua</td>
+                                                <td class="py-2 px-3">數值。當月累積的浪花總點數。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">領用浪花 / 領用扣除</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">redeemed</td>
+                                                <td class="py-2 px-3">數值。當月領用扣除的點數（若無則填 0）。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">有效天數 / 天數</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">days</td>
+                                                <td class="py-2 px-3">數值。當月直播有效天數。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">直播時數 / 時數</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">hours</td>
+                                                <td class="py-2 px-3">數值。當月總直播時數。</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="py-2 px-3 font-medium text-indigo-600">合約版本 / 合約</td>
+                                                <td class="py-2 px-3 font-mono text-gray-500">contract</td>
+                                                <td class="py-2 px-3">文字。僅支援：<code>瞬_21</code>、<code>瞬_25</code>。</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
 
+                        <!-- 桌面版顯示表格 (已新增 服務費、分潤 兩行欄位) -->
                         <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/85 backdrop-blur-[1px]">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse text-sm">
@@ -256,6 +380,8 @@
                                             <th class="py-3 px-3 font-semibold">領用扣除</th>
                                             <th class="py-3 px-3 font-semibold">有效天</th>
                                             <th class="py-3 px-3 font-semibold">時數</th>
+                                            <th class="py-3 px-3 font-semibold">服務費 (級距)</th>
+                                            <th class="py-3 px-3 font-semibold">分潤</th>
                                             <th class="py-3 px-3 font-semibold">服務費實發</th>
                                             <th class="py-3 px-3 font-semibold">分潤實發</th>
                                             <th class="py-3 px-3 font-semibold text-right">總計金額</th>
@@ -266,78 +392,12 @@
                             </div>
                         </div>
 
+                        <!-- 手機版專屬卡片清單容器 (已同步加入 服務費 與 分潤 資訊) -->
                         <div class="block sm:hidden space-y-3 print:hidden" id="adminCardList"></div>
 
                         <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 text-white flex justify-between items-center">
                             <div><p class="text-xs text-indigo-200 uppercase tracking-wider">當月全公司總支出金額</p></div>
                             <div class="text-xl sm:text-2xl font-bold text-amber-300" id="adminGrandTotal">NT$ 0</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ================= 區塊三：浪平台專屬對帳單 (新增獨立專區) ================= -->
-        <div id="sectionLangPlatform" class="hidden max-w-4xl mx-auto space-y-6">
-            <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 text-center no-print">
-                <h1 class="text-xl sm:text-2xl font-bold text-gray-800">🌊 浪平台專屬對帳單系統</h1>
-                <p class="text-xs sm:text-sm text-gray-500 mt-1">獨立檢視與對接浪平台相關數據與官方報表</p>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-5">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 border-b border-gray-100 pb-3 no-print">
-                    <div>
-                        <h2 class="text-base sm:text-lg font-bold text-gray-800">浪平台專屬結算明細</h2>
-                        <p class="text-xs text-gray-500 mt-0.5">專門針對浪平台數據進行快速核對與列印</p>
-                    </div>
-                    <div class="flex items-center gap-2 w-full sm:w-auto">
-                        <select id="selectLangPlatformMonth" onchange="loadLangPlatformStatement()" class="border border-gray-300 rounded-xl px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
-                        <button onclick="window.print()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-medium px-4 py-2 rounded-xl transition text-xs shadow-sm whitespace-nowrap">
-                            🖨️ 列印浪平台對帳單
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 浪平台列印與展示主容器 -->
-                <div id="langPlatformPrintableArea" class="relative bg-white rounded-2xl p-4 sm:p-6 space-y-5 overflow-hidden border border-gray-100">
-                    <div id="langPlatformWatermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden"></div>
-
-                    <div class="relative z-10 space-y-5">
-                        <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
-                            <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg shadow-sm border border-gray-100 bg-white p-1">
-                            <div>
-                                <h1 class="text-base sm:text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 浪平台專屬對帳單</h1>
-                                <p class="text-xs text-gray-500 mt-0.5">結算月份：<span id="printLangPlatformMonthText"></span></p>
-                            </div>
-                        </div>
-
-                        <!-- 桌面版浪平台表格 -->
-                        <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/85 backdrop-blur-[1px]">
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-left border-collapse text-sm">
-                                    <thead>
-                                        <tr class="bg-indigo-50 text-indigo-900 text-xs uppercase tracking-wider border-b border-indigo-100">
-                                            <th class="py-3 px-3 font-semibold">ID</th>
-                                            <th class="py-3 px-3 font-semibold">直播主名稱</th>
-                                            <th class="py-3 px-3 font-semibold">合約版本</th>
-                                            <th class="py-3 px-3 font-semibold">浪花點數</th>
-                                            <th class="py-3 px-3 font-semibold">領用扣除</th>
-                                            <th class="py-3 px-3 font-semibold">有效天</th>
-                                            <th class="py-3 px-3 font-semibold">時數</th>
-                                            <th class="py-3 px-3 font-semibold text-right">浪平台總計金額</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-gray-100 text-gray-700" id="langPlatformTableBody"></tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <!-- 手機版浪平台清單 -->
-                        <div class="block sm:hidden space-y-3 print:hidden" id="langPlatformCardList"></div>
-
-                        <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 text-white flex justify-between items-center">
-                            <div><p class="text-xs text-indigo-200 uppercase tracking-wider">浪平台當月總支出金額</p></div>
-                            <div class="text-xl sm:text-2xl font-bold text-amber-300" id="langPlatformGrandTotal">NT$ 0</div>
                         </div>
                     </div>
                 </div>
@@ -361,12 +421,12 @@
             { threshold: 0, fee: 0 }
         ];
 
+        // 動態產生浮水印函數（鋪滿整個容器）
         function initWatermarks() {
             const watermarkText = "哲運娛樂經紀有限公司";
             const containers = [
                 document.getElementById('watermarkBg'),
-                document.getElementById('adminWatermarkBg'),
-                document.getElementById('langPlatformWatermarkBg')
+                document.getElementById('adminWatermarkBg')
             ];
 
             containers.forEach(container => {
@@ -427,11 +487,19 @@
             let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
             const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
 
-            return { fixedFee, serviceFeeActual: Math.round(serviceFeeActual), splitFeeActual, rowTotal };
+            return {
+                fixedFee,
+                serviceFeeActual: Math.round(serviceFeeActual),
+                splitFeeActual,
+                rowTotal
+            };
         }
 
         function calculateSalary({ langhua, redeemed, days, hours, contract }) {
-            let divisor = (contract === '瞬_25') ? 24 : 20;
+            let divisor = 20;
+            if (contract === '瞬_25') {
+                divisor = 24;
+            }
             const fixedFee = getFixedFee(langhua);
 
             let serviceFeeActual = 0;
@@ -441,35 +509,38 @@
             }
 
             const netLanghua = Math.max(0, langhua - redeemed);
-            let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
+            
+            let splitFeeActual = 0;
+            if (divisor > 0) {
+                splitFeeActual = Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95);
+            }
+
             const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
 
-            return { fixedFee, serviceFeeActual: Math.round(serviceFeeActual), splitFeeActual, rowTotal };
+            return {
+                fixedFee,
+                serviceFeeActual: Math.round(serviceFeeActual),
+                splitFeeActual,
+                rowTotal
+            };
         }
 
         function switchTab(tab) {
             const btnSim = document.getElementById('tabSimulator');
             const btnStmt = document.getElementById('tabStatement');
-            const btnLang = document.getElementById('tabLangPlatform');
             const secSim = document.getElementById('sectionSimulator');
             const secStmt = document.getElementById('sectionStatement');
-            const secLang = document.getElementById('sectionLangPlatform');
-
-            // 重置所有按鈕樣式
-            [btnSim, btnStmt, btnLang].forEach(b => b.className = "px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900 whitespace-nowrap");
-            [secSim, secStmt, secLang].forEach(s => s.classList.add('hidden'));
 
             if (tab === 'simulator') {
-                btnSim.className = "px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm whitespace-nowrap";
+                btnSim.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm";
+                btnStmt.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900";
                 secSim.classList.remove('hidden');
-            } else if (tab === 'statement') {
-                btnStmt.className = "px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm whitespace-nowrap";
+                secStmt.classList.add('hidden');
+            } else {
+                btnStmt.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm";
+                btnSim.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900";
                 secStmt.classList.remove('hidden');
-            } else if (tab === 'langPlatform') {
-                btnLang.className = "px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm whitespace-nowrap";
-                secLang.classList.remove('hidden');
-                refreshLangPlatformDropdown();
-                loadLangPlatformStatement();
+                secSim.classList.add('hidden');
             }
         }
 
@@ -491,9 +562,9 @@
                 <td class="py-3 px-3"><span class="fixed-fee font-medium text-gray-800">0</span></td>
                 <td class="py-3 px-3">
                     <div class="flex items-center gap-1">
-                        <input type="number" value="${days}" oninput="calculate()" class="days-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="天">
+                        <input type="number" value="${days}" oninput="calculate()" class="days-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="天" title="有效天數">
                         <span class="text-gray-400">天/</span>
-                        <input type="number" value="${hours}" oninput="calculate()" class="hours-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="時">
+                        <input type="number" value="${hours}" oninput="calculate()" class="hours-input w-12 border border-gray-300 rounded px-1 py-1 text-xs" placeholder="時" title="直播時數">
                         <span class="text-gray-400">h</span>
                         <select onchange="calculate()" class="contract-select border border-gray-300 rounded px-1.5 py-1 text-xs bg-white">
                             <option value="瞬_21" ${contract === '瞬_21' ? 'selected' : ''}>瞬_21</option>
@@ -557,7 +628,7 @@
                 const resI = await fetch('income.json');
                 incomeData = await resI.json();
             } catch (e) {
-                console.warn("無法讀取外部 JSON");
+                console.warn("無法讀取外部 JSON，請確保透過本地伺服器或網頁伺服器執行。");
             }
         }
 
@@ -576,6 +647,7 @@
 
             if (streamer.role === 'system_admin' || streamer.role === 'manager') {
                 refreshAdminDropdown();
+                
                 const adminTools = document.getElementById('adminTools');
                 const formatTableCard = document.getElementById('formatTableCard');
 
@@ -640,21 +712,6 @@
             });
         }
 
-        function refreshLangPlatformDropdown() {
-            const allMonths = [...new Set(incomeData.map(i => i.month))].sort().reverse();
-            const selectLangPlatformMonth = document.getElementById('selectLangPlatformMonth');
-            const currentSelected = selectLangPlatformMonth.value;
-            selectLangPlatformMonth.innerHTML = '';
-            allMonths.forEach(m => {
-                const [y, mm] = m.split('-');
-                const opt = document.createElement('option');
-                opt.value = m;
-                opt.innerText = `${y}年${parseInt(mm)}月`;
-                if (m === currentSelected) opt.selected = true;
-                selectLangPlatformMonth.appendChild(opt);
-            });
-        }
-
         function loadStatement() {
             if (!currentStreamer) return;
             const selectedMonth = document.getElementById('selectMonth').value;
@@ -696,6 +753,7 @@
             cardList.innerHTML = '';
 
             let companyTotal = 0;
+            
             const streamers = streamersData.filter(s => {
                 if (s.role !== 'streamer') return false;
                 return incomeData.some(item => item.id === s.id && item.month === selectedMonth);
@@ -710,6 +768,16 @@
                 const contract = record ? record.contract : '瞬_21';
 
                 const res = calculateSalary({ langhua, redeemed, days, hours, contract });
+                
+                // 依照要求計算分潤與級距服務費：
+                // 1. 級距固定服務費 (如浪花200,000對應6,000)
+                const tierFee = res.fixedFee;
+                
+                // 2. 分潤計算：(浪花 - 領用) / 20 或 24，完全捨去小數
+                const divisor = (contract === '瞬_25') ? 24 : 20;
+                const netLanghua = Math.max(0, langhua - redeemed);
+                const rawSplit = divisor > 0 ? Math.floor(netLanghua / divisor) : 0;
+
                 companyTotal += res.rowTotal;
 
                 const tr = document.createElement('tr');
@@ -722,6 +790,8 @@
                     <td class="py-3 px-3 text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</td>
                     <td class="py-3 px-3 text-gray-700">${days}天</td>
                     <td class="py-3 px-3 text-gray-700">${hours}h</td>
+                    <td class="py-3 px-3 font-medium text-indigo-600">NT$ ${tierFee.toLocaleString()}</td>
+                    <td class="py-3 px-3 font-medium text-emerald-600">${rawSplit.toLocaleString()}</td>
                     <td class="py-3 px-3 text-gray-600">${res.serviceFeeActual.toLocaleString()}</td>
                     <td class="py-3 px-3 text-gray-600">${res.splitFeeActual.toLocaleString()}</td>
                     <td class="py-3 px-3 text-right font-bold text-indigo-600">NT$ ${res.rowTotal.toLocaleString()}</td>
@@ -732,7 +802,10 @@
                 card.className = "bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-2 text-xs text-gray-700";
                 card.innerHTML = `
                     <div class="flex justify-between items-center border-b border-gray-200 pb-2">
-                        <div><span class="font-bold text-gray-900 text-sm">${s.name}</span><span class="text-gray-400 ml-1">(ID: ${s.id})</span></div>
+                        <div>
+                            <span class="font-bold text-gray-900 text-sm">${s.name}</span>
+                            <span class="text-gray-400 ml-1">(ID: ${s.id})</span>
+                        </div>
                         <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-medium">${contract}</span>
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
@@ -740,6 +813,8 @@
                         <div>領用扣除：<span class="font-medium text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</span></div>
                         <div>有效天數：<span class="font-medium text-gray-900">${days} 天</span></div>
                         <div>直播時數：<span class="font-medium text-gray-900">${hours} 小時</span></div>
+                        <div>服務費 (級距)：<span class="font-medium text-indigo-600">NT$ ${tierFee.toLocaleString()}</span></div>
+                        <div>分潤 (未扣趴數)：<span class="font-medium text-emerald-600">${rawSplit.toLocaleString()}</span></div>
                         <div>服務費實發：<span class="font-medium text-gray-900">${res.serviceFeeActual.toLocaleString()}</span></div>
                         <div>分潤實發：<span class="font-medium text-gray-900">${res.splitFeeActual.toLocaleString()}</span></div>
                     </div>
@@ -754,73 +829,12 @@
             document.getElementById('adminGrandTotal').innerText = formatCurrency(companyTotal);
         }
 
-        // 浪平台專屬對帳單載入邏輯
-        function loadLangPlatformStatement() {
-            const selectedMonth = document.getElementById('selectLangPlatformMonth').value;
-            const [y, mm] = selectedMonth ? selectedMonth.split('-') : ['----', '--'];
-            document.getElementById('printLangPlatformMonthText').innerText = `${y}年${parseInt(mm)}月`;
-
-            const tbody = document.getElementById('langPlatformTableBody');
-            const cardList = document.getElementById('langPlatformCardList');
-            tbody.innerHTML = '';
-            cardList.innerHTML = '';
-
-            let platformTotal = 0;
-            const streamers = streamersData.filter(s => {
-                if (s.role !== 'streamer') return false;
-                return incomeData.some(item => item.id === s.id && item.month === selectedMonth);
-            });
-
-            streamers.forEach(s => {
-                const record = incomeData.find(item => item.id === s.id && item.month === selectedMonth);
-                const langhua = record ? record.langhua : 0;
-                const redeemed = record ? record.redeemed : 0;
-                const days = record ? (record.days !== undefined ? record.days : 15) : 0;
-                const hours = record ? record.hours : 0;
-                const contract = record ? record.contract : '瞬_21';
-
-                const res = calculateSalary({ langhua, redeemed, days, hours, contract });
-                platformTotal += res.rowTotal;
-
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-indigo-50/40 transition";
-                tr.innerHTML = `
-                    <td class="py-3 px-3 font-mono text-gray-500">${s.id}</td>
-                    <td class="py-3 px-3 font-semibold text-gray-800">${s.name}</td>
-                    <td class="py-3 px-3 text-gray-600"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs">${contract}</span></td>
-                    <td class="py-3 px-3 text-gray-700 font-medium">${langhua.toLocaleString()}</td>
-                    <td class="py-3 px-3 text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</td>
-                    <td class="py-3 px-3 text-gray-700">${days}天</td>
-                    <td class="py-3 px-3 text-gray-700">${hours}h</td>
-                    <td class="py-3 px-3 text-right font-bold text-indigo-600">NT$ ${res.rowTotal.toLocaleString()}</td>
-                `;
-                tbody.appendChild(tr);
-
-                const card = document.createElement('div');
-                card.className = "bg-indigo-50/30 border border-indigo-100 rounded-xl p-4 space-y-2 text-xs text-gray-700";
-                card.innerHTML = `
-                    <div class="flex justify-between items-center border-b border-indigo-100 pb-2">
-                        <div><span class="font-bold text-gray-900 text-sm">${s.name}</span><span class="text-gray-400 ml-1">(ID: ${s.id})</span></div>
-                        <span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-medium">${contract}</span>
-                    </div>
-                    <div class="grid grid-cols-2 gap-2 pt-1">
-                        <div>浪花點數：<span class="font-medium text-gray-900">${langhua.toLocaleString()}</span></div>
-                        <div>領用扣除：<span class="font-medium text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</span></div>
-                        <div>有效天數：<span class="font-medium text-gray-900">${days} 天</span></div>
-                        <div>直播時數：<span class="font-medium text-gray-900">${hours} 小時</span></div>
-                    </div>
-                    <div class="flex justify-between items-center pt-2 border-t border-indigo-100 mt-2">
-                        <span class="font-semibold text-gray-800">浪平台小計</span>
-                        <span class="font-bold text-base text-indigo-600">NT$ ${res.rowTotal.toLocaleString()}</span>
-                    </div>
-                `;
-                cardList.appendChild(card);
-            });
-
-            document.getElementById('langPlatformGrandTotal').innerText = formatCurrency(platformTotal);
-        }
-
         function handleExcelUpload(e) {
+            if (!currentStreamer || currentStreamer.role !== 'system_admin') {
+                alert("權限不足，僅系統管理員可匯入資料！");
+                return;
+            }
+
             const file = e.target.files[0];
             if (!file) return;
 
@@ -863,11 +877,10 @@
 
                     alert(`成功匯入/更新 ${importedCount} 筆資料！`);
                     refreshAdminDropdown();
-                    refreshLangPlatformDropdown();
                     loadAdminStatement();
                     e.target.value = '';
                 } catch (err) {
-                    alert("Excel 檔案解析失敗。");
+                    alert("Excel 檔案解析失敗，請確認檔案格式是否正確。");
                     console.error(err);
                 }
             };
@@ -875,6 +888,11 @@
         }
 
         function exportJSONBackup() {
+            if (!currentStreamer || currentStreamer.role !== 'system_admin') {
+                alert("權限不足，僅系統管理員可下載備份！");
+                return;
+            }
+
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(incomeData, null, 4));
             const downloadAnchor = document.createElement('a');
             downloadAnchor.setAttribute("href", dataStr);
