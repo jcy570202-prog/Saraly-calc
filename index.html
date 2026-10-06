@@ -595,9 +595,9 @@
 
         async function initData() {
             try {
-                const resS = await fetch('streamers_3.json');
+                const resS = await fetch('streamers.json');
                 streamersData = await resS.json();
-                const resI = await fetch('income_4.json');
+                const resI = await fetch('income.json');
                 incomeData = await resI.json();
             } catch (e) {
                 console.warn("無法讀取外部 JSON，請確保透過本地伺服器或網頁伺服器執行。");
