@@ -255,8 +255,8 @@
                     <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽</h2></div>
                     <div class="flex items-center gap-2">
                         <button onclick="window.print()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">🖨 列印全公司總覽報表</button>
-                        <!-- 新增的列平台對帳單按鈕 (位於登出按鈕左邊) -->
-                        <button onclick="openPlatformStatementModal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">列平台對帳單</button>
+                        <!-- 僅系統管理員 (system_admin) 才顯示此按鈕 -->
+                        <button id="btnPlatformStatement" onclick="openPlatformStatementModal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm hidden">列平台對帳單</button>
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                     </div>
                 </div>
@@ -280,7 +280,7 @@
 
                         <!-- 系統管理員專屬工具列 (僅 system_admin 顯示) -->
                         <div id="adminTools" class="hidden flex-col sm:flex-row justify-between items-center gap-3 bg-indigo-50/90 backdrop-blur-[2px] p-4 rounded-xl border border-indigo-100 no-print">
-                            <span class="text-xs font-semibold text-indigo-900">⚙️️ 系統管理員數據維護工具：</span>
+                            <span class="text-xs font-semibold text-indigo-900">⚙ 系統管理員數據維護工具：</span>
                             <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                                 <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
                                 <button onclick="document.getElementById('excelInput').click()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">
@@ -357,7 +357,7 @@
                             </div>
                         </div>
 
-                        <!-- 桌面版顯示表格 (若為老闆登入，會自動隱藏「服務費」與「分潤」兩行) -->
+                        <!-- 桌面版顯示表格 -->
                         <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/85 backdrop-blur-[1px]">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse text-sm">
@@ -370,7 +370,6 @@
                                             <th class="py-3 px-3 font-semibold">領用扣除</th>
                                             <th class="py-3 px-3 font-semibold">有效天</th>
                                             <th class="py-3 px-3 font-semibold">時數</th>
-                                            <!-- 僅 system_admin 顯示這兩行 -->
                                             <th class="py-3 px-3 font-semibold admin-only-col">服務費 (級距)</th>
                                             <th class="py-3 px-3 font-semibold admin-only-col">分潤</th>
                                             <th class="py-3 px-3 font-semibold">服務費實發</th>
@@ -383,7 +382,7 @@
                             </div>
                         </div>
 
-                        <!-- 手機版專屬卡片清單容器 (若為老闆登入，會自動隱藏該兩項細節) -->
+                        <!-- 手機版專屬卡片清單容器 -->
                         <div class="block sm:hidden space-y-3 print:hidden" id="adminCardList"></div>
 
                         <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 text-white flex justify-between items-center">
@@ -407,32 +406,32 @@
             <div id="platformStatementArea" class="relative bg-white border border-gray-200 rounded-xl p-5 space-y-4 text-sm text-gray-700">
                 <div class="text-center space-y-1 pb-3 border-b border-gray-200">
                     <h2 class="font-bold text-base text-gray-900">平台對帳單及發票明細</h2>
-                    <p class="text-xs text-gray-500" id="platformModalTitleMonth">哲運娛樂經紀有限公司 - 2026年9月發票請款明細</p>
+                    <p class="text-xs text-gray-500" id="platformModalTitleMonth">哲運娛樂經紀有限公司 - 結算發票請款明細</p>
                 </div>
                 <div class="space-y-2.5 text-xs sm:text-sm">
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-100">
                         <span>主播服務費用（未稅）：</span>
-                        <span class="font-medium text-gray-900" id="modalServiceFee">NT$ 187,810</span>
+                        <span class="font-medium text-gray-900" id="modalServiceFee">NT$ 0</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-100">
                         <span>虛擬禮物收入分成（未稅）：</span>
-                        <span class="font-medium text-gray-900" id="modalGiftSplit">NT$ 361,404</span>
+                        <span class="font-medium text-gray-900" id="modalGiftSplit">NT$ 0</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-100 bg-gray-50 px-2 rounded">
                         <span class="font-semibold text-gray-800">營業額總計（未稅）：</span>
-                        <span class="font-bold text-indigo-600" id="modalSubtotal">NT$ 549,214</span>
+                        <span class="font-bold text-indigo-600" id="modalSubtotal">NT$ 0</span>
                     </div>
                     <div class="flex justify-between py-1 border-b border-dashed border-gray-100">
                         <span>加值營業稅 5%：</span>
-                        <span class="font-medium text-gray-900" id="modalTax">NT$ 27,461</span>
+                        <span class="font-medium text-gray-900" id="modalTax">NT$ 0</span>
                     </div>
                     <div class="flex justify-between py-2 border-t border-gray-200 bg-indigo-50/50 px-2 rounded">
                         <span class="font-bold text-gray-900">發票金額（含稅）：</span>
-                        <span class="font-bold text-base text-indigo-700" id="modalTotalTaxIncluded">NT$ 576,675</span>
+                        <span class="font-bold text-base text-indigo-700" id="modalTotalTaxIncluded">NT$ 0</span>
                     </div>
                     <div class="flex justify-between py-1 text-xs text-gray-500">
                         <span>中文大寫：</span>
-                        <span class="font-medium text-gray-700" id="modalChineseNum">伍拾柒萬陸仟陸佰柒拾伍元</span>
+                        <span class="font-medium text-gray-700" id="modalChineseNum">零元整</span>
                     </div>
                 </div>
             </div>
@@ -692,18 +691,21 @@
                 const adminTools = document.getElementById('adminTools');
                 const formatTableCard = document.getElementById('formatTableCard');
                 const adminCols = document.querySelectorAll('.admin-only-col');
+                const btnPlatformStatement = document.getElementById('btnPlatformStatement');
 
                 if (streamer.role === 'system_admin') {
                     adminTools.classList.remove('hidden');
                     adminTools.classList.add('flex');
                     if (formatTableCard) formatTableCard.classList.remove('hidden');
                     adminCols.forEach(el => el.classList.remove('hidden'));
+                    if (btnPlatformStatement) btnPlatformStatement.classList.remove('hidden'); // 僅系統管理員顯示
                 } else {
-                    // 若為老闆 (manager) 角色，隱藏管理員工具與服務費(級距)、分潤兩行欄位
+                    // 若為老闆 (manager) 角色，隱藏管理員工具、服務費(級距)、分潤兩行欄位，以及列平台對帳單按鈕
                     adminTools.classList.add('hidden');
                     adminTools.classList.remove('flex');
                     if (formatTableCard) formatTableCard.classList.add('hidden');
                     adminCols.forEach(el => el.classList.add('hidden'));
+                    if (btnPlatformStatement) btnPlatformStatement.classList.add('hidden');
                 }
 
                 document.getElementById('adminQueryCard').classList.remove('hidden');
