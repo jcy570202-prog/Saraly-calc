@@ -137,7 +137,10 @@
                         <div>
                             <h2 class="text-base sm:text-lg font-bold text-gray-800">歡迎回來，<span id="welcomeName" class="text-indigo-600"></span> <span class="text-xs text-gray-400 font-normal">(ID: <span id="welcomeId"></span>)</span></h2>
                         </div>
-                        <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
+                        <div class="flex items-center gap-2">
+                            <button onclick="openPasswordModal()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-3 py-1.5 rounded-lg transition">修改密碼</button>
+                            <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
+                        </div>
                     </div>
 
                     <div id="printableArea" class="relative bg-white rounded-2xl p-4 sm:p-6 overflow-hidden border border-gray-100 space-y-4">
@@ -200,6 +203,7 @@
                     <div class="flex items-center gap-2">
                         <button onclick="window.print()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">🖨 列印全公司總覽報表</button>
                         <button id="btnPlatformStatement" onclick="openPlatformStatementModal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm hidden">列印平台對帳單</button>
+                        <button onclick="openPasswordModal()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-3 py-1.5 rounded-lg transition">修改密碼</button>
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                     </div>
                 </div>
@@ -253,6 +257,34 @@
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 修改密碼彈跳視窗 -->
+    <div id="passwordModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-xl">
+            <div class="flex justify-between items-center border-b border-gray-100 pb-3">
+                <h3 class="text-base font-bold text-gray-800">修改登入密碼</h3>
+                <button onclick="closePasswordModal()" class="text-gray-400 hover:text-gray-600 text-sm font-semibold">✕</button>
+            </div>
+            <div class="space-y-3 text-xs sm:text-sm">
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">請輸入舊密碼</label>
+                    <input type="password" id="oldPasswordInput" placeholder="舊密碼" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">請輸入新密碼</label>
+                    <input type="password" id="newPasswordInput" placeholder="新密碼 (至少 4 碼)" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-gray-700 mb-1">再次確認新密碼</label>
+                    <input type="password" id="confirmPasswordInput" placeholder="確認新密碼" class="w-full border border-gray-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="submitNewPassword()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition text-sm shadow-sm">確認修改</button>
+                <button onclick="closePasswordModal()" class="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-2.5 rounded-xl transition text-sm">取消</button>
             </div>
         </div>
     </div>
@@ -337,7 +369,6 @@
             return 0;
         }
 
-        // 計算邏輯：服務費一律乘 0.95，分潤依據有無 '+' 決定是否乘 0.95
         function calculateSalary({ langhua, redeemed, days, hours, contract }) {
             const isPlus = contract && String(contract).includes('+');
             const baseDivisor = (contract && String(contract).includes('25')) ? 24 : 20;
@@ -513,6 +544,63 @@
             document.getElementById('queryCard').classList.add('hidden');
             document.getElementById('adminQueryCard').classList.add('hidden');
             document.getElementById('loginCard').classList.remove('hidden');
+        }
+
+        function openPasswordModal() {
+            document.getElementById('oldPasswordInput').value = '';
+            document.getElementById('newPasswordInput').value = '';
+            document.getElementById('confirmPasswordInput').value = '';
+            document.getElementById('passwordModal').classList.remove('hidden');
+        }
+
+        function closePasswordModal() {
+            document.getElementById('passwordModal').classList.add('hidden');
+        }
+
+        async function submitNewPassword() {
+            if (!currentStreamer) return;
+            const oldPass = document.getElementById('oldPasswordInput').value.trim();
+            const newPass = document.getElementById('newPasswordInput').value.trim();
+            const confirmPass = document.getElementById('confirmPasswordInput').value.trim();
+
+            if (oldPass !== String(currentStreamer.password)) {
+                alert("舊密碼輸入錯誤！");
+                return;
+            }
+            if (!newPass || newPass.length < 4) {
+                alert("新密碼長度至少需要 4 個字元！");
+                return;
+            }
+            if (newPass !== confirmPass) {
+                alert("兩次輸入的新密碼不相符！");
+                return;
+            }
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        action: "updatePassword",
+                        id: currentStreamer.id,
+                        newPassword: newPass
+                    })
+                });
+                const result = await res.json();
+                if (result.status === "success") {
+                    currentStreamer.password = newPass;
+                    // 同步更新記憶體中的 streamersData
+                    const s = streamersData.find(item => String(item.id) === String(currentStreamer.id));
+                    if (s) s.password = newPass;
+
+                    alert("密碼修改成功！");
+                    closePasswordModal();
+                } else {
+                    alert("密碼修改失敗，請稍後再試。");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("連線發生錯誤，無法更新密碼。");
+            }
         }
 
         function refreshAdminDropdown() {
