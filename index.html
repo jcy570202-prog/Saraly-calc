@@ -200,8 +200,9 @@
             <div id="adminQueryCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 hidden space-y-5">
                 <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                     <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽</h2></div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 flex-wrap">
                         <button onclick="window.print()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">🖨 列印全公司總覽報表</button>
+                        <button onclick="exportMonthlyReport()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">📥 匯出當月對帳報表 (Excel)</button>
                         <button id="btnPlatformStatement" onclick="openPlatformStatementModal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm hidden">列印平台對帳單</button>
                         <button onclick="openPasswordModal()" class="text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-medium px-3 py-1.5 rounded-lg transition">修改密碼</button>
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
@@ -233,7 +234,7 @@
                                             <th class="py-3 px-3 font-semibold">ID</th>
                                             <th class="py-3 px-3 font-semibold">直播主名稱</th>
                                             <th class="py-3 px-3 font-semibold">合約版本</th>
-                                            <th class="py-3 px-3 font-semibold">對帳狀態</th>
+                                            <th class="py-3 px-3 font-semibold">對帳狀態與操作</th>
                                             <th class="py-3 px-3 font-semibold">浪花點數</th>
                                             <th class="py-3 px-3 font-semibold">領用扣除</th>
                                             <th class="py-3 px-3 font-semibold">有效天</th>
@@ -639,15 +640,32 @@
             document.getElementById('printNameText').innerText = currentStreamer.name;
             document.getElementById('printIdText').innerText = currentStreamer.id;
 
-            const res = calculateSalary({ langhua, redeemed, days, hours, contract });
+            const isConfirmed = record && (record.confirmed === true || String(record.confirmed).toLowerCase() === 'true');
+
+            let serviceFeeActual, splitFeeActual, rowTotal, fixedFee;
+
+            // 核心封存邏輯：若已確認且有封存金額，直接讀取封存金額
+            if (isConfirmed && record.serviceFeeActual !== undefined && record.serviceFeeActual !== "") {
+                serviceFeeActual = Number(record.serviceFeeActual);
+                splitFeeActual = Number(record.splitFeeActual);
+                rowTotal = Number(record.grandTotal);
+                fixedFee = getFixedFee(langhua);
+            } else {
+                const res = calculateSalary({ langhua, redeemed, days, hours, contract });
+                fixedFee = res.fixedFee;
+                serviceFeeActual = res.serviceFeeActual;
+                splitFeeActual = res.splitFeeActual;
+                rowTotal = res.rowTotal;
+            }
+
             document.getElementById('resLanghua').innerText = `${langhua.toLocaleString()} 點`;
-            document.getElementById('resFixedFee').innerText = `NT$ ${res.fixedFee.toLocaleString()}`;
+            document.getElementById('resFixedFee').innerText = `NT$ ${fixedFee.toLocaleString()}`;
             document.getElementById('resRedeemed').innerText = `${redeemed.toLocaleString()} 點`;
             document.getElementById('resDays').innerText = `${days} 天`;
             document.getElementById('resHours').innerText = `${hours} 小時`;
-            document.getElementById('resServiceFee').innerText = `NT$ ${res.serviceFeeActual.toLocaleString()}`;
-            document.getElementById('resSplitFee').innerText = `NT$ ${res.splitFeeActual.toLocaleString()}`;
-            document.getElementById('resGrandTotal').innerText = `NT$ ${res.rowTotal.toLocaleString()}`;
+            document.getElementById('resServiceFee').innerText = `NT$ ${serviceFeeActual.toLocaleString()}`;
+            document.getElementById('resSplitFee').innerText = `NT$ ${splitFeeActual.toLocaleString()}`;
+            document.getElementById('resGrandTotal').innerText = `NT$ ${rowTotal.toLocaleString()}`;
 
             checkStatementStatus(selectedMonth);
         }
@@ -685,18 +703,27 @@
             const selectedMonth = document.getElementById('selectMonth').value;
             if (!selectedMonth) { alert("請先選擇查詢月份！"); return; }
 
+            const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && String(item.month) === selectedMonth);
+            const langhua = record ? Number(record.langhua) : 0;
+            const redeemed = record ? Number(record.redeemed) : 0;
+            const days = record ? (record.days !== undefined ? Number(record.days) : 15) : 0;
+            const hours = record ? Number(record.hours) : 0;
+            const contract = record ? record.contract : '瞬_21';
+
+            const res = calculateSalary({ langhua, redeemed, days, hours, contract });
+
             const parts = String(selectedMonth).split('-');
             const y = parts[0];
             const mm = parts[1];
             const monthText = `${y}年${parseInt(mm)}月`;
 
-            if (confirm(`確定要送出「${monthText}」的對帳確認嗎？\n送出後將同步至雲端並標示為對帳完成。`)) {
+            if (confirm(`確定要送出「${monthText}」的對帳確認嗎？\n送出後將自動封存金額、時間，並產生 PDF 備份至雲端硬碟。`)) {
                 const now = new Date();
                 const timeString = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
                 
                 const btn = document.getElementById('btnConfirmStatement');
                 const originalText = btn.innerText;
-                btn.innerText = "⏳ 正在同步至雲端...";
+                btn.innerText = "⏳ 正在同步、封存並產生 PDF...";
                 btn.disabled = true;
 
                 try {
@@ -706,19 +733,24 @@
                             id: currentStreamer.id,
                             month: selectedMonth,
                             confirmed: true,
-                            confirmTime: timeString
+                            confirmTime: timeString,
+                            serviceFeeActual: res.serviceFeeActual,
+                            splitFeeActual: res.splitFeeActual,
+                            grandTotal: res.rowTotal
                         })
                     });
                     const result = await response.json();
 
                     if (result.status === "success") {
-                        const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && String(item.month) === selectedMonth);
                         if (record) {
                             record.confirmed = true;
                             record.confirmTime = timeString;
+                            record.serviceFeeActual = res.serviceFeeActual;
+                            record.splitFeeActual = res.splitFeeActual;
+                            record.grandTotal = res.rowTotal;
                         }
-                        checkStatementStatus(selectedMonth);
-                        alert("已成功完成對帳並同步至雲端！");
+                        loadStatement();
+                        alert("已成功完成對帳，金額已封存並完成 PDF 雲端備份！");
                     } else {
                         alert("同步失敗，請稍後再試。");
                         btn.innerText = originalText;
@@ -730,6 +762,43 @@
                     btn.innerText = originalText;
                     btn.disabled = false;
                 }
+            }
+        }
+
+        async function resetConfirmation(streamerId, month) {
+            if (!confirm(`確定要解除該直播主 (${streamerId}) 在 ${month} 的對帳確認嗎？\n解除後狀態將重設，主播可重新進行對帳。`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        id: streamerId,
+                        month: month,
+                        confirmed: false
+                    })
+                });
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    const record = incomeData.find(item => String(item.id) === String(streamerId) && String(item.month) === String(month));
+                    if (record) {
+                        record.confirmed = false;
+                        record.confirmTime = "";
+                        record.serviceFeeActual = undefined;
+                        record.splitFeeActual = undefined;
+                        record.grandTotal = undefined;
+                        record.pdfUrl = "";
+                    }
+                    loadAdminStatement();
+                    alert("已成功解除對帳確認！");
+                } else {
+                    alert("操作失敗，請稍後再試。");
+                }
+            } catch (err) {
+                console.error(err);
+                alert("連線發生錯誤。");
             }
         }
 
@@ -765,7 +834,18 @@
                 
                 const isConfirmed = record && (record.confirmed === true || String(record.confirmed).toLowerCase() === 'true');
 
-                const res = calculateSalary({ langhua, redeemed, days, hours, contract });
+                let res;
+                if (isConfirmed && record.grandTotal !== undefined && record.grandTotal !== "") {
+                    res = {
+                        fixedFee: getFixedFee(langhua),
+                        serviceFeeActual: Number(record.serviceFeeActual),
+                        splitFeeActual: Number(record.splitFeeActual),
+                        rowTotal: Number(record.grandTotal)
+                    };
+                } else {
+                    res = calculateSalary({ langhua, redeemed, days, hours, contract });
+                }
+
                 const tierFee = res.fixedFee;
                 const baseDivisor = (contract && String(contract).includes('25')) ? 24 : 20;
                 const netLanghua = Math.max(0, langhua - redeemed);
@@ -782,7 +862,9 @@
                     <td class="py-3 px-3 font-semibold text-gray-800">${s.name}</td>
                     <td class="py-3 px-3 text-gray-600"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-semibold">${contract}</span></td>
                     <td class="py-3 px-3 text-gray-600">
-                        ${isConfirmed ? '<span class="text-emerald-600 font-semibold text-xs bg-emerald-50 px-2 py-1 rounded">✅ 已對帳</span>' : '<span class="text-amber-600 text-xs bg-amber-50 px-2 py-1 rounded">⏳ 未對帳</span>'}
+                        ${isConfirmed 
+                            ? `<div class="flex items-center gap-2"><span class="text-emerald-600 font-semibold text-xs bg-emerald-50 px-2 py-1 rounded">✅ 已對帳</span><button onclick="resetConfirmation('${s.id}', '${selectedMonth}')" class="text-[10px] bg-red-50 hover:bg-red-100 text-red-600 px-2 py-1 rounded transition no-print">解除</button></div>` 
+                            : '<span class="text-amber-600 text-xs bg-amber-50 px-2 py-1 rounded">⏳ 未對帳</span>'}
                     </td>
                     <td class="py-3 px-3 text-gray-700">${langhua.toLocaleString()}</td>
                     <td class="py-3 px-3 text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</td>
@@ -804,7 +886,9 @@
                         <div><span class="font-bold text-gray-900 text-sm">${s.name}</span><span class="text-gray-400 ml-1">(ID: ${s.id})</span></div>
                         <div class="flex items-center gap-1.5">
                             <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-semibold">${contract}</span>
-                            ${isConfirmed ? '<span class="text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded">✅ 已對帳</span>' : '<span class="text-amber-600 bg-amber-50 px-2 py-0.5 rounded">⏳ 未對帳</span>'}
+                            ${isConfirmed 
+                                ? `<span class="text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded">✅ 已對帳</span><button onclick="resetConfirmation('${s.id}', '${selectedMonth}')" class="text-[10px] bg-red-50 text-red-600 px-1.5 py-0.5 rounded">解除</button>` 
+                                : '<span class="text-amber-600 bg-amber-50 px-2 py-0.5 rounded">⏳ 未對帳</span>'}
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
@@ -840,6 +924,55 @@
             document.getElementById('modalTax').innerText = `NT$ ${Math.round(tax).toLocaleString()}`;
             document.getElementById('modalTotalTaxIncluded').innerText = `NT$ ${Math.round(totalTaxIncluded).toLocaleString()}`;
             document.getElementById('modalChineseNum').innerText = numberToChineseCurrency(Math.round(totalTaxIncluded));
+        }
+
+        function exportMonthlyReport() {
+            const selectedMonth = document.getElementById('selectAdminMonth').value;
+            if (!selectedMonth) { alert("請先選擇要匯出的月份！"); return; }
+            const parts = String(selectedMonth).split('-');
+            const y = parts[0];
+            const mm = parts[1];
+
+            const reportRows = [];
+            reportRows.push(["ID", "直播主名稱", "合約版本", "對帳狀態", "確認時間", "PDF備份連結", "浪花點數", "領用扣除", "有效天數", "直播時數", "服務費實發", "分潤實發", "總計金額"]);
+
+            const streamers = streamersData.filter(s => {
+                if (s.role !== 'streamer') return false;
+                return incomeData.some(item => String(item.id) === String(s.id) && String(item.month) === selectedMonth);
+            });
+
+            streamers.forEach(s => {
+                const record = incomeData.find(item => String(item.id) === String(s.id) && String(item.month) === selectedMonth);
+                const langhua = record ? Number(record.langhua) : 0;
+                const redeemed = record ? Number(record.redeemed) : 0;
+                const days = record ? (record.days !== undefined ? Number(record.days) : 15) : 0;
+                const hours = record ? Number(record.hours) : 0;
+                const contract = record ? record.contract : '瞬_21';
+                const isConfirmed = record && (record.confirmed === true || String(record.confirmed).toLowerCase() === 'true');
+                const confirmTime = (isConfirmed && record.confirmTime) ? record.confirmTime : "未確認";
+                const pdfUrl = (record && record.pdfUrl) ? record.pdfUrl : "";
+
+                let res;
+                if (isConfirmed && record.grandTotal !== undefined && record.grandTotal !== "") {
+                    res = {
+                        serviceFeeActual: Number(record.serviceFeeActual),
+                        splitFeeActual: Number(record.splitFeeActual),
+                        rowTotal: Number(record.grandTotal)
+                    };
+                } else {
+                    res = calculateSalary({ langhua, redeemed, days, hours, contract });
+                }
+
+                reportRows.push([
+                    s.id, s.name, contract, isConfirmed ? "已對帳" : "未對帳", confirmTime, pdfUrl,
+                    langhua, redeemed, days, hours, res.serviceFeeActual, res.splitFeeActual, res.rowTotal
+                ]);
+            });
+
+            const worksheet = XLSX.utils.aoa_to_sheet(reportRows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, `${y}年${mm}月對帳報表`);
+            XLSX.writeFile(workbook, `哲運娛樂_${y}年${mm}月結算對帳報表.xlsx`);
         }
 
         function numberToChineseCurrency(n) {
