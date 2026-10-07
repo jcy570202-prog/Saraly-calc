@@ -181,9 +181,17 @@
                         </div>
                     </div>
 
-                    <button onclick="window.print()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition shadow-sm text-sm no-print">
-                        🖨️ 列印本月對帳單 (另存為 PDF)
-                    </button>
+                    <!-- 按鈕區塊：包含列印與對帳完成按鈕 -->
+                    <div class="flex flex-col sm:flex-row gap-3 no-print">
+                        <button onclick="window.print()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+                            列印本月對帳單 (另存為 PDF)
+                        </button>
+                        <button id="btnConfirmStatement" onclick="handleConfirmStatement()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                            <span id="confirmBtnText">對帳完成（確認無誤）</span>
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -596,6 +604,47 @@
             document.getElementById('resServiceFee').innerText = `NT$ ${res.serviceFeeActual.toLocaleString()}`;
             document.getElementById('resSplitFee').innerText = `NT$ ${res.splitFeeActual.toLocaleString()}`;
             document.getElementById('resGrandTotal').innerText = `NT$ ${res.rowTotal.toLocaleString()}`;
+
+            // 檢查並更新當前月份的對帳確認按鈕狀態
+            updateConfirmButtonState(selectedMonth);
+        }
+
+        // 檢查 localStorage 並更新對帳完成按鈕 UI
+        function updateConfirmButtonState(month) {
+            const btn = document.getElementById('btnConfirmStatement');
+            const btnText = document.getElementById('confirmBtnText');
+            if (!currentStreamer || !month) return;
+
+            const storageKey = `statement_confirmed_${currentStreamer.id}_${month}`;
+            const isConfirmed = localStorage.getItem(storageKey) === 'true';
+
+            if (isConfirmed) {
+                btn.className = "flex-1 bg-gray-400 cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl shadow-sm text-sm flex items-center justify-center gap-2";
+                btn.disabled = true;
+                btnText.innerText = "已完成對帳（確認無誤）";
+            } else {
+                btn.className = "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2";
+                btn.disabled = false;
+                btnText.innerText = "對帳完成（確認無誤）";
+            }
+        }
+
+        // 點擊對帳完成按鈕處理函式
+        function handleConfirmStatement() {
+            if (!currentStreamer) return;
+            const selectedMonth = document.getElementById('selectMonth').value;
+            if (!selectedMonth) {
+                alert("目前無可確認的月份資料！");
+                return;
+            }
+
+            const [y, mm] = selectedMonth.split('-');
+            if (confirm(`確定要送出「${y}年${parseInt(mm)}月」的對帳確認嗎？確認後將無法自行修改。`)) {
+                const storageKey = `statement_confirmed_${currentStreamer.id}_${selectedMonth}`;
+                localStorage.setItem(storageKey, 'true');
+                updateConfirmButtonState(selectedMonth);
+                alert("已成功完成對帳紀錄！");
+            }
         }
 
         function loadAdminStatement() {
