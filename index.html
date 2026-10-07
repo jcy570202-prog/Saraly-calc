@@ -136,7 +136,7 @@
                     <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                         <div>
                             <h2 class="text-base sm:text-lg font-bold text-gray-800">歡迎回來，<span id="welcomeName" class="text-indigo-600"></span> <span class="text-xs text-gray-400 font-normal">(ID: <span id="welcomeId"></span>)</span></h2>
-                            <p class="text-xs text-gray-400 mt-0.5">本月合約版本：<span id="welcomeContract"></span></p>
+                            <p class="text-xs text-gray-400 mt-0.5">本月合約版本：<span id="welcomeContract" class="font-semibold text-indigo-600"></span></p>
                         </div>
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                     </div>
@@ -167,6 +167,7 @@
                             </div>
 
                             <div class="bg-white/85 backdrop-blur-[1px] rounded-xl p-4 sm:p-5 border border-gray-200 space-y-3 text-xs sm:text-sm text-gray-600 shadow-sm">
+                                <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>本月合約版本：</span><span id="resContractText" class="font-semibold text-indigo-600">--</span></div>
                                 <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>本月浪花點數：</span><span id="resLanghua" class="font-medium text-gray-800">0 點</span></div>
                                 <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>級距固定服務費：</span><span id="resFixedFee" class="font-medium text-gray-800">NT$ 0</span></div>
                                 <div class="flex justify-between py-1 border-b border-dashed border-gray-200"><span>領用浪花扣除：</span><span id="resRedeemed" class="font-medium text-gray-800">0 點</span></div>
@@ -337,32 +338,34 @@
             return 0;
         }
 
-        function calculateSimulatorSalary({ langhua, redeemed, days, hours, contract }) {
-            const divisor = (contract === '瞬_25') ? 24 : 20;
+        // 修正後的計算邏輯：服務費一律乘 0.95，分潤則依據有無 '+' 決定是否乘 0.95
+        function calculateSalary({ langhua, redeemed, days, hours, contract }) {
+            const isPlus = contract && String(contract).includes('+');
+            const baseDivisor = (contract && String(contract).includes('25')) ? 24 : 20;
             const fixedFee = getFixedFee(langhua);
+            
             let serviceFeeActual = 0;
             if (days >= 15 && hours >= 20 && langhua >= 100000) {
                 const effectiveHours = Math.min(hours, 20);
-                serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
+                let rawService = (fixedFee === 3200) ? (fixedFee - 1200) : (fixedFee - (effectiveHours * 100));
+                // 服務費維持不變，一律乘以 0.95 營業稅
+                serviceFeeActual = rawService * 0.95;
             }
+
             const netLanghua = Math.max(0, langhua - redeemed);
-            let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
+            let splitFeeActual = 0;
+            if (baseDivisor > 0) {
+                let rawSplit = Math.floor(netLanghua / baseDivisor) * 0.9;
+                // 有 + 號不乘 0.95（僅乘 0.9），沒 + 號乘 0.95
+                splitFeeActual = isPlus ? Math.ceil(rawSplit) : Math.ceil(rawSplit * 0.95);
+            }
+
             const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
             return { fixedFee, serviceFeeActual: Math.round(serviceFeeActual), splitFeeActual, rowTotal };
         }
 
-        function calculateSalary({ langhua, redeemed, days, hours, contract }) {
-            let divisor = (contract === '瞬_25') ? 24 : 20;
-            const fixedFee = getFixedFee(langhua);
-            let serviceFeeActual = 0;
-            if (days >= 15 && hours >= 20 && langhua >= 100000) {
-                const effectiveHours = Math.min(hours, 20);
-                serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
-            }
-            const netLanghua = Math.max(0, langhua - redeemed);
-            let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
-            const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
-            return { fixedFee, serviceFeeActual: Math.round(serviceFeeActual), splitFeeActual, rowTotal };
+        function calculateSimulatorSalary({ langhua, redeemed, days, hours, contract }) {
+            return calculateSalary({ langhua, redeemed, days, hours, contract });
         }
 
         function switchTab(tab) {
@@ -383,7 +386,7 @@
 
         window.onload = function() {
             addRow("直播主A", 905000, 0, 15, 20, "瞬_21");
-            addRow("直播主B", 1000000, 0, 15, 20, "瞬_21");
+            addRow("直播主B", 1000000, 0, 15, 20, "瞬_21+");
             initData();
             initWatermarks();
         };
@@ -405,7 +408,9 @@
                         <span class="text-gray-400">h</span>
                         <select onchange="calculate()" class="contract-select border border-gray-300 rounded px-1.5 py-1 text-xs bg-white">
                             <option value="瞬_21" ${contract === '瞬_21' ? 'selected' : ''}>瞬_21</option>
+                            <option value="瞬_21+" ${contract === '瞬_21+' ? 'selected' : ''}>瞬_21+</option>
                             <option value="瞬_25" ${contract === '瞬_25' ? 'selected' : ''}>瞬_25</option>
+                            <option value="瞬_25+" ${contract === '瞬_25+' ? 'selected' : ''}>瞬_25+</option>
                         </select>
                     </div>
                 </td>
@@ -544,6 +549,8 @@
             const contract = record ? record.contract : '瞬_21';
 
             document.getElementById('welcomeContract').innerText = contract;
+            document.getElementById('resContractText').innerText = contract;
+
             const parts = selectedMonth ? String(selectedMonth).split('-') : ['----', '--'];
             const y = parts[0];
             const mm = parts[1];
@@ -677,9 +684,9 @@
 
                 const res = calculateSalary({ langhua, redeemed, days, hours, contract });
                 const tierFee = res.fixedFee;
-                const divisor = (contract === '瞬_25') ? 24 : 20;
+                const baseDivisor = (contract && String(contract).includes('25')) ? 24 : 20;
                 const netLanghua = Math.max(0, langhua - redeemed);
-                const rawSplit = divisor > 0 ? Math.floor(netLanghua / divisor) : 0;
+                const rawSplit = baseDivisor > 0 ? Math.floor(netLanghua / baseDivisor) : 0;
 
                 companyTotal += res.rowTotal;
                 totalServiceFeeSum += tierFee;
@@ -690,7 +697,7 @@
                 tr.innerHTML = `
                     <td class="py-3 px-3 font-mono text-gray-500">${s.id}</td>
                     <td class="py-3 px-3 font-semibold text-gray-800">${s.name}</td>
-                    <td class="py-3 px-3 text-gray-600"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs">${contract}</span></td>
+                    <td class="py-3 px-3 text-gray-600"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-semibold">${contract}</span></td>
                     <td class="py-3 px-3 text-gray-700">${langhua.toLocaleString()}</td>
                     <td class="py-3 px-3 text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</td>
                     <td class="py-3 px-3 text-gray-700">${days}天</td>
@@ -709,7 +716,7 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-center border-b border-gray-200 pb-2">
                         <div><span class="font-bold text-gray-900 text-sm">${s.name}</span><span class="text-gray-400 ml-1">(ID: ${s.id})</span></div>
-                        <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-medium">${contract}</span>
+                        <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-semibold">${contract}</span>
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <div>浪花點數：<span class="font-medium text-gray-900">${langhua.toLocaleString()}</span></div>
