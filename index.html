@@ -151,12 +151,22 @@
                     <div id="printableArea" class="relative bg-white rounded-2xl p-4 sm:p-6 overflow-hidden border border-gray-100 space-y-4">
                         <div id="watermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden"></div>
 
+                        <!-- 檔案頂端區塊 (含動態對帳狀態標示，列印時也會顯示) -->
                         <div class="relative z-10 space-y-4">
-                            <div class="flex items-center gap-3 pb-3 border-b border-gray-200">
-                                <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg shadow-sm border border-gray-100 bg-white p-1">
-                                <div>
-                                    <h1 class="text-base sm:text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 直播主對帳單</h1>
-                                    <p class="text-xs text-gray-500 mt-0.5">查詢月份：<span id="printMonthText"></span> | 直播主：<span id="printNameText"></span> (ID: <span id="printIdText"></span>)</p>
+                            <div class="flex justify-between items-start pb-3 border-b border-gray-200">
+                                <div class="flex items-center gap-3">
+                                    <img src="ZheYun.png" alt="哲運娛樂 LOGO" class="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-lg shadow-sm border border-gray-100 bg-white p-1">
+                                    <div>
+                                        <h1 class="text-base sm:text-lg font-bold text-gray-900">哲運娛樂經紀有限公司 - 直播主對帳單</h1>
+                                        <p class="text-xs text-gray-500 mt-0.5">查詢月份：<span id="printMonthText"></span> | 直播主：<span id="printNameText"></span> (ID: <span id="printIdText"></span>)</p>
+                                    </div>
+                                </div>
+                                <!-- 對帳完成狀態標示 (預設隱藏，確認後顯示，列印時可見) -->
+                                <div id="statusBadge" class="hidden flex flex-col items-end">
+                                    <span class="bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-bold px-3 py-1.5 rounded-xl border border-emerald-300 shadow-sm flex items-center gap-1">
+                                        ✅ 已對帳完成
+                                    </span>
+                                    <span id="statusTimestamp" class="text-[10px] text-gray-400 mt-1"></span>
                                 </div>
                             </div>
 
@@ -181,15 +191,13 @@
                         </div>
                     </div>
 
-                    <!-- 按鈕區塊：包含列印與對帳完成按鈕 -->
+                    <!-- 操作按鈕群組 (列印與對帳完成) -->
                     <div class="flex flex-col sm:flex-row gap-3 no-print">
-                        <button onclick="window.print()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 px-4 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-                            列印本月對帳單 (另存為 PDF)
+                        <button onclick="window.print()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2">
+                            🖨️ 列印本月對帳單 (另存為 PDF)
                         </button>
-                        <button id="btnConfirmStatement" onclick="handleConfirmStatement()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-                            <span id="confirmBtnText">對帳完成（確認無誤）</span>
+                        <button id="btnConfirmStatement" onclick="confirmStatement()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2">
+                            ✅ 確認對帳完成
                         </button>
                     </div>
                 </div>
@@ -605,45 +613,59 @@
             document.getElementById('resSplitFee').innerText = `NT$ ${res.splitFeeActual.toLocaleString()}`;
             document.getElementById('resGrandTotal').innerText = `NT$ ${res.rowTotal.toLocaleString()}`;
 
-            // 檢查並更新當前月份的對帳確認按鈕狀態
-            updateConfirmButtonState(selectedMonth);
+            // 檢查該月份的對帳狀態
+            checkStatementStatus(selectedMonth);
         }
 
-        // 檢查 localStorage 並更新對帳完成按鈕 UI
-        function updateConfirmButtonState(month) {
-            const btn = document.getElementById('btnConfirmStatement');
-            const btnText = document.getElementById('confirmBtnText');
+        // 檢查並更新對帳狀態與UI表現
+        function checkStatementStatus(month) {
             if (!currentStreamer || !month) return;
+            const key = `statement_confirmed_${currentStreamer.id}_${month}`;
+            const confirmedData = localStorage.getItem(key);
+            const badge = document.getElementById('statusBadge');
+            const timestamp = document.getElementById('statusTimestamp');
+            const btn = document.getElementById('btnConfirmStatement');
 
-            const storageKey = `statement_confirmed_${currentStreamer.id}_${month}`;
-            const isConfirmed = localStorage.getItem(storageKey) === 'true';
-
-            if (isConfirmed) {
-                btn.className = "flex-1 bg-gray-400 cursor-not-allowed text-white font-medium py-3 px-4 rounded-xl shadow-sm text-sm flex items-center justify-center gap-2";
+            if (confirmedData) {
+                // 已確認
+                badge.classList.remove('hidden');
+                badge.classList.add('flex');
+                timestamp.innerText = `確認時間：${confirmedData}`;
+                
+                btn.innerText = "✓ 已完成對帳";
                 btn.disabled = true;
-                btnText.innerText = "已完成對帳（確認無誤）";
+                btn.className = "flex-1 bg-gray-300 text-gray-500 font-medium py-3 rounded-xl cursor-not-allowed text-sm flex items-center justify-center gap-2";
             } else {
-                btn.className = "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 px-4 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2";
+                // 未確認
+                badge.classList.add('hidden');
+                badge.classList.remove('flex');
+                timestamp.innerText = "";
+                
+                btn.innerText = "✅ 確認對帳完成";
                 btn.disabled = false;
-                btnText.innerText = "對帳完成（確認無誤）";
+                btn.className = "flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2";
             }
         }
 
-        // 點擊對帳完成按鈕處理函式
-        function handleConfirmStatement() {
+        // 直播主點擊確認對帳完成
+        function confirmStatement() {
             if (!currentStreamer) return;
             const selectedMonth = document.getElementById('selectMonth').value;
-            if (!selectedMonth) {
-                alert("目前無可確認的月份資料！");
-                return;
-            }
+            if (!selectedMonth) { alert("請先選擇查詢月份！"); return; }
 
             const [y, mm] = selectedMonth.split('-');
-            if (confirm(`確定要送出「${y}年${parseInt(mm)}月」的對帳確認嗎？確認後將無法自行修改。`)) {
-                const storageKey = `statement_confirmed_${currentStreamer.id}_${selectedMonth}`;
-                localStorage.setItem(storageKey, 'true');
-                updateConfirmButtonState(selectedMonth);
-                alert("已成功完成對帳紀錄！");
+            const monthText = `${y}年${parseInt(mm)}月`;
+
+            if (confirm(`確定要送出「${monthText}」的對帳確認嗎？\n送出後將標示為對帳完成並反映於列印報表上。`)) {
+                const now = new Date();
+                const timeString = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+                
+                const key = `statement_confirmed_${currentStreamer.id}_${selectedMonth}`;
+                localStorage.setItem(key, timeString);
+
+                // 更新畫面狀態
+                checkStatementStatus(selectedMonth);
+                alert("已成功完成對帳！您現在可以列印或儲存帶有對帳標記的 PDF。");
             }
         }
 
@@ -658,8 +680,8 @@
             tbody.innerHTML = ''; cardList.innerHTML = '';
 
             let companyTotal = 0;
-            let totalServiceFeeSum = 0;  // 平台對帳用：服務費加總（含稅）
-            let totalGiftSplitSum = 0;   // 平台對帳用：分潤加總（含稅）
+            let totalServiceFeeSum = 0;  
+            let totalGiftSplitSum = 0;   
             const isAdmin = currentStreamer && currentStreamer.role === 'system_admin';
             
             const streamers = streamersData.filter(s => {
@@ -682,8 +704,6 @@
                 const rawSplit = divisor > 0 ? Math.floor(netLanghua / divisor) : 0;
 
                 companyTotal += res.rowTotal;
-                
-                // 累積平台對帳專用數值：使用服務費（級距標準）與原始分潤（皆視為含稅）
                 totalServiceFeeSum += tierFee;
                 totalGiftSplitSum += rawSplit;
 
@@ -732,7 +752,6 @@
 
             document.getElementById('adminGrandTotal').innerText = formatCurrency(companyTotal);
 
-            // 平台對帳單數值計算：服務費與分潤皆為含稅，需各自回推未稅，再相加得出未稅營業額，後續計算 5% 稅額
             const serviceFeeEx = totalServiceFeeSum / 1.05;
             const giftSplitEx = totalGiftSplitSum / 1.05;
             const subtotal = serviceFeeEx + giftSplitEx;
@@ -749,7 +768,6 @@
             document.getElementById('modalChineseNum').innerText = numberToChineseCurrency(Math.round(totalTaxIncluded));
         }
 
-        // 數字轉中文大寫金額輔助函式
         function numberToChineseCurrency(n) {
             if (n === 0) return "零元整";
             const fraction = ['角', '分'];
