@@ -351,22 +351,8 @@
             return 0;
         }
 
-        function calculateSimulatorSalary({ langhua, redeemed, days, hours, contract }) {
-            const divisor = (contract === '瞬_25') ? 24 : 20;
-            const fixedFee = getFixedFee(langhua);
-            let serviceFeeActual = 0;
-            if (days >= 15 && hours >= 20 && langhua >= 100000) {
-                const effectiveHours = Math.min(hours, 20);
-                serviceFeeActual = (fixedFee === 3200) ? (fixedFee - 1200) * 0.95 : (fixedFee - (effectiveHours * 100)) * 0.95;
-            }
-            const netLanghua = Math.max(0, langhua - redeemed);
-            let splitFeeActual = divisor > 0 ? Math.ceil(Math.floor(netLanghua / divisor) * 0.9 * 0.95) : 0;
-            const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
-            return { fixedFee, serviceFeeActual: Math.round(serviceFeeActual), splitFeeActual, rowTotal };
-        }
-
         function calculateSalary({ langhua, redeemed, days, hours, contract }) {
-            let divisor = (contract === '瞬_25') ? 24 : 20;
+            const divisor = (contract === '瞬_25') ? 24 : 20;
             const fixedFee = getFixedFee(langhua);
             let serviceFeeActual = 0;
             if (days >= 15 && hours >= 20 && langhua >= 100000) {
@@ -444,7 +430,7 @@
                 const days = parseFloat(row.querySelector('.days-input').value) || 0;
                 const hours = parseFloat(row.querySelector('.hours-input').value) || 0;
                 const contract = row.querySelector('.contract-select').value;
-                const res = calculateSimulatorSalary({ langhua, redeemed, days, hours, contract });
+                const res = calculateSalary({ langhua, redeemed, days, hours, contract });
                 row.querySelector('.fixed-fee').innerText = res.fixedFee.toLocaleString();
                 row.querySelector('.service-fee-actual').innerText = res.serviceFeeActual.toLocaleString();
                 row.querySelector('.split-fee-actual').innerText = res.splitFeeActual.toLocaleString();
@@ -461,7 +447,6 @@
         let incomeData = [];
         let currentStreamer = null;
 
-        // 從雲端 Google Sheets 載入資料
         async function initData() {
             try {
                 const res = await fetch(API_URL);
@@ -568,11 +553,9 @@
             document.getElementById('resSplitFee').innerText = `NT$ ${res.splitFeeActual.toLocaleString()}`;
             document.getElementById('resGrandTotal').innerText = `NT$ ${res.rowTotal.toLocaleString()}`;
 
-            // 檢查雲端回傳的對帳狀態
             checkStatementStatus(selectedMonth);
         }
 
-        // 檢查雲端資料中的對帳狀態與 UI 顯示
         function checkStatementStatus(month) {
             if (!currentStreamer || !month) return;
             const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && item.month === month);
@@ -601,7 +584,6 @@
             }
         }
 
-        // 直播主點擊確認對帳完成（直接寫入雲端 Google Sheets）
         async function confirmStatement() {
             if (!currentStreamer) return;
             const selectedMonth = document.getElementById('selectMonth').value;
@@ -632,7 +614,6 @@
                     const result = await response.json();
 
                     if (result.status === "success") {
-                        // 更新前端暫存資料
                         const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && item.month === selectedMonth);
                         if (record) {
                             record.confirmed = true;
