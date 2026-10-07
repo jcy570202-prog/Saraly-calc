@@ -11,19 +11,12 @@
     <meta name="theme-color" content="#4f46e5">
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 引入 SheetJS 解析 Excel -->
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
-        
-        /* 列印專屬樣式設定 */
         @media print {
-            .no-print {
-                display: none !important;
-            }
-            body {
-                background: white !important;
-            }
+            .no-print { display: none !important; }
+            body { background: white !important; }
             #printableArea, #adminPrintableArea, #platformStatementArea {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
@@ -151,7 +144,6 @@
                     <div id="printableArea" class="relative bg-white rounded-2xl p-4 sm:p-6 overflow-hidden border border-gray-100 space-y-4">
                         <div id="watermarkBg" class="absolute inset-0 pointer-events-none z-0 flex flex-wrap content-around justify-around opacity-15 select-none overflow-hidden"></div>
 
-                        <!-- 檔案頂端區塊 (含動態對帳狀態標示，列印時也會顯示) -->
                         <div class="relative z-10 space-y-4">
                             <div class="flex justify-between items-start pb-3 border-b border-gray-200">
                                 <div class="flex items-center gap-3">
@@ -161,7 +153,6 @@
                                         <p class="text-xs text-gray-500 mt-0.5">查詢月份：<span id="printMonthText"></span> | 直播主：<span id="printNameText"></span> (ID: <span id="printIdText"></span>)</p>
                                     </div>
                                 </div>
-                                <!-- 對帳完成狀態標示 (預設隱藏，確認後顯示，列印時可見) -->
                                 <div id="statusBadge" class="hidden flex flex-col items-end">
                                     <span class="bg-emerald-100 text-emerald-800 text-xs sm:text-sm font-bold px-3 py-1.5 rounded-xl border border-emerald-300 shadow-sm flex items-center gap-1">
                                         ✅ 已對帳完成
@@ -191,7 +182,6 @@
                         </div>
                     </div>
 
-                    <!-- 操作按鈕群組 (列印與對帳完成) -->
                     <div class="flex flex-col sm:flex-row gap-3 no-print">
                         <button onclick="window.print()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm flex items-center justify-center gap-2">
                             🖨️ 列印本月對帳單 (另存為 PDF)
@@ -209,7 +199,6 @@
                     <div><h2 class="text-base sm:text-lg font-bold text-gray-800">👑 哲運管理後台 - 總覽</h2></div>
                     <div class="flex items-center gap-2">
                         <button onclick="window.print()" class="text-xs bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm">🖨 列印全公司總覽報表</button>
-                        <!-- 僅系統管理員 (system_admin) 才顯示此按鈕 -->
                         <button id="btnPlatformStatement" onclick="openPlatformStatementModal()" class="text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 rounded-lg transition shadow-sm hidden">列印平台對帳單</button>
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                     </div>
@@ -232,7 +221,6 @@
                             <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white/95 focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                         </div>
 
-                        <!-- 桌面版顯示表格 -->
                         <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/85 backdrop-blur-[1px]">
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left border-collapse text-sm">
@@ -257,7 +245,6 @@
                             </div>
                         </div>
 
-                        <!-- 手機版專屬卡片清單容器 -->
                         <div class="block sm:hidden space-y-3 print:hidden" id="adminCardList"></div>
 
                         <div class="bg-gradient-to-r from-indigo-900 to-slate-800 rounded-2xl shadow-md p-5 text-white flex justify-between items-center">
@@ -270,7 +257,7 @@
         </div>
     </div>
 
-    <!-- 平台對帳單彈跳視窗 (Modal) -->
+    <!-- 平台對帳單彈跳視窗 -->
     <div id="platformStatementModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 hidden no-print">
         <div class="bg-white rounded-2xl max-w-lg w-full p-6 space-y-5 shadow-xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-gray-100 pb-3">
@@ -305,7 +292,6 @@
     </div>
 
     <script>
-        // Google Apps Script 雲端 API 網址
         const API_URL = "https://script.google.com/macros/s/AKfycbyLthw26LVrXoCapt3acLunOOZY0CRtXwTPQJg6o6uqr5D-4cHqQilORX3RPb3wP8Xhrw/exec";
 
         const tiers = [
@@ -461,7 +447,6 @@
         let incomeData = [];
         let currentStreamer = null;
 
-        // 從雲端 Google Sheets 載入資料
         async function initData() {
             try {
                 const res = await fetch(API_URL);
@@ -500,7 +485,7 @@
             } else {
                 document.getElementById('welcomeName').innerText = streamer.name;
                 document.getElementById('welcomeId').innerText = streamer.id;
-                const months = incomeData.filter(item => String(item.id) === String(streamer.id)).map(item => item.month).sort().reverse();
+                const months = incomeData.filter(item => String(item.id) === String(streamer.id)).map(item => String(item.month)).sort().reverse();
                 const selectMonth = document.getElementById('selectMonth');
                 selectMonth.innerHTML = '';
                 if (months.length === 0) {
@@ -508,9 +493,12 @@
                     document.getElementById('welcomeContract').innerText = '無合約紀錄';
                 } else {
                     months.forEach(m => {
-                        const [y, mm] = m.split('-');
+                        const parts = String(m).split('-');
+                        const y = parts[0];
+                        const mm = parts[1];
                         const opt = document.createElement('option');
-                        opt.value = m; opt.innerText = `${y}年${parseInt(mm)}月`;
+                        opt.value = m; 
+                        opt.innerText = `${y}年${parseInt(mm)}月`;
                         selectMonth.appendChild(opt);
                     });
                     loadStatement();
@@ -529,14 +517,17 @@
         }
 
         function refreshAdminDropdown() {
-            const allMonths = [...new Set(incomeData.map(i => i.month))].sort().reverse();
+            const allMonths = [...new Set(incomeData.map(i => String(i.month)))].sort().reverse();
             const selectAdminMonth = document.getElementById('selectAdminMonth');
             const currentSelected = selectAdminMonth.value;
             selectAdminMonth.innerHTML = '';
             allMonths.forEach(m => {
-                const [y, mm] = m.split('-');
+                const parts = String(m).split('-');
+                const y = parts[0];
+                const mm = parts[1];
                 const opt = document.createElement('option');
-                opt.value = m; opt.innerText = `${y}年${parseInt(mm)}月`;
+                opt.value = m; 
+                opt.innerText = `${y}年${parseInt(mm)}月`;
                 if (m === currentSelected) opt.selected = true;
                 selectAdminMonth.appendChild(opt);
             });
@@ -545,7 +536,7 @@
         function loadStatement() {
             if (!currentStreamer) return;
             const selectedMonth = document.getElementById('selectMonth').value;
-            const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && item.month === selectedMonth);
+            const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && String(item.month) === selectedMonth);
             const langhua = record ? Number(record.langhua) : 0;
             const redeemed = record ? Number(record.redeemed) : 0;
             const days = record ? (record.days !== undefined ? Number(record.days) : 15) : 0;
@@ -553,7 +544,9 @@
             const contract = record ? record.contract : '瞬_21';
 
             document.getElementById('welcomeContract').innerText = contract;
-            const [y, mm] = selectedMonth ? selectedMonth.split('-') : ['----', '--'];
+            const parts = selectedMonth ? String(selectedMonth).split('-') : ['----', '--'];
+            const y = parts[0];
+            const mm = parts[1];
             document.getElementById('printMonthText').innerText = `${y}年${parseInt(mm)}月`;
             document.getElementById('printNameText').innerText = currentStreamer.name;
             document.getElementById('printIdText').innerText = currentStreamer.id;
@@ -568,14 +561,12 @@
             document.getElementById('resSplitFee').innerText = `NT$ ${res.splitFeeActual.toLocaleString()}`;
             document.getElementById('resGrandTotal').innerText = `NT$ ${res.rowTotal.toLocaleString()}`;
 
-            // 檢查雲端回傳的對帳狀態
             checkStatementStatus(selectedMonth);
         }
 
-        // 檢查雲端資料中的對帳狀態與 UI 顯示
         function checkStatementStatus(month) {
             if (!currentStreamer || !month) return;
-            const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && item.month === month);
+            const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && String(item.month) === month);
             const badge = document.getElementById('statusBadge');
             const timestamp = document.getElementById('statusTimestamp');
             const btn = document.getElementById('btnConfirmStatement');
@@ -601,13 +592,14 @@
             }
         }
 
-        // 直播主點擊確認對帳完成（直接寫入雲端 Google Sheets）
         async function confirmStatement() {
             if (!currentStreamer) return;
             const selectedMonth = document.getElementById('selectMonth').value;
             if (!selectedMonth) { alert("請先選擇查詢月份！"); return; }
 
-            const [y, mm] = selectedMonth.split('-');
+            const parts = String(selectedMonth).split('-');
+            const y = parts[0];
+            const mm = parts[1];
             const monthText = `${y}年${parseInt(mm)}月`;
 
             if (confirm(`確定要送出「${monthText}」的對帳確認嗎？\n送出後將同步至雲端並標示為對帳完成。`)) {
@@ -632,8 +624,7 @@
                     const result = await response.json();
 
                     if (result.status === "success") {
-                        // 更新前端暫存資料
-                        const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && item.month === selectedMonth);
+                        const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && String(item.month) === selectedMonth);
                         if (record) {
                             record.confirmed = true;
                             record.confirmTime = timeString;
@@ -656,7 +647,9 @@
 
         function loadAdminStatement() {
             const selectedMonth = document.getElementById('selectAdminMonth').value;
-            const [y, mm] = selectedMonth ? selectedMonth.split('-') : ['----', '--'];
+            const parts = selectedMonth ? String(selectedMonth).split('-') : ['----', '--'];
+            const y = parts[0];
+            const mm = parts[1];
             document.getElementById('printAdminMonthText').innerText = `${y}年${parseInt(mm)}月`;
             document.getElementById('platformModalTitleMonth').innerText = `哲運娛樂經紀有限公司 - ${y}年${parseInt(mm)}月發票請款明細`;
 
@@ -671,11 +664,11 @@
             
             const streamers = streamersData.filter(s => {
                 if (s.role !== 'streamer') return false;
-                return incomeData.some(item => String(item.id) === String(s.id) && item.month === selectedMonth);
+                return incomeData.some(item => String(item.id) === String(s.id) && String(item.month) === selectedMonth);
             });
 
             streamers.forEach(s => {
-                const record = incomeData.find(item => String(item.id) === String(s.id) && item.month === selectedMonth);
+                const record = incomeData.find(item => String(item.id) === String(s.id) && String(item.month) === selectedMonth);
                 const langhua = record ? Number(record.langhua) : 0;
                 const redeemed = record ? Number(record.redeemed) : 0;
                 const days = record ? (record.days !== undefined ? Number(record.days) : 15) : 0;
