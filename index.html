@@ -117,17 +117,53 @@
                 <p class="text-xs sm:text-sm text-gray-500 mt-1">請輸入 ID 與密碼登入查詢</p>
             </div>
 
-            <!-- 登入表單 -->
-            <div id="loginCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-4 max-w-xl mx-auto no-print">
-                <div>
-                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">帳號 ID (管理員或老闆請輸入對應帳號)</label>
-                    <input type="text" id="inputId" placeholder="請輸入 ID" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <!-- 登入表單（含操作手冊與 QR Code 摺疊面板） -->
+            <div id="loginCard" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-8 space-y-5 max-w-xl mx-auto no-print">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">帳號 ID (管理員或老闆請輸入對應帳號)</label>
+                        <input type="text" id="inputId" placeholder="請輸入 ID" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">密碼 (Password)</label>
+                        <input type="password" id="inputPassword" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter') handleLogin()" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <button onclick="handleLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm tracking-wide">登入查詢</button>
                 </div>
-                <div>
-                    <label class="block text-xs sm:text-sm font-semibold text-gray-700 mb-1">密碼 (Password)</label>
-                    <input type="password" id="inputPassword" placeholder="請輸入密碼" onkeydown="if(event.key==='Enter') handleLogin()" class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+
+                <!-- 整合在登入頁的操作手冊與 QR Code 區塊 -->
+                <div class="border-t border-gray-100 pt-4 mt-4">
+                    <div class="flex justify-between items-center cursor-pointer select-none py-1" onclick="toggleManualModal()">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">📖</span>
+                            <span class="text-xs sm:text-sm font-bold text-gray-700">直播主操作手冊與系統說明</span>
+                        </div>
+                        <span id="manualToggleIcon" class="text-xs text-indigo-600 font-medium bg-indigo-50 px-2.5 py-1 rounded-lg transition">查看說明 ▼</span>
+                    </div>
+
+                    <!-- 摺疊內容區塊 -->
+                    <div id="loginManualContent" class="hidden mt-3 pt-3 border-t border-gray-100 text-xs sm:text-sm text-gray-600 space-y-3">
+                        <div class="flex flex-col sm:flex-row items-center gap-4 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <div class="text-center sm:text-left space-y-1 flex-1">
+                                <p class="font-bold text-gray-800">手機快速掃描登入</p>
+                                <p class="text-[11px] text-gray-500">您可以直接使用手機相機掃描右側 QR Code，快速開啟本系統。</p>
+                            </div>
+                            <div class="bg-white p-2 rounded-lg border border-gray-200 shadow-sm">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=https://jcy570202-prog.github.io/Saraly-calc/index.html" alt="系統 QR Code" class="w-24 h-24 sm:w-28 sm:h-28 object-contain">
+                            </div>
+                        </div>
+
+                        <div class="space-y-2 text-xs text-gray-600 bg-white p-3 rounded-xl border border-gray-100">
+                            <p class="font-semibold text-gray-800">💡 快速操作指南：</p>
+                            <ul class="list-disc pl-4 space-y-1 text-[11px] sm:text-xs">
+                                <li><b>登入帳號</b>：請輸入您的直播主 ID 與專屬密碼。</li>
+                                <li><b>修改密碼</b>：登入後可透過右上角按鈕隨時變更密碼。</li>
+                                <li><b>核對與對帳</b>：確認金額無誤後，點擊下方<b>「確認對帳完成」</b>，系統即會自動封存歷史金額。</li>
+                                <li><b>解除確認</b>：若對帳後發現數據有誤，請聯繫管理員協助重設。</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <button onclick="handleLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-xl transition shadow-sm text-sm tracking-wide">登入查詢</button>
             </div>
 
             <!-- 一般直播主查詢面板 -->
@@ -363,6 +399,18 @@
             const icon = document.getElementById('tierToggleIcon');
             if (content.classList.contains('hidden')) { content.classList.remove('hidden'); icon.innerText = '收合 ▲'; }
             else { content.classList.add('hidden'); icon.innerText = '展開 ▼'; }
+        }
+
+        function toggleManualModal() {
+            const content = document.getElementById('loginManualContent');
+            const icon = document.getElementById('manualToggleIcon');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.innerText = '收合 ▲';
+            } else {
+                content.classList.add('hidden');
+                icon.innerText = '查看說明 ▼';
+            }
         }
 
         function getFixedFee(langhua) {
@@ -644,7 +692,6 @@
 
             let serviceFeeActual, splitFeeActual, rowTotal, fixedFee;
 
-            // 核心封存邏輯：若已確認且有封存金額，直接讀取封存金額
             if (isConfirmed && record.serviceFeeActual !== undefined && record.serviceFeeActual !== "") {
                 serviceFeeActual = Number(record.serviceFeeActual);
                 splitFeeActual = Number(record.splitFeeActual);
@@ -717,13 +764,13 @@
             const mm = parts[1];
             const monthText = `${y}年${parseInt(mm)}月`;
 
-            if (confirm(`確定要送出「${monthText}」的對帳確認嗎？\n送出後將自動封存金額、時間，並產生 PDF 備份至雲端硬碟。`)) {
+            if (confirm(`確定要送出「${monthText}」的對帳確認嗎？\n送出後將自動封存金額與確認時間。`)) {
                 const now = new Date();
                 const timeString = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
                 
                 const btn = document.getElementById('btnConfirmStatement');
                 const originalText = btn.innerText;
-                btn.innerText = "⏳ 正在同步、封存並產生 PDF...";
+                btn.innerText = "⏳ 正在同步與封存金額...";
                 btn.disabled = true;
 
                 try {
@@ -750,7 +797,7 @@
                             record.grandTotal = res.rowTotal;
                         }
                         loadStatement();
-                        alert("已成功完成對帳，金額已封存並完成 PDF 雲端備份！");
+                        alert("已成功完成對帳，金額已封存！");
                     } else {
                         alert("同步失敗，請稍後再試。");
                         btn.innerText = originalText;
@@ -789,7 +836,6 @@
                         record.serviceFeeActual = undefined;
                         record.splitFeeActual = undefined;
                         record.grandTotal = undefined;
-                        record.pdfUrl = "";
                     }
                     loadAdminStatement();
                     alert("已成功解除對帳確認！");
@@ -934,7 +980,7 @@
             const mm = parts[1];
 
             const reportRows = [];
-            reportRows.push(["ID", "直播主名稱", "合約版本", "對帳狀態", "確認時間", "PDF備份連結", "浪花點數", "領用扣除", "有效天數", "直播時數", "服務費實發", "分潤實發", "總計金額"]);
+            reportRows.push(["ID", "直播主名稱", "合約版本", "對帳狀態", "確認時間", "浪花點數", "領用扣除", "有效天數", "直播時數", "服務費實發", "分潤實發", "總計金額"]);
 
             const streamers = streamersData.filter(s => {
                 if (s.role !== 'streamer') return false;
@@ -950,7 +996,6 @@
                 const contract = record ? record.contract : '瞬_21';
                 const isConfirmed = record && (record.confirmed === true || String(record.confirmed).toLowerCase() === 'true');
                 const confirmTime = (isConfirmed && record.confirmTime) ? record.confirmTime : "未確認";
-                const pdfUrl = (record && record.pdfUrl) ? record.pdfUrl : "";
 
                 let res;
                 if (isConfirmed && record.grandTotal !== undefined && record.grandTotal !== "") {
@@ -964,7 +1009,7 @@
                 }
 
                 reportRows.push([
-                    s.id, s.name, contract, isConfirmed ? "已對帳" : "未對帳", confirmTime, pdfUrl,
+                    s.id, s.name, contract, isConfirmed ? "已對帳" : "未對帳", confirmTime,
                     langhua, redeemed, days, hours, res.serviceFeeActual, res.splitFeeActual, res.rowTotal
                 ]);
             });
