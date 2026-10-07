@@ -136,7 +136,6 @@
                     <div class="flex justify-between items-center border-b border-gray-100 pb-3 no-print">
                         <div>
                             <h2 class="text-base sm:text-lg font-bold text-gray-800">歡迎回來，<span id="welcomeName" class="text-indigo-600"></span> <span class="text-xs text-gray-400 font-normal">(ID: <span id="welcomeId"></span>)</span></h2>
-                            <p class="text-xs text-gray-400 mt-0.5">本月合約版本：<span id="welcomeContract" class="font-semibold text-indigo-600"></span></p>
                         </div>
                         <button onclick="handleLogout()" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-lg transition">登出</button>
                     </div>
@@ -338,7 +337,7 @@
             return 0;
         }
 
-        // 修正後的計算邏輯：服務費一律乘 0.95，分潤則依據有無 '+' 決定是否乘 0.95
+        // 計算邏輯：服務費一律乘 0.95，分潤依據有無 '+' 決定是否乘 0.95
         function calculateSalary({ langhua, redeemed, days, hours, contract }) {
             const isPlus = contract && String(contract).includes('+');
             const baseDivisor = (contract && String(contract).includes('25')) ? 24 : 20;
@@ -348,7 +347,6 @@
             if (days >= 15 && hours >= 20 && langhua >= 100000) {
                 const effectiveHours = Math.min(hours, 20);
                 let rawService = (fixedFee === 3200) ? (fixedFee - 1200) : (fixedFee - (effectiveHours * 100));
-                // 服務費維持不變，一律乘以 0.95 營業稅
                 serviceFeeActual = rawService * 0.95;
             }
 
@@ -356,7 +354,6 @@
             let splitFeeActual = 0;
             if (baseDivisor > 0) {
                 let rawSplit = Math.floor(netLanghua / baseDivisor) * 0.9;
-                // 有 + 號不乘 0.95（僅乘 0.9），沒 + 號乘 0.95
                 splitFeeActual = isPlus ? Math.ceil(rawSplit) : Math.ceil(rawSplit * 0.95);
             }
 
@@ -386,7 +383,7 @@
 
         window.onload = function() {
             addRow("直播主A", 905000, 0, 15, 20, "瞬_21");
-            addRow("直播主B", 1000000, 0, 15, 20, "瞬_21+");
+            addRow("直播主B", 1000000, 0, 15, 20, "瞬_25");
             initData();
             initWatermarks();
         };
@@ -408,9 +405,7 @@
                         <span class="text-gray-400">h</span>
                         <select onchange="calculate()" class="contract-select border border-gray-300 rounded px-1.5 py-1 text-xs bg-white">
                             <option value="瞬_21" ${contract === '瞬_21' ? 'selected' : ''}>瞬_21</option>
-                            <option value="瞬_21+" ${contract === '瞬_21+' ? 'selected' : ''}>瞬_21+</option>
                             <option value="瞬_25" ${contract === '瞬_25' ? 'selected' : ''}>瞬_25</option>
-                            <option value="瞬_25+" ${contract === '瞬_25+' ? 'selected' : ''}>瞬_25+</option>
                         </select>
                     </div>
                 </td>
@@ -495,7 +490,6 @@
                 selectMonth.innerHTML = '';
                 if (months.length === 0) {
                     selectMonth.innerHTML = '<option value="">目前無結算資料</option>';
-                    document.getElementById('welcomeContract').innerText = '無合約紀錄';
                 } else {
                     months.forEach(m => {
                         const parts = String(m).split('-');
@@ -548,7 +542,6 @@
             const hours = record ? Number(record.hours) : 0;
             const contract = record ? record.contract : '瞬_21';
 
-            document.getElementById('welcomeContract').innerText = contract;
             document.getElementById('resContractText').innerText = contract;
 
             const parts = selectedMonth ? String(selectedMonth).split('-') : ['----', '--'];
