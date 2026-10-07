@@ -232,48 +232,6 @@
                             <select id="selectAdminMonth" onchange="loadAdminStatement()" class="w-full border border-gray-300 rounded-xl px-4 py-2 text-sm bg-white/95 focus:outline-none focus:ring-2 focus:ring-indigo-500"></select>
                         </div>
 
-                        <!-- 系統管理員專屬工具列 -->
-                        <div id="adminTools" class="hidden flex-col sm:flex-row justify-between items-center gap-3 bg-indigo-50/90 backdrop-blur-[2px] p-4 rounded-xl border border-indigo-100 no-print">
-                            <span class="text-xs font-semibold text-indigo-900">⚙ 系統管理員數據維護工具：</span>
-                            <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                                <input type="file" id="excelInput" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleExcelUpload(event)">
-                                <button onclick="document.getElementById('excelInput').click()" class="flex-1 sm:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">📂 匯入 Excel/CSV 報表</button>
-                                <button onclick="exportJSONBackup()" class="flex-1 sm:flex-none bg-gray-800 hover:bg-gray-900 text-white font-medium px-3.5 py-2 rounded-xl transition text-xs flex items-center justify-center gap-1.5 shadow-sm">💾 下載 JSON 備份檔</button>
-                            </div>
-                        </div>
-
-                        <!-- 系統管理員專屬的 Excel 說明面板 -->
-                        <div id="formatTableCard" class="bg-white/95 backdrop-blur-[2px] rounded-2xl border border-indigo-100 p-5 space-y-3 no-print shadow-sm hidden">
-                            <div class="flex justify-between items-center cursor-pointer select-none" onclick="toggleFormatTable()">
-                                <div class="flex items-center gap-2"><span class="text-base">📋</span><h3 class="text-sm font-bold text-gray-800">匯入 Excel / CSV 報表格式範例與說明</h3></div>
-                                <span id="formatToggleIcon" class="text-xs text-indigo-600 font-medium bg-indigo-50 px-3 py-1 rounded-lg transition">展開 ▼</span>
-                            </div>
-                            
-                            <div id="formatTableContent" class="hidden space-y-3 pt-3 border-t border-gray-100">
-                                <p class="text-xs text-gray-500">系統支援匯入 <code>.xlsx</code>、<code>.xls</code> 或 <code>.csv</code> 檔案。</p>
-                                <div class="border border-gray-200 rounded-xl overflow-hidden">
-                                    <table class="w-full text-left border-collapse text-xs">
-                                        <thead>
-                                            <tr class="bg-gray-50 text-gray-600 uppercase tracking-wider border-b border-gray-200">
-                                                <th class="py-2.5 px-3 font-semibold">欄位名稱 (中文支援)</th>
-                                                <th class="py-2.5 px-3 font-semibold">欄位名稱 (英文支援)</th>
-                                                <th class="py-2.5 px-3 font-semibold">格式與說明</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-100 text-gray-700">
-                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">帳號 / ID</td><td class="py-2 px-3 font-mono text-gray-500">id</td><td class="py-2 px-3">必填。直播主的唯一編號。</td></tr>
-                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">月份</td><td class="py-2 px-3 font-mono text-gray-500">month</td><td class="py-2 px-3">必填。格式須為 <code>YYYY-MM</code>。</td></tr>
-                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">浪花點數 / 浪花</td><td class="py-2 px-3 font-mono text-gray-500">langhua</td><td class="py-2 px-3">數值。當月累積的浪花總點數。</td></tr>
-                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">領用浪花 / 領用扣除</td><td class="py-2 px-3 font-mono text-gray-500">redeemed</td><td class="py-2 px-3">數值。當月領用扣除的點數。</td></tr>
-                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">有效天數 / 天數</td><td class="py-2 px-3 font-mono text-gray-500">days</td><td class="py-2 px-3">數值。當月直播有效天數。</td></tr>
-                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">直播時數 / 時數</td><td class="py-2 px-3 font-mono text-gray-500">hours</td><td class="py-2 px-3">數值。當月總直播時數。</td></tr>
-                                            <tr><td class="py-2 px-3 font-medium text-indigo-600">合約版本 / 合約</td><td class="py-2 px-3 font-mono text-gray-500">contract</td><td class="py-2 px-3">文字。僅支援：<code>瞬_21</code>、<code>瞬_25</code>。</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
                         <!-- 桌面版顯示表格 -->
                         <div class="hidden sm:block border border-gray-200 rounded-xl overflow-hidden bg-white/85 backdrop-blur-[1px]">
                             <div class="overflow-x-auto">
@@ -347,6 +305,9 @@
     </div>
 
     <script>
+        // Google Apps Script 雲端 API 網址
+        const API_URL = "https://script.google.com/macros/s/AKfycbyLthw26LVrXoCapt3acLunOOZY0CRtXwTPQJg6o6uqr5D-4cHqQilORX3RPb3wP8Xhrw/exec";
+
         const tiers = [
             { threshold: 6000000, fee: 110000 },
             { threshold: 5000000, fee: 100000 },
@@ -380,13 +341,6 @@
         function toggleTierTable() {
             const content = document.getElementById('tierTableContent');
             const icon = document.getElementById('tierToggleIcon');
-            if (content.classList.contains('hidden')) { content.classList.remove('hidden'); icon.innerText = '收合 ▲'; }
-            else { content.classList.add('hidden'); icon.innerText = '展開 ▼'; }
-        }
-
-        function toggleFormatTable() {
-            const content = document.getElementById('formatTableContent');
-            const icon = document.getElementById('formatToggleIcon');
             if (content.classList.contains('hidden')) { content.classList.remove('hidden'); icon.innerText = '收合 ▲'; }
             else { content.classList.add('hidden'); icon.innerText = '展開 ▼'; }
         }
@@ -507,36 +461,37 @@
         let incomeData = [];
         let currentStreamer = null;
 
+        // 從雲端 Google Sheets 載入資料
         async function initData() {
             try {
-                const resS = await fetch('streamers.json'); streamersData = await resS.json();
-                const resI = await fetch('income.json'); incomeData = await resI.json();
-            } catch (e) { console.warn("無法讀取外部 JSON。"); }
+                const res = await fetch(API_URL);
+                const data = await res.json();
+                streamersData = data.streamers || [];
+                incomeData = data.income || [];
+                console.log("成功從雲端載入資料");
+            } catch (e) {
+                console.warn("無法讀取雲端資料。", e);
+                alert("無法連線至雲端資料庫，請檢查網路連線。");
+            }
         }
 
         function handleLogin() {
             const idInput = document.getElementById('inputId').value.trim();
             const passInput = document.getElementById('inputPassword').value.trim();
-            const streamer = streamersData.find(s => s.id === idInput && s.password === passInput);
+            const streamer = streamersData.find(s => String(s.id) === idInput && String(s.password) === passInput);
             if (!streamer) { alert("ID 或密碼錯誤，請重新輸入！"); return; }
             currentStreamer = streamer;
             document.getElementById('loginCard').classList.add('hidden');
 
             if (streamer.role === 'system_admin' || streamer.role === 'manager') {
                 refreshAdminDropdown();
-                const adminTools = document.getElementById('adminTools');
-                const formatTableCard = document.getElementById('formatTableCard');
                 const adminCols = document.querySelectorAll('.admin-only-col');
                 const btnPlatformStatement = document.getElementById('btnPlatformStatement');
 
                 if (streamer.role === 'system_admin') {
-                    adminTools.classList.remove('hidden'); adminTools.classList.add('flex');
-                    if (formatTableCard) formatTableCard.classList.remove('hidden');
                     adminCols.forEach(el => el.classList.remove('hidden'));
                     if (btnPlatformStatement) btnPlatformStatement.classList.remove('hidden');
                 } else {
-                    adminTools.classList.add('hidden'); adminTools.classList.remove('flex');
-                    if (formatTableCard) formatTableCard.classList.add('hidden');
                     adminCols.forEach(el => el.classList.add('hidden'));
                     if (btnPlatformStatement) btnPlatformStatement.classList.add('hidden');
                 }
@@ -545,7 +500,7 @@
             } else {
                 document.getElementById('welcomeName').innerText = streamer.name;
                 document.getElementById('welcomeId').innerText = streamer.id;
-                const months = incomeData.filter(item => item.id === streamer.id).map(item => item.month).sort().reverse();
+                const months = incomeData.filter(item => String(item.id) === String(streamer.id)).map(item => item.month).sort().reverse();
                 const selectMonth = document.getElementById('selectMonth');
                 selectMonth.innerHTML = '';
                 if (months.length === 0) {
@@ -590,11 +545,11 @@
         function loadStatement() {
             if (!currentStreamer) return;
             const selectedMonth = document.getElementById('selectMonth').value;
-            const record = incomeData.find(item => item.id === currentStreamer.id && item.month === selectedMonth);
-            const langhua = record ? record.langhua : 0;
-            const redeemed = record ? record.redeemed : 0;
-            const days = record ? (record.days !== undefined ? record.days : 15) : 0;
-            const hours = record ? record.hours : 0;
+            const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && item.month === selectedMonth);
+            const langhua = record ? Number(record.langhua) : 0;
+            const redeemed = record ? Number(record.redeemed) : 0;
+            const days = record ? (record.days !== undefined ? Number(record.days) : 15) : 0;
+            const hours = record ? Number(record.hours) : 0;
             const contract = record ? record.contract : '瞬_21';
 
             document.getElementById('welcomeContract').innerText = contract;
@@ -613,30 +568,29 @@
             document.getElementById('resSplitFee').innerText = `NT$ ${res.splitFeeActual.toLocaleString()}`;
             document.getElementById('resGrandTotal').innerText = `NT$ ${res.rowTotal.toLocaleString()}`;
 
-            // 檢查該月份的對帳狀態
+            // 檢查雲端回傳的對帳狀態
             checkStatementStatus(selectedMonth);
         }
 
-        // 檢查並更新對帳狀態與UI表現
+        // 檢查雲端資料中的對帳狀態與 UI 顯示
         function checkStatementStatus(month) {
             if (!currentStreamer || !month) return;
-            const key = `statement_confirmed_${currentStreamer.id}_${month}`;
-            const confirmedData = localStorage.getItem(key);
+            const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && item.month === month);
             const badge = document.getElementById('statusBadge');
             const timestamp = document.getElementById('statusTimestamp');
             const btn = document.getElementById('btnConfirmStatement');
 
-            if (confirmedData) {
-                // 已確認
+            const isConfirmed = record && (record.confirmed === true || String(record.confirmed).toLowerCase() === 'true');
+
+            if (isConfirmed) {
                 badge.classList.remove('hidden');
                 badge.classList.add('flex');
-                timestamp.innerText = `確認時間：${confirmedData}`;
+                timestamp.innerText = `確認時間：${record.confirmTime || '已確認'}`;
                 
                 btn.innerText = "✓ 已完成對帳";
                 btn.disabled = true;
                 btn.className = "flex-1 bg-gray-300 text-gray-500 font-medium py-3 rounded-xl cursor-not-allowed text-sm flex items-center justify-center gap-2";
             } else {
-                // 未確認
                 badge.classList.add('hidden');
                 badge.classList.remove('flex');
                 timestamp.innerText = "";
@@ -647,8 +601,8 @@
             }
         }
 
-        // 直播主點擊確認對帳完成
-        function confirmStatement() {
+        // 直播主點擊確認對帳完成（直接寫入雲端 Google Sheets）
+        async function confirmStatement() {
             if (!currentStreamer) return;
             const selectedMonth = document.getElementById('selectMonth').value;
             if (!selectedMonth) { alert("請先選擇查詢月份！"); return; }
@@ -656,16 +610,47 @@
             const [y, mm] = selectedMonth.split('-');
             const monthText = `${y}年${parseInt(mm)}月`;
 
-            if (confirm(`確定要送出「${monthText}」的對帳確認嗎？\n送出後將標示為對帳完成並反映於列印報表上。`)) {
+            if (confirm(`確定要送出「${monthText}」的對帳確認嗎？\n送出後將同步至雲端並標示為對帳完成。`)) {
                 const now = new Date();
                 const timeString = `${now.getFullYear()}/${String(now.getMonth()+1).padStart(2,'0')}/${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
                 
-                const key = `statement_confirmed_${currentStreamer.id}_${selectedMonth}`;
-                localStorage.setItem(key, timeString);
+                const btn = document.getElementById('btnConfirmStatement');
+                const originalText = btn.innerText;
+                btn.innerText = "⏳ 正在同步至雲端...";
+                btn.disabled = true;
 
-                // 更新畫面狀態
-                checkStatementStatus(selectedMonth);
-                alert("已成功完成對帳！您現在可以列印或儲存帶有對帳標記的 PDF。");
+                try {
+                    const response = await fetch(API_URL, {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            id: currentStreamer.id,
+                            month: selectedMonth,
+                            confirmed: true,
+                            confirmTime: timeString
+                        })
+                    });
+                    const result = await response.json();
+
+                    if (result.status === "success") {
+                        // 更新前端暫存資料
+                        const record = incomeData.find(item => String(item.id) === String(currentStreamer.id) && item.month === selectedMonth);
+                        if (record) {
+                            record.confirmed = true;
+                            record.confirmTime = timeString;
+                        }
+                        checkStatementStatus(selectedMonth);
+                        alert("已成功完成對帳並同步至雲端！");
+                    } else {
+                        alert("同步失敗，請稍後再試。");
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("連線發生錯誤，請檢查網路狀態。");
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
             }
         }
 
@@ -686,15 +671,15 @@
             
             const streamers = streamersData.filter(s => {
                 if (s.role !== 'streamer') return false;
-                return incomeData.some(item => item.id === s.id && item.month === selectedMonth);
+                return incomeData.some(item => String(item.id) === String(s.id) && item.month === selectedMonth);
             });
 
             streamers.forEach(s => {
-                const record = incomeData.find(item => item.id === s.id && item.month === selectedMonth);
-                const langhua = record ? record.langhua : 0;
-                const redeemed = record ? record.redeemed : 0;
-                const days = record ? (record.days !== undefined ? record.days : 15) : 0;
-                const hours = record ? record.hours : 0;
+                const record = incomeData.find(item => String(item.id) === String(s.id) && item.month === selectedMonth);
+                const langhua = record ? Number(record.langhua) : 0;
+                const redeemed = record ? Number(record.redeemed) : 0;
+                const days = record ? (record.days !== undefined ? Number(record.days) : 15) : 0;
+                const hours = record ? Number(record.hours) : 0;
                 const contract = record ? record.contract : '瞬_21';
 
                 const res = calculateSalary({ langhua, redeemed, days, hours, contract });
@@ -802,55 +787,6 @@
             window.print();
             document.body.innerHTML = originalBody;
             window.location.reload();
-        }
-
-        function handleExcelUpload(e) {
-            if (!currentStreamer || currentStreamer.role !== 'system_admin') { alert("權限不足！"); return; }
-            const file = e.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                try {
-                    const data = new Uint8Array(evt.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonArray = XLSX.utils.sheet_to_json(worksheet);
-                    if (jsonArray.length === 0) { alert("檔案內無資料！"); return; }
-                    let count = 0;
-                    jsonArray.forEach(row => {
-                        const id = String(row.id || row.ID || row['帳號'] || '').trim();
-                        const month = String(row.month || row.Month || row['月份'] || '').trim();
-                        const langhua = Number(row.langhua || row.Langhua || row['浪花點數'] || row['浪花'] || 0);
-                        const redeemed = Number(row.redeemed || row.Redeemed || row['領用浪花'] || row['領用扣除'] || 0);
-                        const days = Number(row.days || row.Days || row['有效天數'] || row['天數'] || 15);
-                        const hours = Number(row.hours || row.Hours || row['直播時數'] || row['時數'] || 0);
-                        const contract = String(row.contract || row.Contract || row['合約版本'] || row['合約'] || '瞬_21').trim();
-                        if (id && month) {
-                            const existIndex = incomeData.findIndex(i => i.id === id && i.month === month);
-                            const newRecord = { id, month, langhua, redeemed, days, hours, contract };
-                            if (existIndex >= 0) incomeData[existIndex] = newRecord;
-                            else incomeData.push(newRecord);
-                            count++;
-                        }
-                    });
-                    alert(`成功匯入/更新 ${count} 筆資料！`);
-                    refreshAdminDropdown();
-                    loadAdminStatement();
-                    e.target.value = '';
-                } catch (err) { alert("Excel 解析失敗。"); console.error(err); }
-            };
-            reader.readAsArrayBuffer(file);
-        }
-
-        function exportJSONBackup() {
-            if (!currentStreamer || currentStreamer.role !== 'system_admin') { alert("權限不足！"); return; }
-            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(incomeData, null, 4));
-            const downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", `income_backup_${new Date().toISOString().slice(0, 10)}.json`);
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
         }
     </script>
 </body>
