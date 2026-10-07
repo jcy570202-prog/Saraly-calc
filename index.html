@@ -233,6 +233,7 @@
                                             <th class="py-3 px-3 font-semibold">ID</th>
                                             <th class="py-3 px-3 font-semibold">直播主名稱</th>
                                             <th class="py-3 px-3 font-semibold">合約版本</th>
+                                            <th class="py-3 px-3 font-semibold">對帳狀態</th>
                                             <th class="py-3 px-3 font-semibold">浪花點數</th>
                                             <th class="py-3 px-3 font-semibold">領用扣除</th>
                                             <th class="py-3 px-3 font-semibold">有效天</th>
@@ -588,7 +589,6 @@
                 const result = await res.json();
                 if (result.status === "success") {
                     currentStreamer.password = newPass;
-                    // 同步更新記憶體中的 streamersData
                     const s = streamersData.find(item => String(item.id) === String(currentStreamer.id));
                     if (s) s.password = newPass;
 
@@ -762,6 +762,8 @@
                 const days = record ? (record.days !== undefined ? Number(record.days) : 15) : 0;
                 const hours = record ? Number(record.hours) : 0;
                 const contract = record ? record.contract : '瞬_21';
+                
+                const isConfirmed = record && (record.confirmed === true || String(record.confirmed).toLowerCase() === 'true');
 
                 const res = calculateSalary({ langhua, redeemed, days, hours, contract });
                 const tierFee = res.fixedFee;
@@ -779,6 +781,9 @@
                     <td class="py-3 px-3 font-mono text-gray-500">${s.id}</td>
                     <td class="py-3 px-3 font-semibold text-gray-800">${s.name}</td>
                     <td class="py-3 px-3 text-gray-600"><span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded text-xs font-semibold">${contract}</span></td>
+                    <td class="py-3 px-3 text-gray-600">
+                        ${isConfirmed ? '<span class="text-emerald-600 font-semibold text-xs bg-emerald-50 px-2 py-1 rounded">✅ 已對帳</span>' : '<span class="text-amber-600 text-xs bg-amber-50 px-2 py-1 rounded">⏳ 未對帳</span>'}
+                    </td>
                     <td class="py-3 px-3 text-gray-700">${langhua.toLocaleString()}</td>
                     <td class="py-3 px-3 text-red-500">${redeemed > 0 ? '-' + redeemed.toLocaleString() : '0'}</td>
                     <td class="py-3 px-3 text-gray-700">${days}天</td>
@@ -797,7 +802,10 @@
                 card.innerHTML = `
                     <div class="flex justify-between items-center border-b border-gray-200 pb-2">
                         <div><span class="font-bold text-gray-900 text-sm">${s.name}</span><span class="text-gray-400 ml-1">(ID: ${s.id})</span></div>
-                        <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-semibold">${contract}</span>
+                        <div class="flex items-center gap-1.5">
+                            <span class="bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded font-semibold">${contract}</span>
+                            ${isConfirmed ? '<span class="text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded">✅ 已對帳</span>' : '<span class="text-amber-600 bg-amber-50 px-2 py-0.5 rounded">⏳ 未對帳</span>'}
+                        </div>
                     </div>
                     <div class="grid grid-cols-2 gap-2 pt-1">
                         <div>浪花點數：<span class="font-medium text-gray-900">${langhua.toLocaleString()}</span></div>
