@@ -117,7 +117,7 @@
         <div id="sectionConverter" class="hidden space-y-6 max-w-4xl mx-auto">
             <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 text-center">
                 <h1 class="text-xl sm:text-2xl font-bold text-gray-800">💎 浪花金額級距試算工具 (藍新金流)</h1>
-                <p class="text-xs sm:text-sm text-gray-500 mt-1">即時雙向計算：金額 (NT$ 150 ~ 199,999) ↔ 所得浪花數</p>
+                <p class="text-xs sm:text-sm text-gray-500 mt-1">即時雙向計算：金額 (NT$ 150 ~ 199,999) ↔ 所得浪花數 (1,155 ~ 1,739,991)</p>
             </div>
 
             <!-- 計算器卡片區 -->
@@ -153,8 +153,12 @@
                         <h2 class="font-bold text-gray-800 text-base">浪花數 ➔ 所需金額換算</h2>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">請輸入目標浪花數</label>
-                        <input type="number" id="calcWaveInput" oninput="convertWaveToMoney()" placeholder="例如：40000" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-semibold text-gray-600">請輸入目標浪花數</label>
+                            <span class="text-[11px] text-emerald-600 font-medium">範圍：1,155 ~ 1,739,991</span>
+                        </div>
+                        <input type="number" id="calcWaveInput" min="1155" max="1739991" oninput="convertWaveToMoney()" placeholder="請輸入 1155 ~ 1739991 浪花" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <p id="waveErrorText" class="text-xs text-red-500 mt-1 hidden">⚠️ 浪花數需介於 1,155 至 1,739,991 之間</p>
                     </div>
                     <div class="bg-emerald-50/60 rounded-xl p-4 space-y-2 text-xs sm:text-sm">
                         <div class="flex justify-between text-gray-600"><span>適用級距比值：</span><span id="resWaveRatio" class="font-bold text-emerald-600">--</span></div>
@@ -429,7 +433,7 @@
             </div>
 
             <div class="flex gap-3 pt-2">
-                <button onclick="printPlatformStatement()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition shadow-sm text-sm">
+                <button onclick="printPlatformStatement()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition text-sm shadow-sm">
                     🖨️ 列印平台對帳單
                 </button>
                 <button onclick="closePlatformStatementModal()" class="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-2.5 rounded-xl transition text-sm">關閉</button>
@@ -450,6 +454,10 @@
             { from: 50000, to: 99999, ratio: 8.5, baseWave: 425000 },
             { from: 100000, to: 199999, ratio: 8.7, baseWave: 870000 }
         ];
+
+        // 計算浪花數最大限制：最高級距上限金額 * 最高級距比值 (199,999 * 8.7 = 1,739,991.3 => 1,739,991)
+        const MIN_WAVE = 1155;
+        const MAX_WAVE = Math.floor(199999 * 8.7);
 
         const tiers = [
             { threshold: 6000000, fee: 110000 },
@@ -540,8 +548,12 @@
         }
 
         function convertWaveToMoney() {
-            const wave = parseFloat(document.getElementById('calcWaveInput').value);
+            const waveInput = document.getElementById('calcWaveInput');
+            const waveErrorText = document.getElementById('waveErrorText');
+            const wave = parseFloat(waveInput.value);
+
             if (isNaN(wave) || wave <= 0) {
+                waveErrorText.classList.add('hidden');
                 document.getElementById('resWaveRatio').innerText = '--';
                 document.getElementById('resWaveExactMoney').innerText = 'NT$ 0';
                 document.getElementById('resWaveMoneyResult').innerText = 'NT$ 0';
@@ -549,8 +561,17 @@
                 return;
             }
 
-            // 正確以「各級距最大金額上限換算出的浪花數」判斷界線
-            // 例如：4,999 元 * 7.9 = 39,492.1 浪花，因此浪花在 <= 39492 時屬於 7.9 級距，> 39492 (即從 39493 點起) 進入 8.0 級距 (5,000 元起)
+            if (wave < MIN_WAVE || wave > MAX_WAVE) {
+                waveErrorText.classList.remove('hidden');
+                document.getElementById('resWaveRatio').innerText = '--';
+                document.getElementById('resWaveExactMoney').innerText = 'NT$ 0';
+                document.getElementById('resWaveMoneyResult').innerText = '超出範圍';
+                renderRatioTable(-1);
+                return;
+            }
+
+            waveErrorText.classList.add('hidden');
+
             let foundIndex = 0;
             for (let i = 0; i < waveTiers.length; i++) {
                 const tierMaxWave = waveTiers[i].to * waveTiers[i].ratio;
