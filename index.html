@@ -28,9 +28,12 @@
     <div class="max-w-7xl mx-auto">
         <!-- 頂部切換頁籤 -->
         <div class="flex justify-center mb-6 no-print">
-            <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200 inline-flex gap-2 w-full sm:w-auto">
+            <div class="bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200 inline-flex flex-wrap sm:flex-nowrap gap-2 w-full sm:w-auto">
                 <button onclick="switchTab('simulator')" id="tabSimulator" class="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm">
                     🧮 業績模擬試算
+                </button>
+                <button onclick="switchTab('converter')" id="tabConverter" class="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900">
+                    🧮 浪花金額試算
                 </button>
                 <button onclick="switchTab('statement')" id="tabStatement" class="flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900">
                     📋 對帳查詢系統
@@ -110,7 +113,76 @@
             </div>
         </div>
 
-        <!-- ================= 區塊二：對帳與管理員查詢 ================= -->
+        <!-- ================= 區塊二：浪花金額雙向換算 ================= -->
+        <div id="sectionConverter" class="hidden space-y-6 max-w-4xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 text-center">
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-800">💎 浪花金額級距試算工具</h1>
+                <p class="text-xs sm:text-sm text-gray-500 mt-1">即時雙向計算：金額 ↔ 所得浪花數</p>
+            </div>
+
+            <!-- 計算器卡片區 -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 計算一：花多少錢買多少浪花 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                    <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+                        <span class="text-xl">💵</span>
+                        <h2 class="font-bold text-gray-800 text-base">金額 ➔ 浪花數換算</h2>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">請輸入預計準備金額 (NT$)</label>
+                        <input type="number" id="calcMoneyInput" oninput="convertMoneyToWave()" placeholder="例如：1000" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="bg-indigo-50/60 rounded-xl p-4 space-y-2 text-xs sm:text-sm">
+                        <div class="flex justify-between text-gray-600"><span>適用級距比值：</span><span id="resMoneyRatio" class="font-bold text-indigo-600">--</span></div>
+                        <div class="flex justify-between text-gray-600"><span>起始浪花基準：</span><span id="resMoneyBaseWave" class="font-medium text-gray-800">--</span></div>
+                        <div class="border-t border-indigo-100 pt-2 flex justify-between items-center">
+                            <span class="font-bold text-gray-700">可獲得浪花數：</span>
+                            <span id="resMoneyWaveResult" class="text-lg font-extrabold text-indigo-600">0 浪花</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 計算二：要多少浪花需要多少錢 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6 space-y-4">
+                    <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+                        <span class="text-xl">🌊</span>
+                        <h2 class="font-bold text-gray-800 text-base">浪花數 ➔ 所需金額換算</h2>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-600 mb-1">請輸入目標浪花數</label>
+                        <input type="number" id="calcWaveInput" oninput="convertWaveToMoney()" placeholder="例如：7900" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    </div>
+                    <div class="bg-emerald-50/60 rounded-xl p-4 space-y-2 text-xs sm:text-sm">
+                        <div class="flex justify-between text-gray-600"><span>適用級距比值：</span><span id="resWaveRatio" class="font-bold text-emerald-600">--</span></div>
+                        <div class="flex justify-between text-gray-600"><span>精確推算金額：</span><span id="resWaveExactMoney" class="font-medium text-gray-800">NT$ 0</span></div>
+                        <div class="border-t border-emerald-100 pt-2 flex justify-between items-center">
+                            <span class="font-bold text-gray-700">預計需要金額：</span>
+                            <span id="resWaveMoneyResult" class="text-lg font-extrabold text-emerald-600">NT$ 0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 浪花級距對照表 -->
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 sm:p-6">
+                <h2 class="text-base font-bold text-gray-800 mb-3 flex items-center gap-2">📊 浪花金額級距對照表</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-600 border-b border-gray-200">
+                                <th class="py-2.5 px-3">金額 FROM</th>
+                                <th class="py-2.5 px-3">金額 TO</th>
+                                <th class="py-2.5 px-3">比值</th>
+                                <th class="py-2.5 px-3 text-right">起始所得浪花數</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ratioTableBody" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= 區塊三：對帳與管理員查詢 ================= -->
         <div id="sectionStatement" class="hidden max-w-4xl mx-auto space-y-6">
             <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 text-center no-print">
                 <h1 class="text-xl sm:text-2xl font-bold text-gray-800">🌊 哲運娛樂 - 對帳查詢系統</h1>
@@ -364,6 +436,17 @@
     <script>
         const API_URL = "https://script.google.com/macros/s/AKfycbyLthw26LVrXoCapt3acLunOOZY0CRtXwTPQJg6o6uqr5D-4cHqQilORX3RPb3wP8Xhrw/exec";
 
+        // 浪花對照表資料 (依金額從小到大排序)
+        const waveTiers = [
+            { from: 150, to: 499, ratio: 7.7, baseWave: 1155 },
+            { from: 500, to: 999, ratio: 7.8, baseWave: 3900 },
+            { from: 1000, to: 4999, ratio: 7.9, baseWave: 7900 },
+            { from: 5000, to: 9999, ratio: 8.0, baseWave: 40000 },
+            { from: 10000, to: 49999, ratio: 8.1, baseWave: 81000 },
+            { from: 50000, to: 99999, ratio: 8.5, baseWave: 425000 },
+            { from: 100000, to: 199999, ratio: 8.7, baseWave: 870000 }
+        ];
+
         const tiers = [
             { threshold: 6000000, fee: 110000 },
             { threshold: 5000000, fee: 100000 },
@@ -392,6 +475,88 @@
                     container.appendChild(item);
                 }
             });
+        }
+
+        function renderRatioTable(highlightIndex = -1) {
+            const tbody = document.getElementById('ratioTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            waveTiers.forEach((t, i) => {
+                const tr = document.createElement('tr');
+                if (i === highlightIndex) {
+                    tr.className = "bg-indigo-50/80 font-bold text-indigo-900 border-l-4 border-indigo-600 transition";
+                } else {
+                    tr.className = "hover:bg-gray-50 transition";
+                }
+                tr.innerHTML = `
+                    <td class="py-2.5 px-3">NT$ ${t.from.toLocaleString()}</td>
+                    <td class="py-2.5 px-3">NT$ ${t.to.toLocaleString()}</td>
+                    <td class="py-2.5 px-3"><span class="bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-bold">${t.ratio}</span></td>
+                    <td class="py-2.5 px-3 text-right font-medium">${t.baseWave.toLocaleString()} 浪花</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function convertMoneyToWave() {
+            const money = parseFloat(document.getElementById('calcMoneyInput').value);
+            if (isNaN(money) || money <= 0) {
+                document.getElementById('resMoneyRatio').innerText = '--';
+                document.getElementById('resMoneyBaseWave').innerText = '--';
+                document.getElementById('resMoneyWaveResult').innerText = '0 浪花';
+                renderRatioTable(-1);
+                return;
+            }
+
+            let foundIndex = waveTiers.findIndex(t => money >= t.from && money <= t.to);
+            let matchedTier;
+
+            if (foundIndex !== -1) {
+                matchedTier = waveTiers[foundIndex];
+            } else if (money < waveTiers[0].from) {
+                matchedTier = waveTiers[0];
+                foundIndex = 0;
+            } else {
+                matchedTier = waveTiers[waveTiers.length - 1];
+                foundIndex = waveTiers.length - 1;
+            }
+
+            const waveResult = Math.round(money * matchedTier.ratio);
+            document.getElementById('resMoneyRatio').innerText = `${matchedTier.ratio} 倍`;
+            document.getElementById('resMoneyBaseWave').innerText = `${matchedTier.baseWave.toLocaleString()} 浪花`;
+            document.getElementById('resMoneyWaveResult').innerText = `${waveResult.toLocaleString()} 浪花`;
+
+            renderRatioTable(foundIndex);
+        }
+
+        function convertWaveToMoney() {
+            const wave = parseFloat(document.getElementById('calcWaveInput').value);
+            if (isNaN(wave) || wave <= 0) {
+                document.getElementById('resWaveRatio').innerText = '--';
+                document.getElementById('resWaveExactMoney').innerText = 'NT$ 0';
+                document.getElementById('resWaveMoneyResult').innerText = 'NT$ 0';
+                renderRatioTable(-1);
+                return;
+            }
+
+            let foundIndex = -1;
+            for (let i = waveTiers.length - 1; i >= 0; i--) {
+                if (wave >= waveTiers[i].baseWave) {
+                    foundIndex = i;
+                    break;
+                }
+            }
+            if (foundIndex === -1) foundIndex = 0;
+            const matchedTier = waveTiers[foundIndex];
+
+            const exactMoney = wave / matchedTier.ratio;
+            const roundedMoney = Math.ceil(exactMoney);
+
+            document.getElementById('resWaveRatio').innerText = `${matchedTier.ratio} 倍`;
+            document.getElementById('resWaveExactMoney').innerText = `NT$ ${exactMoney.toFixed(2)}`;
+            document.getElementById('resWaveMoneyResult').innerText = `NT$ ${roundedMoney.toLocaleString()}`;
+
+            renderRatioTable(foundIndex);
         }
 
         function toggleTierTable() {
@@ -448,17 +613,32 @@
 
         function switchTab(tab) {
             const btnSim = document.getElementById('tabSimulator');
+            const btnConv = document.getElementById('tabConverter');
             const btnStmt = document.getElementById('tabStatement');
+            
             const secSim = document.getElementById('sectionSimulator');
+            const secConv = document.getElementById('sectionConverter');
             const secStmt = document.getElementById('sectionStatement');
+
+            // 重設按鈕樣式
+            btnSim.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900";
+            btnConv.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900";
+            btnStmt.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900";
+
+            secSim.classList.add('hidden');
+            secConv.classList.add('hidden');
+            secStmt.classList.add('hidden');
+
             if (tab === 'simulator') {
                 btnSim.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm";
-                btnStmt.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900";
-                secSim.classList.remove('hidden'); secStmt.classList.add('hidden');
+                secSim.classList.remove('hidden');
+            } else if (tab === 'converter') {
+                btnConv.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm";
+                secConv.classList.remove('hidden');
+                renderRatioTable();
             } else {
                 btnStmt.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition bg-indigo-600 text-white shadow-sm";
-                btnSim.className = "flex-1 sm:flex-initial px-4 sm:px-6 py-2.5 rounded-xl font-medium text-xs sm:text-sm transition text-gray-600 hover:text-gray-900";
-                secStmt.classList.remove('hidden'); secSim.classList.add('hidden');
+                secStmt.classList.remove('hidden');
             }
         }
 
@@ -467,6 +647,7 @@
             addRow("直播主B", 1000000, 0, 15, 20, "瞬_25");
             initData();
             initWatermarks();
+            renderRatioTable();
         };
 
         function addRow(name = "新直播主", langhua = 100000, redeemed = 0, days = 15, hours = 20, contract = "瞬_21") {
