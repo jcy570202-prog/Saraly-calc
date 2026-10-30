@@ -116,8 +116,8 @@
         <!-- ================= 區塊二：浪花金額雙向換算 ================= -->
         <div id="sectionConverter" class="hidden space-y-6 max-w-4xl mx-auto">
             <div class="bg-white rounded-2xl shadow-sm p-5 sm:p-6 border border-gray-100 text-center">
-                <h1 class="text-xl sm:text-2xl font-bold text-gray-800">💎 浪花金額級距試算工具(藍新金流)</h1>
-                <p class="text-xs sm:text-sm text-gray-500 mt-1">即時雙向計算：金額 ↔ 所得浪花數</p>
+                <h1 class="text-xl sm:text-2xl font-bold text-gray-800">💎 浪花金額級距試算工具 (藍新金流)</h1>
+                <p class="text-xs sm:text-sm text-gray-500 mt-1">即時雙向計算：金額 (NT$ 150 ~ 199,999) ↔ 所得浪花數</p>
             </div>
 
             <!-- 計算器卡片區 -->
@@ -129,8 +129,12 @@
                         <h2 class="font-bold text-gray-800 text-base">金額 ➔ 浪花數換算</h2>
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-gray-600 mb-1">請輸入預計準備金額 (NT$)</label>
-                        <input type="number" id="calcMoneyInput" oninput="convertMoneyToWave()" placeholder="例如：1000" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-semibold text-gray-600">請輸入預計準備金額 (NT$)</label>
+                            <span class="text-[11px] text-indigo-600 font-medium">範圍：150 ~ 199,999</span>
+                        </div>
+                        <input type="number" id="calcMoneyInput" min="150" max="199999" oninput="convertMoneyToWave()" placeholder="請輸入 150 ~ 199999 之間金額" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <p id="moneyErrorText" class="text-xs text-red-500 mt-1 hidden">⚠️ 金額需介於 150 至 199,999 元之間</p>
                     </div>
                     <div class="bg-indigo-50/60 rounded-xl p-4 space-y-2 text-xs sm:text-sm">
                         <div class="flex justify-between text-gray-600"><span>適用級距比值：</span><span id="resMoneyRatio" class="font-bold text-indigo-600">--</span></div>
@@ -150,7 +154,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-600 mb-1">請輸入目標浪花數</label>
-                        <input type="number" id="calcWaveInput" oninput="convertWaveToMoney()" placeholder="例如：7900" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <input type="number" id="calcWaveInput" oninput="convertWaveToMoney()" placeholder="例如：40000" class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
                     <div class="bg-emerald-50/60 rounded-xl p-4 space-y-2 text-xs sm:text-sm">
                         <div class="flex justify-between text-gray-600"><span>適用級距比值：</span><span id="resWaveRatio" class="font-bold text-emerald-600">--</span></div>
@@ -425,7 +429,7 @@
             </div>
 
             <div class="flex gap-3 pt-2">
-                <button onclick="printPlatformStatement()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition text-sm shadow-sm">
+                <button onclick="printPlatformStatement()" class="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-2.5 rounded-xl transition shadow-sm text-sm">
                     🖨️ 列印平台對帳單
                 </button>
                 <button onclick="closePlatformStatementModal()" class="px-4 bg-gray-100 hover:bg-gray-200 text-gray-600 font-medium py-2.5 rounded-xl transition text-sm">關閉</button>
@@ -499,8 +503,12 @@
         }
 
         function convertMoneyToWave() {
-            const money = parseFloat(document.getElementById('calcMoneyInput').value);
+            const moneyInput = document.getElementById('calcMoneyInput');
+            const errorText = document.getElementById('moneyErrorText');
+            const money = parseFloat(moneyInput.value);
+
             if (isNaN(money) || money <= 0) {
+                errorText.classList.add('hidden');
                 document.getElementById('resMoneyRatio').innerText = '--';
                 document.getElementById('resMoneyBaseWave').innerText = '--';
                 document.getElementById('resMoneyWaveResult').innerText = '0 浪花';
@@ -508,20 +516,22 @@
                 return;
             }
 
-            let foundIndex = waveTiers.findIndex(t => money >= t.from && money <= t.to);
-            let matchedTier;
-
-            if (foundIndex !== -1) {
-                matchedTier = waveTiers[foundIndex];
-            } else if (money < waveTiers[0].from) {
-                matchedTier = waveTiers[0];
-                foundIndex = 0;
-            } else {
-                matchedTier = waveTiers[waveTiers.length - 1];
-                foundIndex = waveTiers.length - 1;
+            if (money < 150 || money > 199999) {
+                errorText.classList.remove('hidden');
+                document.getElementById('resMoneyRatio').innerText = '--';
+                document.getElementById('resMoneyBaseWave').innerText = '--';
+                document.getElementById('resMoneyWaveResult').innerText = '超出範圍';
+                renderRatioTable(-1);
+                return;
             }
 
+            errorText.classList.add('hidden');
+            let foundIndex = waveTiers.findIndex(t => money >= t.from && money <= t.to);
+            if (foundIndex === -1) foundIndex = waveTiers.length - 1;
+
+            const matchedTier = waveTiers[foundIndex];
             const waveResult = Math.round(money * matchedTier.ratio);
+
             document.getElementById('resMoneyRatio').innerText = `${matchedTier.ratio} 倍`;
             document.getElementById('resMoneyBaseWave').innerText = `${matchedTier.baseWave.toLocaleString()} 浪花`;
             document.getElementById('resMoneyWaveResult').innerText = `${waveResult.toLocaleString()} 浪花`;
@@ -539,16 +549,18 @@
                 return;
             }
 
-            let foundIndex = -1;
-            for (let i = waveTiers.length - 1; i >= 0; i--) {
-                if (wave >= waveTiers[i].baseWave) {
+            // 正確以「各級距最大金額上限換算出的浪花數」判斷界線
+            // 例如：4,999 元 * 7.9 = 39,492.1 浪花，因此浪花在 <= 39492 時屬於 7.9 級距，> 39492 (即從 39493 點起) 進入 8.0 級距 (5,000 元起)
+            let foundIndex = 0;
+            for (let i = 0; i < waveTiers.length; i++) {
+                const tierMaxWave = waveTiers[i].to * waveTiers[i].ratio;
+                if (wave <= tierMaxWave || i === waveTiers.length - 1) {
                     foundIndex = i;
                     break;
                 }
             }
-            if (foundIndex === -1) foundIndex = 0;
-            const matchedTier = waveTiers[foundIndex];
 
+            const matchedTier = waveTiers[foundIndex];
             const exactMoney = wave / matchedTier.ratio;
             const roundedMoney = Math.ceil(exactMoney);
 
