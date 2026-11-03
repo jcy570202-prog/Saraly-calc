@@ -663,13 +663,19 @@
 
         function calculateSalary({ langhua, redeemed, days, hours, contract }) {
             const isPlus = contract && String(contract).includes('+');
+            const isContract21a = contract === '順_21a' || contract === '瞬_21a';
             const baseDivisor = (contract && String(contract).includes('25')) ? 24 : 20;
             const fixedFee = getFixedFee(langhua);
             
             let serviceFeeActual = 0;
             if (days >= 15 && hours >= 20 && langhua >= 100000) {
                 const effectiveHours = Math.min(hours, 20);
-                let rawService = (fixedFee === 3200) ? (fixedFee - 1200) : (fixedFee - (effectiveHours * 100));
+                let rawService = 0;
+                if (isContract21a && fixedFee < 20000) {
+                    rawService = fixedFee * 0.9;
+                } else {
+                    rawService = (fixedFee === 3200) ? (fixedFee - 1200) : (fixedFee - (effectiveHours * 100));
+                }
                 serviceFeeActual = rawService * 0.95;
             }
 
@@ -680,8 +686,9 @@
                 splitFeeActual = isPlus ? Math.ceil(rawSplit) : Math.ceil(rawSplit * 0.95);
             }
 
-            const rowTotal = Math.round(serviceFeeActual) + splitFeeActual;
-            return { fixedFee, serviceFeeActual: Math.round(serviceFeeActual), splitFeeActual, rowTotal };
+            const finalServiceFeeActual = isContract21a ? Math.ceil(serviceFeeActual) : Math.round(serviceFeeActual);
+            const rowTotal = finalServiceFeeActual + splitFeeActual;
+            return { fixedFee, serviceFeeActual: finalServiceFeeActual, splitFeeActual, rowTotal };
         }
 
         function calculateSimulatorSalary({ langhua, redeemed, days, hours, contract }) {
@@ -1303,7 +1310,7 @@
         }
 
         function openPlatformStatementModal() { document.getElementById('platformStatementModal').classList.remove('hidden'); }
-        function closePlatformStatementModal() { document.getElementById('platformStatementModal').classList.add('hidden'); }
+        function closePlatformStatementModal() { document.getElementById('platformStatementModal'].classList.add('hidden'); }
 
         function printPlatformStatement() {
             document.body.classList.add('printing-platform-modal');
